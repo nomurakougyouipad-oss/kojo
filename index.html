@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工場 製作指示</title>
+<style>
+/* ================== 色（明るい＝初期値） ================== */
+:root{
+  --bg:#e6e8eb; --card:#ffffff; --ink:#111418; --sub:#4a525c; --line:#c9ced5;
+  --red:#c40f0f; --red-bg:#ffe1e1; --amber:#9a5a00; --amber-bg:#ffefc7;
+  --green:#11743a; --green-bg:#dcf3e4; --blue:#1650b8; --blue-bg:#dfe9fb;
+  --gray:#59616b; --gray-bg:#e8eaed; --head:#1b2430; --head-ink:#ffffff;
+}
+:root[data-theme="dark"]{
+  --bg:#0d1014; --card:#1a1f26; --ink:#f4f6f8; --sub:#b6bec8; --line:#38404a;
+  --red:#ff5a5a; --red-bg:#4a1414; --amber:#ffc04d; --amber-bg:#4a3608;
+  --green:#4fd98a; --green-bg:#0f3a22; --blue:#7fb0ff; --blue-bg:#16294a;
+  --gray:#aab2bc; --gray-bg:#2a3038; --head:#000000; --head-ink:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"BIZ UDPGothic","BIZ UDゴシック","Meiryo UI","Meiryo","Yu Gothic UI","Yu Gothic",sans-serif;
+  line-height:1.4;
+}
+button,input,select,textarea{font:inherit; color:inherit}
+[hidden]{display:none !important}
+
+/* ================== はじめの画面（どちらを開くか） ================== */
+#start{min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:24px; font-size:20px; text-align:center}
+#start h1{font-size:32px}
+#start .choices{display:flex; gap:24px; flex-wrap:wrap; justify-content:center}
+#start a{display:block; width:300px; padding:28px 20px; background:var(--card); border:3px solid var(--line); border-radius:16px; color:var(--ink); text-decoration:none}
+#start a b{display:block; font-size:30px; margin-bottom:6px}
+#start a:hover{border-color:var(--blue)}
+#start p.small{font-size:15px; color:var(--sub); max-width:640px}
+
+/* ================== 工場の表示画面 ================== */
+body.display{
+  height:100vh; overflow:hidden; display:flex; flex-direction:column;
+  /* 画面の大きさに合わせる。最小20px（これより小さくしない）。1024×768で約27px */
+  font-size:clamp(20px, min(2.6vw, 3.6vh), 64px); line-height:1.35;
+}
+#display{display:contents}
+#display header{
+  background:var(--head); color:var(--head-ink);
+  display:flex; align-items:center; flex-wrap:wrap; gap:.2em .8em;
+  padding:.35em .8em; flex:0 0 auto;
+}
+#display header h1{font-size:1.25em; font-weight:700; letter-spacing:.05em}
+#display header .clock{margin-left:auto; font-size:1.25em; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+#display header .page{font-size:.9em; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+#display header button{
+  font-size:.7em; color:var(--head-ink); background:transparent;
+  border:2px solid rgba(255,255,255,.5); border-radius:.4em; padding:.15em .6em; cursor:pointer; white-space:nowrap;
+}
+#display header .nav{font-size:.8em; font-weight:800; min-width:2.2em}
+#display header #pauseBtn{font-size:.8em; font-weight:800; border-color:#fff; min-width:5.6em}
+#display header #pauseBtn.paused{background:#fff; color:var(--head)}
+@media (max-width:700px){ #display header h1{display:none} #display header .clock{margin-left:0} }
+.counts{display:flex; flex-wrap:wrap; gap:0 1.2em; justify-content:center; padding:.2em .8em; font-weight:800; font-size:.85em; background:var(--card); border-bottom:2px solid var(--line); flex:0 0 auto}
+.counts .n{font-size:1.15em; font-variant-numeric:tabular-nums; margin-left:.25em}
+.counts .c-warn{color:var(--red)} .counts .c-done{color:var(--green)}
+.notice{background:var(--amber-bg); color:var(--amber); font-weight:700; font-size:.7em; padding:.2em .8em; flex:0 0 auto; text-align:center}
+.notice.paused{background:#1650b8; color:#fff; font-size:1em; font-weight:800}
+.syncwarn{background:#c40f0f; color:#fff; font-weight:800; font-size:.75em; padding:.2em .8em; text-align:center; flex:0 0 auto}
+#main{flex:1 1 auto; min-height:0; padding:.5em .6em; overflow:hidden; display:flex; flex-direction:column; gap:.45em}
+.empty{margin:auto; font-size:1.3em; font-weight:800; color:var(--sub); text-align:center}
+.card{
+  background:var(--card); border:2px solid var(--line); border-left:.5em solid var(--line);
+  border-radius:.35em; display:flex; gap:.7em; padding:.45em .7em .5em .6em; flex:0 0 auto;
+}
+.card.urgent{border-left-color:var(--red)}
+.card.done{border-left-color:var(--green)}
+.card.done .what{color:var(--sub)}
+.card.scroll{flex:1 1 auto; min-height:0; overflow-y:auto}
+.due{flex:0 0 6em; width:6em; text-align:center; display:flex; flex-direction:column; justify-content:center}
+.due .left{font-size:1.4em; font-weight:800; line-height:1.1; white-space:nowrap}
+.due .date{font-size:.8em; color:var(--sub); margin-top:.15em; white-space:nowrap}
+.due.over .left{color:var(--red)} .due.soon .left{color:var(--amber)}
+.due.done .left{color:var(--green); font-size:1.2em}
+.card.scroll .due{justify-content:flex-start}
+.body{flex:1 1 auto; min-width:0}
+.line1{display:flex; align-items:baseline; gap:0 .5em; flex-wrap:wrap; color:var(--sub); font-size:.8em}
+.line1 > span{overflow-wrap:anywhere}
+.line1 .no{font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.tag-urgent{background:var(--red); color:#fff; font-weight:800; padding:0 .45em; border-radius:.25em}
+.cont{font-weight:800; color:var(--blue)}
+.what{font-size:1.3em; font-weight:800; line-height:1.2; margin-top:.05em; overflow-wrap:anywhere}
+.what .qty{font-weight:800; margin-left:.4em; white-space:nowrap}
+.inst{margin-top:.2em; white-space:pre-wrap; overflow-wrap:anywhere}
+.more{margin-top:.25em; font-weight:800; color:var(--blue); font-size:.85em}
+.chips{display:flex; flex-wrap:wrap; gap:.35em .5em; margin-top:.3em; align-items:center}
+.chip{font-size:.8em; font-weight:700; padding:.05em .55em; border-radius:999px; border:2px solid; white-space:nowrap}
+.st-work {color:var(--blue);  background:var(--blue-bg);  border-color:var(--blue)}
+.st-rec  {color:var(--ink);   background:var(--gray-bg);  border-color:var(--sub)}
+.st-check{color:var(--amber); background:var(--amber-bg); border-color:var(--amber)}
+.st-hold {color:var(--amber); background:var(--amber-bg); border-color:var(--amber)}
+.st-done {color:var(--green); background:var(--green-bg); border-color:var(--green)}
+.st-none {color:var(--gray);  background:var(--gray-bg);  border-color:var(--gray)}
+.sep{width:2px; align-self:stretch; background:var(--line); margin:0 .15em}
+.warn{font-size:.8em; font-weight:700; color:var(--red)}
+.note{font-size:.75em; font-weight:700; color:var(--sub)}
+#display footer{flex:0 0 auto}
+#display footer .track{height:.35em; background:var(--line)}
+#display footer .bar{height:100%; width:0; background:var(--blue)}
+#display .help{font-size:.55em; color:var(--sub); text-align:right; padding:.1em .8em .15em}
+#measure{position:absolute; left:0; top:0; visibility:hidden; pointer-events:none}
+
+/* ================== 事務所の登録画面 ================== */
+body.office{font-size:18px}
+#office header{
+  background:var(--head); color:var(--head-ink); display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px;
+  padding:10px 16px; position:sticky; top:0; z-index:5;
+}
+#office header h1{font-size:22px}
+#office header .me{margin-left:auto; display:flex; align-items:center; gap:6px; font-size:15px}
+#office header .me input{width:9em; padding:4px 8px; border-radius:6px; border:1px solid #888; background:#fff; color:#111}
+#office header a, #office header button{color:#fff; background:transparent; border:2px solid rgba(255,255,255,.6); border-radius:8px; padding:4px 12px; font-size:15px; text-decoration:none; cursor:pointer; white-space:nowrap}
+.wrap{max-width:1100px; margin:0 auto; padding:16px}
+.sample{background:var(--amber-bg); color:var(--amber); border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; font-weight:700}
+.sample button{margin-left:auto}
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px}
+.btn{border:2px solid var(--line); background:var(--card); border-radius:10px; padding:8px 16px; cursor:pointer; font-weight:700; white-space:nowrap}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue); color:#fff; border-color:var(--blue); font-size:20px; padding:10px 22px}
+.btn.green{background:var(--green); color:#fff; border-color:var(--green)}
+.btn.danger{color:var(--red); border-color:var(--red)}
+.btn.armed{background:var(--red); color:#fff; border-color:var(--red)}
+.tabs{display:flex; gap:0; margin-left:auto; border:2px solid var(--line); border-radius:10px; overflow:hidden}
+.tabs button{border:0; background:var(--card); padding:8px 16px; cursor:pointer; font-weight:700}
+.tabs button.on{background:var(--head); color:#fff}
+.job{background:var(--card); border:2px solid var(--line); border-radius:12px; margin-bottom:14px; overflow:hidden}
+.job .jh{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; padding:10px 14px; border-bottom:2px solid var(--line); background:var(--gray-bg)}
+.job .jh .no{font-weight:800; font-size:20px; font-variant-numeric:tabular-nums}
+.job .jh .title{font-weight:700; overflow-wrap:anywhere}
+.job .jh .acts{margin-left:auto; display:flex; gap:8px}
+.job .jh .acts .btn{padding:4px 12px; font-size:15px}
+.row{display:flex; align-items:center; gap:14px; padding:10px 14px; border-top:1px solid var(--line); cursor:pointer}
+.row:first-of-type{border-top:0}
+.row:hover{background:var(--blue-bg)}
+.row .rdue{width:7.5em; flex:0 0 auto; text-align:center}
+.row .rdue b{display:block; font-size:20px}
+.row .rdue small{color:var(--sub)}
+.row .rdue.over b{color:var(--red)} .row .rdue.soon b{color:var(--amber)} .row .rdue.done b{color:var(--green)}
+.row .rmain{flex:1 1 auto; min-width:0}
+.row .rmain .w{font-weight:800; font-size:19px; overflow-wrap:anywhere}
+.row .rmain .s{color:var(--sub); font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.row .chip{font-size:14px}
+.nothing{padding:40px; text-align:center; color:var(--sub); font-weight:700}
+
+/* 入力の窓 */
+dialog{border:0; border-radius:14px; padding:0; width:min(720px, 96vw); max-height:94vh; background:var(--card); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg-h{display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:2px solid var(--line); position:sticky; top:0; background:var(--card); z-index:1}
+.dlg-h h2{font-size:22px}
+.dlg-h .x{margin-left:auto}
+.dlg-b{padding:16px 18px; display:flex; flex-direction:column; gap:14px}
+.dlg-f{display:flex; flex-wrap:wrap; gap:10px; padding:14px 18px; border-top:2px solid var(--line); position:sticky; bottom:0; background:var(--card)}
+.dlg-f .right{margin-left:auto; display:flex; gap:10px}
+.fld label{display:block; font-weight:800; margin-bottom:4px}
+.fld label .req{color:var(--red); font-size:14px; margin-left:4px}
+.fld label .opt{color:var(--sub); font-size:14px; font-weight:400; margin-left:4px}
+.fld input[type=text], .fld input[type=date], .fld textarea{width:100%; padding:8px 10px; border:2px solid var(--line); border-radius:8px; background:var(--card)}
+.fld input:focus, .fld textarea:focus{outline:none; border-color:var(--blue)}
+.fld textarea{min-height:6em; resize:vertical}
+.fld .hint{font-size:14px; color:var(--sub); margin-top:3px}
+.fld .hint.long{color:var(--amber); font-weight:700}
+.fld .err{font-size:14px; color:var(--red); font-weight:700; margin-top:3px}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+@media (max-width:560px){ .two{grid-template-columns:1fr} }
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg button{border:2px solid var(--line); background:var(--card); border-radius:8px; padding:6px 14px; cursor:pointer; font-weight:700}
+.seg button.on{background:var(--head); color:#fff; border-color:var(--head)}
+.check{display:flex; align-items:center; gap:8px; font-weight:800; cursor:pointer}
+.check input{width:22px; height:22px}
+details.more-f{border:2px dashed var(--line); border-radius:10px; padding:8px 12px}
+details.more-f summary{cursor:pointer; font-weight:800}
+details.more-f .two{margin-top:10px}
+.fixed{font-weight:800; font-size:19px}
+.statebox{border:2px solid var(--line); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:10px}
+.statebox .now{font-weight:800}
+.statebox .btns{display:flex; flex-wrap:wrap; gap:8px}
+.hist{font-size:14px; color:var(--sub)}
+.hist li{margin-left:1.2em}
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--head); color:#fff; padding:10px 22px; border-radius:999px; font-weight:800; z-index:50}
+
+/* ================== ログイン・権限なし ================== */
+.gate{min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px; font-size:19px; text-align:center}
+.gate h1{font-size:28px}
+.gate .box{background:var(--card); border:2px solid var(--line); border-radius:16px; padding:24px; width:min(460px, 94vw); display:flex; flex-direction:column; gap:14px; text-align:left}
+.gate .box label{font-weight:800; display:block; margin-bottom:4px}
+.gate .box input{width:100%; padding:10px 12px; border:2px solid var(--line); border-radius:10px; background:var(--card); font-size:18px}
+.gate .msg{color:var(--red); font-weight:700; min-height:1.4em}
+.gate .uid{font-family:ui-monospace,Consolas,monospace; font-size:16px; background:var(--gray-bg); border-radius:8px; padding:8px 10px; word-break:break-all; user-select:all}
+.gate .small{font-size:15px; color:var(--sub)}
+.gbtn{display:flex; align-items:center; justify-content:center; gap:10px; font-size:19px}
+
+/* 接続の状態（工場の画面）。日報の集計の遅れとは別に出す */
+.connwarn{background:#9a5a00; color:#fff; font-weight:800; font-size:.75em; padding:.2em .8em; text-align:center; flex:0 0 auto}
+.connwarn.bad{background:#c40f0f}
+.connwarn[hidden]{display:none}
+
+/* 事務所 */
+#office header .who{margin-left:auto; font-size:15px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+#office header .who b{font-size:16px}
+#office header .badge{font-size:12px; border:1px solid rgba(255,255,255,.6); border-radius:999px; padding:1px 8px}
+.offline{background:var(--red-bg); color:var(--red); border-radius:10px; padding:8px 14px; margin-bottom:12px; font-weight:800}
+.row.canceled .rmain .w{text-decoration:line-through; color:var(--sub)}
+.st-cancel{color:var(--sub); background:var(--gray-bg); border-color:var(--sub)}
+.statebox .reason{display:flex; flex-direction:column; gap:6px}
+.statebox .reason input{padding:8px 10px; border:2px solid var(--line); border-radius:8px; background:var(--card)}
+.roles table{width:100%; border-collapse:collapse; font-size:15px}
+.roles th, .roles td{border-bottom:1px solid var(--line); padding:6px 4px; text-align:center}
+.roles td.n{text-align:left}
+.roles td.u{font-family:ui-monospace,Consolas,monospace; font-size:12px; color:var(--sub); text-align:left; word-break:break-all}
+.roles input[type=checkbox]{width:20px; height:20px}
+.roles .add{display:grid; grid-template-columns:2fr 1fr auto; gap:8px; margin-top:12px}
+.roles .add input{padding:6px 8px; border:2px solid var(--line); border-radius:8px; background:var(--card)}
+/* 注番：入力と登録される注番がちがう時、目立たせる */
+#fNoHint.long{color:#b45309;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- ================== はじめの画面 ================== -->
+<section id="start" hidden>
+  <h1>工場 製作指示</h1>
+  <div class="choices">
+    <a href="#office"><b>事務所</b>製作指示を登録する</a>
+    <a href="#display"><b>工場</b>製作指示を映す</a>
+  </div>
+  <p class="small">事務所はGoogleアカウント、工場の画面は専用のアカウントでログインします。</p>
+</section>
+
+<!-- ================== 読み込み中 ================== -->
+<section id="loading" class="gate"><p>読み込んでいます…</p></section>
+
+<!-- ================== 事務所のログイン ================== -->
+<section id="loginOffice" class="gate" hidden>
+  <h1>事務所：製作指示の登録</h1>
+  <div class="box">
+    <p>会社のGoogleアカウントでログインしてください。</p>
+    <button class="btn primary gbtn" id="googleBtn">Googleでログイン</button>
+    <div class="msg" id="loginOfficeMsg"></div>
+  </div>
+  <a class="small" href="#display">工場の画面はこちら</a>
+</section>
+
+<!-- ================== 工場の画面のログイン ================== -->
+<section id="loginDisplay" class="gate" hidden>
+  <h1>工場の画面</h1>
+  <form class="box" id="displayForm">
+    <p class="small">工場の画面専用のアカウントで、最初に1回だけログインします。次からは自動で開きます。</p>
+    <div><label for="dEmail">メールアドレス</label><input id="dEmail" type="email" autocomplete="username" required></div>
+    <div><label for="dPass">パスワード</label><input id="dPass" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" type="submit">ログイン</button>
+    <div class="msg" id="loginDisplayMsg"></div>
+  </form>
+  <a class="small" href="#office">事務所の画面はこちら</a>
+</section>
+
+<!-- ================== 権限がない ================== -->
+<section id="noRole" class="gate" hidden>
+  <h1>まだ使う権限がありません</h1>
+  <div class="box">
+    <p id="noRoleWho"></p>
+    <p>管理者に、次の番号を伝えてください。管理者が権限を付けると使えるようになります。</p>
+    <div class="uid" id="noRoleUid"></div>
+    <button class="btn" id="copyUid">番号をコピー</button>
+    <button class="btn" id="noRoleReload">権限を付けてもらったら、ここを押す</button>
+    <button class="btn danger" id="noRoleLogout">ログアウト（別のアカウントで入る）</button>
+  </div>
+</section>
+
+<!-- ================== 工場の表示画面 ================== -->
+<section id="display" hidden>
+  <header>
+    <h1>製作指示</h1>
+    <div class="clock" id="clock"></div>
+    <div class="page" id="page"></div>
+    <button class="nav" id="prevBtn" title="前のページ（←キー）">◀</button>
+    <button class="nav" id="nextBtn" title="次のページ（→キー）">▶</button>
+    <button id="pauseBtn" title="自動切替を止める／動かす（スペースキー）"></button>
+    <button id="themeBtn" title="明るい／暗い（Tキー）">明/暗</button>
+  </header>
+  <div class="counts" id="counts"></div>
+  <div class="connwarn" id="connwarn" hidden></div>
+  <div class="syncwarn" id="syncwarn" hidden></div>
+  <div class="notice" id="notice"></div>
+  <main id="main"></main>
+  <footer>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <div class="help">← → ページ　スペース 止める/動かす　T 明/暗　F11 全画面</div>
+  </footer>
+  <div id="measure"></div>
+</section>
+
+<!-- ================== 事務所の登録画面 ================== -->
+<section id="office" hidden>
+  <header>
+    <h1>事務所：製作指示の登録</h1>
+    <div class="who"><b id="meName"></b><span id="meRoles"></span></div>
+    <a href="#display" target="_blank" rel="noopener">工場の画面を開く ↗</a>
+    <button id="rolesBtn" hidden>権限の設定</button>
+    <button id="oThemeBtn">明/暗</button>
+    <button id="logoutBtn">ログアウト</button>
+  </header>
+  <div class="wrap">
+    <div class="offline" id="officeConn" hidden></div>
+    <div class="toolbar">
+      <button class="btn primary" id="newBtn">＋ 新しい製作指示</button>
+      <div class="tabs" id="tabs">
+        <button data-f="open" class="on">未完了</button>
+        <button data-f="done">完了</button>
+        <button data-f="canceled">取り消し</button>
+        <button data-f="all">すべて</button>
+      </div>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <dialog id="dlg">
+    <div class="dlg-h"><h2 id="dlgTitle"></h2><button class="btn x" id="dlgClose">閉じる</button></div>
+    <div class="dlg-b">
+      <div class="two">
+        <div class="fld">
+          <label>注番<span class="req">必須</span></label>
+          <input type="text" id="fNo" list="noList" placeholder="例：26-0001" maxlength="40">
+          <datalist id="noList"></datalist>
+          <div class="hint" id="fNoHint"></div>
+        </div>
+        <div class="fld">
+          <label>件名<span class="req">必須</span></label>
+          <input type="text" id="fTitle" placeholder="例：A工場 冷却水配管 更新" maxlength="200">
+        </div>
+      </div>
+      <div class="fld">
+        <label>種類</label>
+        <div class="seg" id="fKind"></div>
+      </div>
+      <div class="two">
+        <div class="fld">
+          <label>品名<span class="req">必須</span></label>
+          <input type="text" id="fWhat" placeholder="例：ポンプベース架台" maxlength="200">
+        </div>
+        <div class="fld">
+          <label>数量<span class="req">必須</span></label>
+          <input type="text" id="fQty" placeholder="例：2台" maxlength="50">
+        </div>
+      </div>
+      <div class="two">
+        <div class="fld">
+          <label>工場の完成期限<span class="req">必須</span></label>
+          <input type="date" id="fDue">
+        </div>
+        <div class="fld">
+          <label>&nbsp;</label>
+          <label class="check"><input type="checkbox" id="fUrgent"> 急ぎ（工場の画面で赤く目立たせる）</label>
+        </div>
+      </div>
+      <div class="fld">
+        <label>製作指示<span class="opt">（工場の画面に出る文）</span></label>
+        <textarea id="fInst" maxlength="5000" placeholder="何を作るか・特に大事な注意・完成前に確認すること"></textarea>
+        <div class="hint" id="fInstHint"></div>
+      </div>
+      <details class="more-f" id="fMore">
+        <summary>くわしく（図面・現場納品日）</summary>
+        <div class="two">
+          <div class="fld"><label>図面番号<span class="opt">任意</span></label><input type="text" id="fDrw" maxlength="100" placeholder="例：S-201"></div>
+          <div class="fld"><label>改訂<span class="opt">任意</span></label><input type="text" id="fRev" maxlength="50" placeholder="例：Rev.C"></div>
+          <div class="fld"><label>図面の保管場所<span class="opt">任意</span></label><input type="text" id="fPlace" maxlength="100" placeholder="例：事務所 棚B"></div>
+          <div class="fld"><label>現場納品日<span class="opt">任意</span></label><input type="date" id="fDeliver"></div>
+        </div>
+      </details>
+      <div class="statebox" id="stateBox">
+        <div class="now" id="stateNow"></div>
+        <div class="btns" id="stateBtns"></div>
+        <div class="reason" id="reasonBox" hidden>
+          <label for="fReason"><b>取り消す理由</b>（必須）</label>
+          <input id="fReason" type="text" maxlength="200" placeholder="例：二重に登録した／注文が取り消しになった">
+          <div class="btns"><button class="btn armed" id="cancelGo">取り消す</button><button class="btn" id="cancelBack">やめる</button></div>
+        </div>
+        <ul class="hist" id="hist"></ul>
+      </div>
+      <div class="fld"><div class="err" id="fErr"></div></div>
+    </div>
+    <div class="dlg-f">
+      <div class="right">
+        <button class="btn" id="cancelBtn">やめる</button>
+        <button class="btn primary" id="saveBtn">登録する</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="rolesDlg">
+    <div class="dlg-h"><h2>権限の設定</h2><button class="btn x" id="rolesClose">閉じる</button></div>
+    <div class="dlg-b roles">
+      <p class="hint">名前は履歴に残る名前です（本人の確認はログインのIDで行います）。権限を外す時は、チェックを全部外して保存します。<br>管理者＝権限の設定・取り消しの復元　事務所＝登録・変更・取り消し　完了＝完了と再開　工場＝工場の画面（見るだけ）</p>
+      <table>
+        <thead><tr><th>名前</th><th>管理者</th><th>事務所</th><th>完了</th><th>工場</th><th></th></tr></thead>
+        <tbody id="rolesBody"></tbody>
+      </table>
+      <div class="add">
+        <input id="newUid" placeholder="番号（UID）。本人の画面に出ます">
+        <input id="newName" placeholder="名前" maxlength="40">
+        <button class="btn" id="newRoleBtn">足す</button>
+      </div>
+      <div class="err" id="rolesErr"></div>
+    </div>
+  </dialog>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =====================================================================
+   Firebase（工場管理 yotsuba-kojo）
+   この接続情報は秘密ではありません。守りは Firestore のセキュリティルールで行います。
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB9VQ7HkSk_GVfCgqnBnwVRV7JTpyUQe-Q",
+  authDomain: "yotsuba-kojo.firebaseapp.com",
+  projectId: "yotsuba-kojo",
+  storageBucket: "yotsuba-kojo.firebasestorage.app",
+  messagingSenderId: "222387197689",
+  appId: "1:222387197689:web:20a1868917c6124239f428"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const FV = firebase.firestore.FieldValue;
+/* 通信が切れても、最後に受け取った内容を表示できるようにする（最新でないことは画面で知らせる） */
+db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+
+/* ================== 小道具 ================== */
+const WD = ["日","月","火","水","木","金","土"];
+const KINDS = ["配管","架台","鉄骨","金物","その他"];
+function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function diffDays(a,b){ return Math.round((startOfDay(a)-startOfDay(b))/86400000); }
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parseYmd(s){ if(!s) return null; const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function fmtDate(d){ return (d.getMonth()+1)+"/"+d.getDate()+"("+WD[d.getDay()]+")"; }
+function fmtTime(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function fmtStamp(iso){ const d=new Date(iso); return (d.getMonth()+1)+"/"+d.getDate()+" "+fmtTime(d); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+/* 注番の書き方をそろえる（全角の数字・英字・ハイフンを半角に、前後の空白を取る）。
+   注番の文書IDは、この「そろえた注番」そのもの → 同じ注番で2つの案件はできない */
+function normNo(no){ return String(no||"").normalize("NFKC").replace(/[‐－ー−―]/g,"-").replace(/\s+/g," ").trim(); }
+function noProblem(no){
+  if(!no) return "注番を入れてください";
+  if(no.length>40) return "注番が長すぎます（40文字まで）";
+  if(no.includes("/")) return "注番に「/」は使えません";
+  if(/^\.{1,2}$/.test(no) || /^__.*__$/.test(no)) return "この注番は使えません";
+  return "";
+}
+function jobKeyOf(no){ return normNo(no); }
+const toIso = v => v && v.toDate ? v.toDate().toISOString() : (v||null);
+
+/* 明るい／暗い（事務所と工場で共通。このパソコンだけの好み） */
+function setTheme(t){ document.documentElement.dataset.theme=t; try{ localStorage.setItem("kojo-theme",t); }catch(e){} }
+function toggleTheme(){ setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"); }
+try{ setTheme(localStorage.getItem("kojo-theme")||"light"); }catch(e){ setTheme("light"); }
+
+/* =====================================================================
+   Live：Firestore から注番（jobs）と品（collectionGroup items）を購読して、
+   画面用の形 {jobs:{jobKey:{no,title,items:{id:item}}}} にまとめる
+   ===================================================================== */
+const Live = (()=>{
+  let jobsSnap=null, itemsSnap=null, cbs=[];
+  const st = {jobsCache:true, itemsCache:true, everSynced:false, lostAt:null, startedAt:Date.now(), error:"", online:navigator.onLine};
+  const api = { data:{jobs:{}}, onChange(cb){ cbs.push(cb); }, status(){
+    const ok = st.online && !st.jobsCache && !st.itemsCache;
+    return {ok, everSynced:st.everSynced, lostAt:st.lostAt, startedAt:st.startedAt, error:st.error};
+  }};
+  function mark(which, snap){
+    const before = api.status().ok;
+    st[which] = snap.metadata.fromCache;
+    const after = api.status().ok;
+    if(after) st.everSynced = true;
+    if(before && !after) st.lostAt = new Date();
+    if(!before && !after && !st.lostAt && st.everSynced) st.lostAt = new Date();
+  }
+  window.addEventListener("online",  ()=>{ st.online=true; });
+  window.addEventListener("offline", ()=>{ if(api.status().ok) st.lostAt=new Date(); st.online=false; });
+  function rebuild(){
+    const jobs = {};
+    if(jobsSnap) jobsSnap.forEach(doc=>{ const j=doc.data({serverTimestamps:"estimate"}); jobs[doc.id]={no:j.no, title:j.title, items:{}}; });
+    if(itemsSnap) itemsSnap.forEach(doc=>{
+      const jobKey = doc.ref.parent.parent.id, x = doc.data({serverTimestamps:"estimate"});
+      if(!jobs[jobKey]) return;   // 注番がまだ届いていない
+      jobs[jobKey].items[doc.id] = Object.assign({}, x, {
+        id:doc.id,
+        done: x.done ? {by:x.done.by, name:x.done.name, at:toIso(x.done.at)} : null,
+        canceled: x.canceled ? {by:x.canceled.by, name:x.canceled.name, at:toIso(x.canceled.at), reason:x.canceled.reason} : null,
+        createdAt: toIso(x.createdAt), updatedAt: toIso(x.updatedAt) });
+    });
+    api.data = {jobs};
+    cbs.forEach(cb=>cb(api.data));
+  }
+  function fail(e){ st.error = (e && e.code==="permission-denied") ? "読む権限がありません。管理者に確認してください" : "読み込みでエラーが起きました（"+(e&&e.code||e)+"）"; cbs.forEach(cb=>cb(api.data)); }
+  api.start = ()=>{
+    db.collection("jobs").onSnapshot({includeMetadataChanges:true}, s=>{ mark("jobsCache", s); jobsSnap=s; rebuild(); }, fail);
+    db.collectionGroup("kojo_items").onSnapshot({includeMetadataChanges:true}, s=>{ mark("itemsCache", s); itemsSnap=s; rebuild(); }, fail);
+  };
+  return api;
+})();
+
+/* =====================================================================
+   ログインと権限の確認
+   ===================================================================== */
+const MODE = (location.hash||"").replace("#","");
+window.addEventListener("hashchange", ()=>location.reload());
+const show = id => ["start","loading","loginOffice","loginDisplay","noRole","display","office"]
+  .forEach(x=>document.getElementById(x).hidden = (x!==id));
+let ME = null;   // {uid, name, email, roles:{admin,office,approver,display}}
+
+if(MODE!=="office" && MODE!=="display"){ show("start"); }
+else auth.onAuthStateChanged(async user=>{
+  if(!user){ show(MODE==="office" ? "loginOffice" : "loginDisplay"); return; }
+  show("loading");
+  let roles = {};
+  try{ const r = await db.collection("roles").doc(user.uid).get({source:"server"}); roles = r.exists ? r.data() : {}; }
+  catch(e){
+    try{ const r = await db.collection("roles").doc(user.uid).get(); roles = r.exists ? r.data() : {}; }catch(e2){ roles = {}; }
+  }
+  /* rname：管理者が役割に登録した名前（履歴に残す名前。ルールで一致を確認する）
+     name ：画面の右上に出す名前（なければGoogleの名前） */
+  ME = {uid:user.uid, email:user.email||"", rname:(roles.name||""), name:(roles.name || user.displayName || user.email || "（名前なし）"), roles};
+  const can = MODE==="office" ? (roles.admin||roles.office||roles.approver) : (roles.admin||roles.office||roles.approver||roles.display);
+  if(!can){
+    document.getElementById("noRoleWho").textContent = "ログイン中："+(user.displayName?user.displayName+"（"+(user.email||"")+"）":(user.email||""));
+    document.getElementById("noRoleUid").textContent = user.uid;
+    show("noRole"); return;
+  }
+  Live.start();
+  if(MODE==="display"){ document.body.className="display"; show("display"); initDisplay(); }
+  else { document.body.className="office"; show("office"); initOffice(); }
+});
+
+document.getElementById("googleBtn").onclick = async ()=>{
+  const p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({prompt:"select_account"});
+  try{ await auth.signInWithPopup(p); }
+  catch(e){ document.getElementById("loginOfficeMsg").textContent = "ログインできませんでした（"+e.code+"）"; }
+};
+document.getElementById("displayForm").onsubmit = async ev=>{
+  ev.preventDefault();
+  const m = document.getElementById("loginDisplayMsg"); m.textContent="";
+  try{ await auth.signInWithEmailAndPassword(document.getElementById("dEmail").value.trim(), document.getElementById("dPass").value); }
+  catch(e){ m.textContent = (e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found") ? "メールアドレスかパスワードがちがいます" : "ログインできませんでした（"+e.code+"）"; }
+};
+document.getElementById("copyUid").onclick = ()=>{ navigator.clipboard && navigator.clipboard.writeText(document.getElementById("noRoleUid").textContent); };
+document.getElementById("noRoleReload").onclick = ()=>location.reload();
+document.getElementById("noRoleLogout").onclick = ()=>auth.signOut();
+
+
+/* =====================================================================
+   工場の表示画面
+   ===================================================================== */
+function initDisplay(){
+  const PAGE_SECONDS   = 25;  // 何秒でページを切り替えるか
+  const RESUME_MINUTES = 0;   // 止めた後に自動で再開するまでの分数（0＝人が再開するまで止めたまま）
+  const RECENT_DAYS    = 2;   // 最後の日報がこの日数以内なら「作業中の可能性」
+  const STALE_DAYS     = 7;   // 最後の日報がこの日数以上前なら「状況確認が必要」
+  const SOON_DAYS      = 3;   // 期限まで何日以内なら黄色
+  const SYNC_LATE_MIN  = 30;  // 日報の集計がこの分数より古ければ警告（日報連携後に使う）
+
+  let T0 = startOfDay(new Date());
+  let JOBS = [], SUMMARY = {}, SYNC_AT = null;
+
+  /* 保存データ → 表示用の形（日付を Date に） */
+  function build(data){
+    JOBS = Object.values(data.jobs||{}).map(j=>({
+      no:j.no, title:j.title,
+      items:Object.values(j.items||{}).filter(it=>!it.canceled).sort((a,b)=>a.br.localeCompare(b.br)).map(it=>({
+        br:it.br, kind:it.kind, what:it.what, qty:it.qty, due:parseYmd(it.due), urgent:!!it.urgent,
+        inst:it.inst||"", manual:it.manual||null, done:it.done?{by:it.done.by, at:new Date(it.done.at)}:null }))
+    })).filter(j=>j.items.length);
+    SUMMARY = {};
+    Object.entries(data.summary||{}).forEach(([no,s])=>{ SUMMARY[no] = {last: s.last ? parseYmd(s.last) : null}; });
+    SYNC_AT = data.syncAt ? new Date(data.syncAt) : null;
+  }
+
+  function daysSinceLast(job){ const s=SUMMARY[job.no]; return (s&&s.last) ? diffDays(T0, s.last) : null; }
+  function whenText(d){ return d===0?"今日":d===1?"昨日":d+"日前"; }
+  function stateOf(job, it){
+    if(it.done)              return {cls:"st-done", text:"完了"};
+    if(it.manual==="保留")   return {cls:"st-hold", text:"保留"};
+    if(it.manual==="作業中") return {cls:"st-work", text:"作業中"};
+    const d=daysSinceLast(job), multi=job.items.length>1;
+    if(d===null)             return {cls:"st-none", text:"作業状況 未確認"};
+    if(d>=STALE_DAYS)        return {cls:"st-check", text:"状況確認が必要（"+(multi?"注番の":"")+"最終記録 "+whenText(d)+"）"};
+    if(d<=RECENT_DAYS)
+      return multi ? {cls:"st-rec", text:"注番に作業記録あり（"+whenText(d)+"）"}
+                   : {cls:"st-work", text:"作業中の可能性（日報 "+whenText(d)+"）"};
+    return {cls:"st-rec", text:(multi?"注番に":"")+"作業記録あり（最終 "+whenText(d)+"）"};
+  }
+  function todayNote(job, it){
+    if(it.done || (it.manual!=="作業中" && it.manual!=="保留")) return "";
+    if(daysSinceLast(job)!==0) return "";
+    return job.items.length>1 ? "本日 注番全体の日報あり" : "本日 日報あり";
+  }
+  function warningsOf(job, it){ return (!it.done && diffDays(it.due,T0)<0) ? ["⚠ 期限を過ぎています"] : []; }
+  function needsCheck(job, it){ return !it.done && (warningsOf(job,it).length>0 || stateOf(job,it).cls==="st-check"); }
+
+  function cardHTML(job, it, opt){
+    opt=opt||{};
+    const split=opt.total>1, first=!split||opt.idx===0, last=!split||opt.idx===opt.total-1;
+    const inst=(opt.inst!=null)?opt.inst:it.inst;
+    const st=stateOf(job,it), ws=warningsOf(job,it), tn=todayNote(job,it);
+    const left=diffDays(it.due,T0);
+    let dueCls="", dueText;
+    if(it.done){ dueCls="done"; dueText="完了"; }
+    else if(left<0){ dueCls="over"; dueText=(-left)+"日 遅れ"; }
+    else if(left===0){ dueCls="over"; dueText="今日まで"; }
+    else { dueCls=left<=SOON_DAYS?"soon":""; dueText="あと"+left+"日"; }
+    return `
+    <div class="card${it.urgent&&!it.done?" urgent":""}${it.done?" done":""}${opt.scroll?" scroll":""}">
+      <div class="due ${dueCls}">
+        <div class="left">${esc(dueText)}</div>
+        <div class="date">${it.done?"":"期限 "}${fmtDate(it.done?it.done.at:it.due)}</div>
+      </div>
+      <div class="body">
+        <div class="line1">
+          ${it.urgent&&!it.done?'<span class="tag-urgent">急ぎ</span>':''}
+          <span class="no">${esc(job.no)}-${esc(it.br)}</span>
+          <span>${esc(job.title)}</span>
+          <span>【${esc(it.kind)}】</span>
+          ${split?`<span class="cont">（${first?"":"続き "}${opt.idx+1}/${opt.total}）</span>`:''}
+          ${opt.scroll?'<span class="cont">↓ 下に続きます（↑↓キーで動かす）</span>':''}
+        </div>
+        <div class="what">${esc(it.what)}<span class="qty">${esc(it.qty)}</span></div>
+        ${it.done||!inst?"":`<div class="inst">${esc(inst)}</div>`}
+        ${!last?'<div class="more">▼ 続きは次のページ</div>':''}
+        ${first?`<div class="chips">
+          <span class="chip ${st.cls}">${esc(st.text)}</span>
+          ${tn?`<span class="note">${esc(tn)}</span>`:''}
+          ${ws.length?'<span class="sep"></span>':''}
+          ${ws.map(w=>`<span class="warn">${esc(w)}</span>`).join("")}
+        </div>`:''}
+      </div>
+    </div>`;
+  }
+
+  function renderCounts(){
+    let open=0, check=0, done=0;
+    JOBS.forEach(j=>j.items.forEach(it=>{
+      if(it.done){ if(diffDays(it.done.at,T0)===0) done++; return; }
+      open++; if(needsCheck(j,it)) check++;
+    }));
+    document.getElementById("counts").innerHTML =
+      '<span>未完了<span class="n">'+open+'</span>件</span>'+
+      '<span class="c-warn">要確認<span class="n">'+check+'</span>件</span>'+
+      '<span class="c-done">本日完了<span class="n">'+done+'</span>件</span>';
+  }
+  function orderedCards(){
+    const list=[];
+    JOBS.forEach(j=>j.items.forEach(it=>{ if(!it.done || diffDays(it.done.at,T0)===0) list.push({j,it}); }));
+    list.sort((a,b)=>{
+      if(!!a.it.done!==!!b.it.done) return a.it.done?1:-1;
+      return (a.it.due-b.it.due) || ((b.it.urgent?1:0)-(a.it.urgent?1:0)) || a.j.no.localeCompare(b.j.no) || a.it.br.localeCompare(b.it.br);
+    });
+    return list;
+  }
+
+  let PAGES=[], pageNo=0, tStart=0, paused=false, pausedAt=0, lastMainH=0;
+  function paginate(){
+    const main=document.getElementById("main"), meas=document.getElementById("measure");
+    const cs=getComputedStyle(main);
+    const width=main.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    const height=main.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+    const gap=parseFloat(cs.rowGap)||0;
+    meas.style.width=width+"px"; meas.style.fontSize=getComputedStyle(document.body).fontSize;
+    const hOf=html=>{ meas.innerHTML=html; return meas.firstElementChild.offsetHeight; };
+    lastMainH=main.clientHeight;
+    const cards=[];
+    orderedCards().forEach(c=>{
+      const html=cardHTML(c.j,c.it), h=hOf(html);
+      if(h<=height){ cards.push({html,h}); return; }
+      if(c.it.done || !c.it.inst){ cards.push({html:cardHTML(c.j,c.it,{scroll:true}), h:height, own:true}); return; }
+      splitInst(c.j,c.it,height,hOf).forEach(p=>cards.push(p));
+    });
+    meas.innerHTML="";
+    PAGES=[]; let cur=[], used=0;
+    cards.forEach(c=>{
+      const need=(cur.length?gap:0)+c.h;
+      if(cur.length && (c.own || used+need>height)){ PAGES.push(cur); cur=[]; used=0; }
+      used+=(cur.length?gap:0)+c.h; cur.push(c.html);
+      if(c.own){ PAGES.push(cur); cur=[]; used=0; }
+    });
+    if(cur.length) PAGES.push(cur);
+    if(pageNo>=PAGES.length) pageNo=0;
+    showPage();
+  }
+  /* 長い指示文を、実際の表示の高さで測って分ける（文字は小さくしない・捨てない） */
+  function splitInst(job, it, height, hOf){
+    const parts=[]; let rest=it.inst, scrollRest=false;
+    while(rest.length){
+      const idx=parts.length;
+      const fits=n=>hOf(cardHTML(job,it,{inst:rest.slice(0,n), idx, total:99}))<=height;
+      let n;
+      if(fits(rest.length)) n=rest.length;
+      else{
+        let lo=0, hi=rest.length-1;
+        while(lo<hi){ const m=Math.ceil((lo+hi)/2); if(fits(m)) lo=m; else hi=m-1; }
+        if(lo===0){ scrollRest=true; break; }
+        n=lo;
+        const head=rest.slice(0,n);
+        for(const mark of ["\n","。","、"]){ const cut=head.lastIndexOf(mark); if(cut>=n*0.5){ n=cut+1; break; } }
+      }
+      parts.push(rest.slice(0,n).replace(/\n+$/,""));
+      rest=rest.slice(n).replace(/^\n+/,"");
+    }
+    const total=parts.length+(scrollRest?1:0);
+    const out=parts.map((t,i)=>{ const html=cardHTML(job,it,{inst:t, idx:i, total}); return {html, h:hOf(html)}; });
+    if(scrollRest) out.push({html:cardHTML(job,it,{inst:rest, idx:parts.length, total, scroll:true}), h:height, own:true});
+    return out;
+  }
+  function showPage(){
+    const main=document.getElementById("main");
+    main.innerHTML = PAGES.length ? PAGES[pageNo].join("") : '<div class="empty">いま表示する製作指示はありません</div>';
+    main.querySelectorAll(".card.scroll").forEach(c=>{
+      if(c.scrollHeight<=c.clientHeight+1){ const h=c.querySelector(".cont:last-child"); if(h && h.textContent.indexOf("↓")===0) h.remove(); }
+    });
+    tStart=Date.now(); if(paused) pausedAt=tStart;
+    showPageNo();
+  }
+  function showPageNo(){
+    const multi=PAGES.length>1;
+    document.getElementById("page").textContent = multi ? (pageNo+1)+"/"+PAGES.length+"ページ" : "";
+    ["prevBtn","nextBtn","pauseBtn"].forEach(id=>document.getElementById(id).style.display = multi?"":"none");
+    const btn=document.getElementById("pauseBtn");
+    btn.textContent = paused ? "▶ 動かす" : "‖ 止める";
+    btn.classList.toggle("paused", paused);
+    const nt=document.getElementById("notice");
+    nt.classList.toggle("paused", paused);
+    nt.textContent = paused
+      ? "‖ 停止中 ｜ スペースキー か「▶ 動かす」で再開"+(RESUME_MINUTES>0?"（"+RESUME_MINUTES+"分で自動再開）":"")
+      : "試験運用中（日報連携なし）｜ "+(multi ? PAGE_SECONDS+"秒でページ切替・スペースキーで停止" : "1ページだけです");
+  }
+  function togglePause(){
+    if(PAGES.length<2) return;
+    if(paused){ tStart+=Date.now()-pausedAt; paused=false; } else { paused=true; pausedAt=Date.now(); }
+    showPageNo();
+  }
+  function step(d){ if(PAGES.length<2) return; pageNo=(pageNo+d+PAGES.length)%PAGES.length; showPage(); }
+  function renderSync(){
+    const el=document.getElementById("syncwarn");
+    const late = !!SYNC_AT && (Date.now()-SYNC_AT.getTime()) > SYNC_LATE_MIN*60000;
+    const text = late ? "⚠ 日報の集計が止まっています（最終 "+fmtTime(SYNC_AT)+"）。作業記録の表示が古い可能性があります" : "";
+    if(el.hidden===!late && el.textContent===text) return false;
+    el.hidden=!late; el.textContent=text; return true;
+  }
+  function tick(){
+    const n=new Date();
+    document.getElementById("clock").textContent=(n.getMonth()+1)+"月"+n.getDate()+"日("+WD[n.getDay()]+") "+fmtTime(n);
+    const now=paused?pausedAt:Date.now();
+    const p=Math.min(1,(now-tStart)/(PAGE_SECONDS*1000));
+    document.getElementById("bar").style.width=(PAGES.length>1?p*100:0)+"%";
+    if(PAGES.length>1 && p>=1 && !paused) step(1);
+    if(paused && RESUME_MINUTES>0 && Date.now()-pausedAt>=RESUME_MINUTES*60000) togglePause();
+    if(renderSync() | renderConn()) paginate();
+    /* 日付が変わったら、残り日数などを計算し直す */
+    if(startOfDay(n).getTime()!==T0.getTime()){ T0=startOfDay(n); renderCounts(); paginate(); }
+  }
+  /* 通信の状態（最新を確認できているか）。日報の集計の遅れとは別に表示する */
+  function renderConn(){
+    const el=document.getElementById("connwarn"), st=Live.status();
+    let text="", bad=false;
+    if(!st.ok){
+      if(!st.everSynced && Date.now()-st.startedAt < 15000) text="接続中…";
+      else { bad=true; text="⚠ 最新の情報を確認できていません（最終確認 "+(st.lostAt?fmtTime(st.lostAt):"―")+"）。表示が古い可能性があります"; }
+    }
+    if(st.error){ bad=true; text="⚠ "+st.error; }
+    const hide=!text;
+    if(el.hidden===hide && el.textContent===text && el.classList.contains("bad")===bad) return false;
+    el.hidden=hide; el.textContent=text; el.classList.toggle("bad", bad);
+    return true;
+  }
+  function refresh(data){ if(!data) return; build(data); renderCounts(); renderSync(); paginate(); }
+
+  document.getElementById("themeBtn").onclick=toggleTheme;
+  document.getElementById("pauseBtn").onclick=togglePause;
+  document.getElementById("prevBtn").onclick=()=>step(-1);
+  document.getElementById("nextBtn").onclick=()=>step(1);
+  document.addEventListener("keydown", e=>{
+    const sc=document.querySelector("#main .card.scroll");
+    if(e.key==="ArrowRight") step(1);
+    else if(e.key==="ArrowLeft") step(-1);
+    else if(e.key==="ArrowDown" && sc){ e.preventDefault(); sc.scrollBy({top:sc.clientHeight*.8}); }
+    else if(e.key==="ArrowUp" && sc){ e.preventDefault(); sc.scrollBy({top:-sc.clientHeight*.8}); }
+    else if(e.key==="t"||e.key==="T") toggleTheme();
+    else if(e.key===" "){ e.preventDefault(); togglePause(); }
+  });
+  let rz; window.addEventListener("resize", ()=>{ clearTimeout(rz); rz=setTimeout(paginate,150); });
+  let reflowN=0;
+  new ResizeObserver(()=>{
+    const h=document.getElementById("main").clientHeight;
+    if(h===lastMainH || reflowN>3) return;
+    reflowN++; clearTimeout(rz); rz=setTimeout(()=>{ paginate(); setTimeout(()=>{ reflowN=0; },1000); },30);
+  }).observe(document.getElementById("main"));
+
+  /* 事務所で登録・変更されたら、すぐ作り直す（見ているページはなるべくそのまま） */
+  Live.onChange(refresh);
+  window.__display = {get PAGES(){return PAGES}, get pageNo(){return pageNo}, step, togglePause};  // 試験用
+  refresh(Live.data);
+  setInterval(tick,250); tick();
+}
+
+/* =====================================================================
+   事務所の登録画面（Firestore 版）
+   書き込みはすべて「品の変更＋履歴1件」をひとまとめ（batch）で送る。
+   ルール側で、役割・変えてよい項目・今の状態・履歴の有無を確かめる。
+   ===================================================================== */
+function initOffice(){
+  let filter="open", editing=null, DATA=Live.data;
+  const $=id=>document.getElementById(id);
+  const R=ME.roles, isAdmin=!!R.admin, isOffice=isAdmin||!!R.office, isApprover=isAdmin||!!R.approver;
+
+  $("meName").textContent = ME.name;
+  $("meRoles").innerHTML = [isAdmin&&"管理者", R.office&&"事務所", R.approver&&"完了", R.display&&"工場"].filter(Boolean)
+    .map(t=>`<span class="badge">${t}</span>`).join(" ");
+  $("rolesBtn").hidden = !isAdmin;
+  $("newBtn").hidden = !isOffice;
+  $("oThemeBtn").onclick = toggleTheme;
+  $("logoutBtn").onclick = ()=>auth.signOut().then(()=>location.reload());
+
+  function toast(msg){
+    const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 2400);
+  }
+  function errText(e){
+    if(e && e.code==="permission-denied") return "保存できませんでした。権限がないか、ほかの人が先に変更した可能性があります。画面の内容を確かめて、もう一度お試しください";
+    if(e && e.code==="unavailable") return "通信できません。インターネットの接続を確かめてください";
+    if(e && (e.code==="aborted" || e.code==="failed-precondition")) return "ほかの人の登録と重なりました。もう一度「登録する」を押してください";
+    return "保存できませんでした（"+(e&&e.code||e)+"）";
+  }
+
+  /* ---------- 書き込み（品の変更＋履歴） ---------- */
+  const jobRef  = k=>db.collection("jobs").doc(k);
+  const itemRef = (k,id)=>jobRef(k).collection("kojo_items").doc(id);
+  function withEvent(batch, iRef, type, detail){
+    const ev = iRef.collection("events").doc();
+    batch.set(ev, {at:FV.serverTimestamp(), by:ME.uid, name:ME.rname, type, detail:(detail||"").slice(0,500)});
+    return ev.id;
+  }
+  const stamp = ()=>({updatedAt:FV.serverTimestamp(), updatedBy:ME.uid});
+  /* 送ってから画面の確認を待つ。オフラインの時は「送信待ち」と知らせる */
+  async function send(batch, okMsg){
+    const p = batch.commit();
+    if(!navigator.onLine){ toast("通信が戻ったら送ります（"+okMsg+"）"); }
+    try{ await p; toast(okMsg); return true; }
+    catch(e){ $("fErr").textContent = errText(e); toast("保存できませんでした"); return false; }
+  }
+
+  /* ---------- 一覧 ---------- */
+  function dueInfo(it){
+    const T=startOfDay(new Date());
+    if(it.canceled) return {cls:"", big:"取り消し", small:it.canceled.at?fmtStamp(it.canceled.at):""};
+    if(it.done) return {cls:"done", big:"完了", small:it.done.at?fmtStamp(it.done.at):""};
+    const d=parseYmd(it.due), left=diffDays(d,T);
+    if(left<0)   return {cls:"over", big:(-left)+"日 遅れ", small:"期限 "+fmtDate(d)};
+    if(left===0) return {cls:"over", big:"今日まで", small:"期限 "+fmtDate(d)};
+    return {cls:left<=3?"soon":"", big:"あと"+left+"日", small:"期限 "+fmtDate(d)};
+  }
+  function stateChip(it){
+    if(it.canceled) return '<span class="chip st-cancel">取り消し</span>';
+    if(it.done) return '<span class="chip st-done">完了</span>';
+    if(it.manual==="保留") return '<span class="chip st-hold">保留</span>';
+    if(it.manual==="作業中") return '<span class="chip st-work">作業中</span>';
+    return '<span class="chip st-none">状態なし</span>';
+  }
+  const pass = it => filter==="all" ? true : filter==="canceled" ? !!it.canceled
+                   : filter==="done" ? (!!it.done && !it.canceled) : (!it.done && !it.canceled);
+  function render(){
+    const jobs=Object.entries(DATA.jobs).map(([k,j])=>({k,j,items:Object.values(j.items).filter(pass).sort((a,b)=>a.br.localeCompare(b.br))}))
+      .filter(x=>x.items.length);
+    const key=x=>Math.min(...x.items.map(i=>(i.done||i.canceled)?9e15:parseYmd(i.due).getTime()));
+    jobs.sort((a,b)=>key(a)-key(b) || a.j.no.localeCompare(b.j.no));
+    const empty = {open:"未完了の製作指示はありません", done:"完了した製作指示はまだありません", canceled:"取り消した製作指示はありません", all:"製作指示はまだありません"}[filter];
+    $("list").innerHTML = jobs.length ? jobs.map(x=>`
+      <div class="job">
+        <div class="jh">
+          <span class="no">${esc(x.j.no)}</span><span class="title">${esc(x.j.title)}</span>
+          ${isOffice?`<span class="acts"><button class="btn" data-addto="${x.k}">＋ 品を足す</button><button class="btn" data-retitle="${x.k}">件名を直す</button></span>`:""}
+        </div>
+        ${x.items.map(it=>{ const d=dueInfo(it); return `
+        <div class="row${it.canceled?" canceled":""}" data-open="${x.k}|${it.id}">
+          <div class="rdue ${d.cls}"><b>${esc(d.big)}</b><small>${esc(d.small)}</small></div>
+          <div class="rmain">
+            <div class="w">${it.urgent&&!it.done&&!it.canceled?'<span class="tag-urgent">急ぎ</span> ':''}${esc(x.j.no)}-${esc(it.br)}　${esc(it.what)}　${esc(it.qty)}</div>
+            <div class="s">【${esc(it.kind)}】${esc(it.canceled ? "理由："+it.canceled.reason : (it.inst||"").replace(/\n/g," "))}</div>
+          </div>
+          ${stateChip(it)}
+        </div>`; }).join("")}
+      </div>`).join("")
+      : `<div class="nothing">${empty}${filter==="open"&&isOffice?"。「＋ 新しい製作指示」から登録してください":""}</div>`;
+    $("noList").innerHTML = Object.values(DATA.jobs).map(j=>`<option value="${esc(j.no)}">${esc(j.title)}</option>`).join("");
+  }
+  function renderConn(){
+    const s=Live.status(), el=$("officeConn");
+    if(s.error){ el.hidden=false; el.textContent="⚠ "+s.error; return; }
+    if(!s.ok && (s.everSynced || Date.now()-s.startedAt>15000)){
+      el.hidden=false; el.textContent="⚠ 最新の情報を確認できていません（最終確認 "+(s.lostAt?fmtTime(s.lostAt):"―")+"）。登録した内容は、通信が戻ってから送られます";
+    } else el.hidden=true;
+  }
+  setInterval(renderConn, 1000);
+
+  $("list").addEventListener("click", async e=>{
+    const a=e.target.closest("[data-addto]"), r=e.target.closest("[data-retitle]"), o=e.target.closest("[data-open]");
+    if(a){ openForm(null, DATA.jobs[a.dataset.addto].no); return; }
+    if(r){
+      const k=r.dataset.retitle, j=DATA.jobs[k];
+      const t=prompt("「"+j.no+"」の件名", j.title);
+      if(t && t.trim() && t.trim()!==j.title){
+        /* 件名の変更も履歴に残す（注番の履歴 jobs/{jobKey}/events） */
+        const b=db.batch(), ev=jobRef(k).collection("events").doc();
+        b.set(ev, {at:FV.serverTimestamp(), by:ME.uid, name:ME.rname, type:"retitle", detail:"", from:j.title, to:t.trim().slice(0,200)});
+        b.update(jobRef(k), Object.assign({title:t.trim().slice(0,200), lastEvent:ev.id}, stamp()));
+        await send(b, "件名を直しました");
+      }
+      return;
+    }
+    if(o){ const [k,id]=o.dataset.open.split("|"); openForm({jobKey:k, itemId:id}); }
+  });
+  $("tabs").addEventListener("click", e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    filter=b.dataset.f; $("tabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on", x===b)); render();
+  });
+  $("newBtn").onclick=()=>openForm(null);
+
+  /* ---------- 入力の窓 ---------- */
+  $("fKind").innerHTML = KINDS.map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+  let kind="配管";
+  $("fKind").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b||b.disabled) return; kind=b.dataset.k; syncKind(); });
+  function syncKind(){ $("fKind").querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.k===kind)); }
+  function instHint(){
+    const n=$("fInst").value.replace(/\n/g,"").length, h=$("fInstHint");
+    h.textContent = n+"文字 ／ 工場の画面では80文字くらいまでが読みやすい"+(n>100?"。長いので、画面ではページを分けて表示します（安全・品質の大事な指示は省かないでください）":"");
+    h.classList.toggle("long", n>100);
+  }
+  $("fInst").addEventListener("input", instHint);
+  $("dlg").addEventListener("input", ()=>{ $("fErr").textContent=""; });
+  /* 注番：書き方をそろえた結果を必ず見せる。登録済みなら、新しい案件は作らずその注番に足すことをはっきり出す */
+  let noConfirmed = "";   // 入力と登録される注番がちがう時、確認済みの注番
+  function noState(){
+    const raw=$("fNo").value.trim(), no=normNo(raw), j=no?DATA.jobs[jobKeyOf(no)]:null;
+    return {raw, no, j, changed: !!raw && raw!==no};
+  }
+  $("fNo").addEventListener("input", ()=>{
+    if(editing) return;
+    noConfirmed = "";
+    const {raw, no, j, changed} = noState();
+    $("fTitle").disabled=!!j;
+    if(j) $("fTitle").value=j.title; else if($("fTitle").dataset.auto) $("fTitle").value="";
+    $("fTitle").dataset.auto = j ? "1" : "";
+    const prob = no ? noProblem(no) : "";
+    let h = !raw ? "登録済みの注番を選ぶと、その注番に品を足します"
+          : prob ? "⚠ "+prob
+          : j ? "登録済みの注番「"+no+"」（件名："+j.title+"）に、枝番 "+nextBr(j)+" として足します。新しい案件は作りません"
+          : "新しい注番「"+no+"」として登録します";
+    if(raw && changed && !prob) h += "（入力：「"+raw+"」→ 全角・半角をそろえて「"+no+"」）";
+    $("fNoHint").textContent = h;
+    $("fNoHint").classList.toggle("long", !!raw && (changed || !!prob));
+  });
+  function nextBr(j){ const n=Object.values(j.items).reduce((m,i)=>Math.max(m, parseInt(i.br,10)||0), 0)+1; return String(n).padStart(2,"0"); }
+  const FIELDS = ["fWhat","fQty","fDue","fUrgent","fInst","fDrw","fRev","fPlace","fDeliver"];
+  const cur = ()=> editing ? (DATA.jobs[editing.jobKey]||{items:{}}).items[editing.itemId] : null;
+
+  function openForm(target, presetNo){
+    editing=target; $("fErr").textContent=""; $("reasonBox").hidden=true; noConfirmed="";
+    const isEdit=!!target, j=isEdit?DATA.jobs[target.jobKey]:null, it=isEdit?j.items[target.itemId]:null;
+    const editable = isOffice && (!it || (!it.done && !it.canceled));
+    $("dlgTitle").textContent = isEdit ? (j.no+"-"+it.br+(editable?" を直す":" の内容")) : "新しい製作指示";
+    $("fNo").value = isEdit ? j.no : (presetNo||""); $("fNo").disabled = isEdit;
+    $("fNoHint").textContent = isEdit ? "" : "登録済みの注番を選ぶと、その注番に品を足します";
+    $("fTitle").value = isEdit ? j.title : ""; $("fTitle").disabled = isEdit;
+    kind = it ? it.kind : "配管"; syncKind();
+    $("fWhat").value=it?it.what:""; $("fQty").value=it?it.qty:""; $("fDue").value=it?it.due:""; $("fUrgent").checked=it?!!it.urgent:false;
+    $("fInst").value=it?it.inst:""; $("fDrw").value=it?it.drawing:""; $("fRev").value=it?it.rev:""; $("fPlace").value=it?it.place:""; $("fDeliver").value=it?it.deliver:"";
+    FIELDS.forEach(id=>$(id).disabled=!editable);
+    $("fKind").querySelectorAll("button").forEach(b=>b.disabled=!editable);
+    $("fMore").open = !!(it && (it.drawing||it.rev||it.place||it.deliver));
+    $("saveBtn").hidden = !editable;
+    $("saveBtn").textContent = isEdit ? "直した内容を保存" : "登録する";
+    $("cancelBtn").textContent = editable ? "やめる" : "閉じる";
+    $("stateBox").hidden = !isEdit;
+    if(isEdit){ renderState(it); loadHist(target); }
+    instHint();
+    if(!isEdit && presetNo) $("fNo").dispatchEvent(new Event("input"));
+    $("dlg").showModal();
+    if(editable) (isEdit||presetNo ? $("fWhat") : $("fNo")).focus();
+  }
+  function closeForm(){ $("dlg").close(); editing=null; }
+  $("dlgClose").onclick=closeForm; $("cancelBtn").onclick=closeForm;
+
+  /* 完了・再開など大事な操作は「2回押し」（押しまちがい防止。権限はルールで守る） */
+  function arm(btn,label){ btn.dataset.label=btn.dataset.label||btn.textContent; btn.textContent=label; btn.classList.add("armed"); clearTimeout(btn._t); btn._t=setTimeout(()=>disarm(btn),4000); }
+  function disarm(btn){ if(btn.dataset.label){ btn.textContent=btn.dataset.label; delete btn.dataset.label; } btn.classList.remove("armed"); }
+  const armed=btn=>btn.classList.contains("armed");
+
+  function renderState(it){
+    let now;
+    if(it.canceled) now = "取り消し（"+(it.canceled.at?fmtStamp(it.canceled.at)+" ":"")+it.canceled.name+"）理由："+it.canceled.reason;
+    else if(it.done) now = "完了（"+(it.done.at?fmtStamp(it.done.at)+" ":"")+it.done.name+"）";
+    else now = it.manual || "状態なし（工場の画面では日報から判断します）";
+    $("stateNow").textContent = "いまの状態："+now;
+    const B=(id,label,cls)=>`<button type="button" class="btn ${cls||""}" data-st="${id}">${label}</button>`;
+    let btns=[];
+    if(it.canceled){ if(isAdmin) btns.push(B("restore","元に戻す")); }
+    else if(it.done){ if(isApprover) btns.push(B("reopen","完了を取り消して再開する","danger")); }
+    else {
+      if(isOffice){
+        if(it.manual!=="作業中") btns.push(B("work","作業中にする"));
+        if(it.manual!=="保留") btns.push(B("hold","保留にする"));
+        if(it.manual) btns.push(B("clear","状態を外す"));
+      }
+      if(isApprover) btns.push(B("done","完了にする","green"));
+      if(isOffice) btns.push(B("cancel","この品を取り消す","danger"));
+    }
+    $("stateBtns").innerHTML = btns.join("") || '<span class="hint">この品で、あなたができる操作はありません</span>';
+  }
+  const TYPE_JA = {create:"登録", edit:"内容を直した", done:"完了にした", reopen:"完了を取り消して再開した", cancel:"取り消した", restore:"元に戻した"};
+  async function loadHist(t){
+    $("hist").innerHTML = "<li>履歴を読み込み中…</li>";
+    try{
+      const s = await itemRef(t.jobKey, t.itemId).collection("events").orderBy("at","desc").limit(10).get();
+      if(!editing || editing.itemId!==t.itemId) return;
+      $("hist").innerHTML = s.docs.map(d=>{ const e=d.data({serverTimestamps:"estimate"}); return `<li>${esc(e.at?fmtStamp(toIso(e.at)):"")}　${esc(e.name||("ID:"+String(e.by||"").slice(0,6)))}　${esc(TYPE_JA[e.type]||e.type)}${e.detail?"（"+esc(e.detail)+"）":""}</li>`; }).join("") || "<li>履歴はありません</li>";
+    }catch(e){ $("hist").innerHTML = "<li>履歴を読めませんでした</li>"; }
+  }
+
+  $("stateBtns").addEventListener("click", async e=>{
+    const b=e.target.closest("[data-st]"); if(!b || !editing) return;
+    const it=cur(); if(!it) return;
+    const st=b.dataset.st, ref=itemRef(editing.jobKey, editing.itemId);
+    if(st==="cancel"){ $("reasonBox").hidden=false; $("fReason").value=""; $("fReason").focus(); return; }
+    if((st==="done"||st==="reopen"||st==="restore") && !armed(b)){ arm(b, "もう一度押すと"+{done:"完了",reopen:"再開",restore:"元に戻す"}[st]); return; }
+    const batch=db.batch();
+    let upd, type, msg;
+    if(st==="work"||st==="hold"||st==="clear"){
+      upd={manual: st==="work"?"作業中":st==="hold"?"保留":null}; type="edit"; msg="状態を変えました";
+    }
+    if(st==="done"){ upd={done:{by:ME.uid, name:ME.rname, at:FV.serverTimestamp()}, manual:null}; type="done"; msg="完了にしました"; }
+    if(st==="reopen"){ upd={done:null}; type="reopen"; msg="再開しました"; }
+    if(st==="restore"){ upd={canceled:null}; type="restore"; msg="元に戻しました"; }
+    const detail = st==="work"?"作業中にした":st==="hold"?"保留にした":st==="clear"?"状態を外した":"";
+    upd.lastEvent = withEvent(batch, ref, type, detail);
+    batch.update(ref, Object.assign(upd, stamp()));
+    if(await send(batch, msg)){ const t=editing; setTimeout(()=>{ if(editing&&cur()){ renderState(cur()); loadHist(t);} }, 300); }
+  });
+  $("cancelBack").onclick=()=>{ $("reasonBox").hidden=true; };
+  $("cancelGo").onclick=async ()=>{
+    const reason=$("fReason").value.trim();
+    if(!reason){ $("fErr").textContent="取り消す理由を入れてください"; return; }
+    const ref=itemRef(editing.jobKey, editing.itemId), batch=db.batch();
+    const upd={canceled:{by:ME.uid, name:ME.rname, at:FV.serverTimestamp(), reason:reason.slice(0,200)}};
+    upd.lastEvent = withEvent(batch, ref, "cancel", reason);
+    batch.update(ref, Object.assign(upd, stamp()));
+    if(await send(batch, "取り消しました（「取り消し」の画面から確認できます）")) closeForm();
+  };
+
+  $("saveBtn").onclick=async ()=>{
+    const v=id=>$(id).value.trim();
+    const no=normNo(v("fNo")), title=v("fTitle"), what=v("fWhat"), qty=v("fQty"), due=v("fDue");
+    if(!editing && no && noProblem(no)){ $("fErr").textContent=noProblem(no); return; }
+    /* 入力と、そろえた後の注番がちがう時は、確かめてもらってから登録する（勝手に別の案件へまとめない） */
+    if(!editing && no){
+      const st=noState();
+      if(st.changed && noConfirmed!==no){
+        noConfirmed = no;
+        $("fErr").textContent = "注番は「"+st.raw+"」ではなく「"+no+"」として登録します"
+          + (st.j ? "（登録済みの「"+no+"　"+st.j.title+"」に品を足します）" : "") + "。よければ、もう一度「登録する」を押してください";
+        return;
+      }
+    }
+    const miss=[]; if(!no) miss.push("注番"); if(!title) miss.push("件名"); if(!what) miss.push("品名"); if(!qty) miss.push("数量"); if(!due) miss.push("完成期限");
+    if(miss.length){ $("fErr").textContent = miss.join("・")+" を入れてください"; return; }
+    /* 実在する日付か確かめる（2月30日などを止める） */
+    const realDate = s=>{ if(!/^20\d{2}-\d{2}-\d{2}$/.test(s)) return false; const d=parseYmd(s); return ymd(d)===s; };
+    if(!realDate(due)){ $("fErr").textContent="完成期限の日付が正しくありません"; return; }
+    if(v("fDeliver") && !realDate(v("fDeliver"))){ $("fErr").textContent="現場納品日の日付が正しくありません"; return; }
+    const fields={kind, what, qty, due, urgent:$("fUrgent").checked, inst:$("fInst").value.replace(/\s+$/,""),
+      drawing:v("fDrw"), rev:v("fRev"), place:v("fPlace"), deliver:v("fDeliver")};
+    const batch=db.batch();
+    if(editing){
+      const it=cur(); if(!it){ closeForm(); return; }
+      /* 変わった項目だけ送る（ほかの人が同時に別の項目を直しても消えない） */
+      const changed={}; Object.keys(fields).forEach(k=>{ if(String(it[k]??"")!==String(fields[k]??"")) changed[k]=fields[k]; });
+      const names={kind:"種類",what:"品名",qty:"数量",due:"期限",urgent:"急ぎ",inst:"製作指示",drawing:"図面番号",rev:"改訂",place:"保管場所",deliver:"現場納品日"};
+      if(!Object.keys(changed).length){ closeForm(); return; }
+      const ref=itemRef(editing.jobKey, editing.itemId);
+      changed.lastEvent = withEvent(batch, ref, "edit", Object.keys(changed).map(k=>names[k]).join("・")+"を直した");
+      batch.update(ref, Object.assign(changed, stamp()));
+      if(await send(batch, "保存しました")) closeForm();
+    }else{
+      /* 新しい品の登録：枝番を品のIDにして、トランザクションで空いている番号を確保する。
+         同時にほかの人が同じ注番へ登録しても、枝番は重ならない（ぶつかった時は自動でやり直す） */
+      if(!navigator.onLine){ $("fErr").textContent="新しい登録は、インターネットにつながっている時だけできます"; return; }
+      const k=jobKeyOf(no), j=DATA.jobs[k];
+      $("saveBtn").disabled=true;
+      try{
+        const br = await db.runTransaction(async tx=>{
+          const js = await tx.get(jobRef(k));
+          let n = j ? parseInt(nextBr(j),10) : 1, ref, snap;
+          for(let tries=0; tries<50; tries++, n++){
+            ref = jobRef(k).collection("kojo_items").doc(String(n).padStart(2,"0"));
+            snap = await tx.get(ref);
+            if(!snap.exists) break;
+          }
+          if(snap.exists) throw {code:"no-branch"};
+          const br = ref.id;
+          if(!js.exists) tx.set(jobRef(k), Object.assign({no, title, createdAt:FV.serverTimestamp(), createdBy:ME.uid}, stamp()));
+          const ev = ref.collection("events").doc();
+          tx.set(ev, {at:FV.serverTimestamp(), by:ME.uid, name:ME.rname, type:"create", detail:""});
+          tx.set(ref, Object.assign({br, manual:null, done:null, canceled:null, createdAt:FV.serverTimestamp(), createdBy:ME.uid, lastEvent:ev.id}, fields, stamp()));
+          return br;
+        });
+        toast(no+"-"+br+" を登録しました"); closeForm();
+      }catch(e){ $("fErr").textContent = e.code==="no-branch" ? "空いている枝番が見つかりませんでした" : errText(e); }
+      finally{ $("saveBtn").disabled=false; }
+    }
+  };
+
+  /* ---------- 権限の設定（管理者だけ） ---------- */
+  async function loadRoles(){
+    $("rolesErr").textContent="";
+    try{
+      const s=await db.collection("roles").get();
+      $("rolesBody").innerHTML = s.docs.map(d=>{ const r=d.data(); const cb=k=>`<td><input type="checkbox" data-k="${k}" ${r[k]?"checked":""} ${d.id===ME.uid&&k==="admin"?"disabled":""}></td>`;
+        return `<tr data-uid="${esc(d.id)}"><td class="n"><b>${esc(r.name||"")}</b><div class="u">${esc(d.id)}</div></td>${cb("admin")}${cb("office")}${cb("approver")}${cb("display")}<td><button class="btn" data-save>保存</button></td></tr>`; }).join("");
+    }catch(e){ $("rolesErr").textContent=errText(e); }
+  }
+  async function saveRole(uid, name, flags){
+    try{
+      await db.collection("roles").doc(uid).set(Object.assign({name:(name||"").slice(0,40)}, flags, stamp()));
+      toast("権限を保存しました"); loadRoles();
+    }catch(e){ $("rolesErr").textContent=errText(e); }
+  }
+  $("rolesBtn").onclick=()=>{ $("rolesDlg").showModal(); loadRoles(); };
+  $("rolesClose").onclick=()=>$("rolesDlg").close();
+  $("rolesBody").addEventListener("click", e=>{
+    const b=e.target.closest("[data-save]"); if(!b) return;
+    const tr=b.closest("tr"), flags={};
+    tr.querySelectorAll("input[data-k]").forEach(c=>flags[c.dataset.k]=c.checked);
+    saveRole(tr.dataset.uid, tr.querySelector("b").textContent, flags);
+  });
+  $("newRoleBtn").onclick=()=>{
+    const uid=$("newUid").value.trim(), name=$("newName").value.trim();
+    if(!/^[A-Za-z0-9]{20,40}$/.test(uid)){ $("rolesErr").textContent="番号（UID）をそのまま貼りつけてください"; return; }
+    saveRole(uid, name, {admin:false, office:false, approver:false, display:false});
+    $("newUid").value=""; $("newName").value="";
+  };
+
+  Live.onChange(d=>{ DATA=d; render(); if(editing){ const it=cur(); if(it) renderState(it); } });
+  render(); renderConn();
+}
+</script>
+</body>
+</html>
