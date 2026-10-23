@@ -432,8 +432,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const FV = firebase.firestore.FieldValue;
-/* 通信が切れても、最後に受け取った内容を表示できるようにする（最新でないことは画面で知らせる） */
-db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+/* 通信が切れても、最後に受け取った内容を表示できるようにする（最新でないことは画面で知らせる）
+   タブ同士の共有はしない：同じPCで2つ目のタブを開くと保存は使えず失敗するが、
+   そのタブは自分で直接つながって動く（1つ目のタブに頼って同期が止まるのを防ぐ） */
+db.enablePersistence().catch(()=>{});
 
 /* ================== 小道具 ================== */
 const WD = ["日","月","火","水","木","金","土"];
