@@ -199,6 +199,7 @@ details.more-f .two{margin-top:10px}
 
 /* 接続の状態（工場の画面）。日報の集計の遅れとは別に出す */
 .connwarn{background:#9a5a00; color:#fff; font-weight:800; font-size:.75em; padding:.2em .8em; text-align:center; flex:0 0 auto}
+.connwarn.bad{font-size:1em; padding:.45em .8em}
 .connwarn.bad{background:#c40f0f}
 .connwarn[hidden]{display:none}
 
@@ -235,7 +236,7 @@ details.more-f .two{margin-top:10px}
 </section>
 
 <!-- ================== 読み込み中 ================== -->
-<section id="loading" class="gate"><p>読み込んでいます…</p></section>
+<section id="loading" class="gate"><p>読み込んでいます…</p><div class="msg offnote" hidden></div></section>
 
 <!-- ================== 事務所のログイン ================== -->
 <section id="loginOffice" class="gate" hidden>
@@ -244,6 +245,7 @@ details.more-f .two{margin-top:10px}
     <p>会社のGoogleアカウントでログインしてください。</p>
     <button class="btn primary gbtn" id="googleBtn">Googleでログイン</button>
     <div class="msg" id="loginOfficeMsg"></div>
+    <div class="msg offnote" hidden></div>
   </div>
   <a class="small" href="#display">工場の画面はこちら</a>
 </section>
@@ -257,6 +259,7 @@ details.more-f .two{margin-top:10px}
     <div><label for="dPass">パスワード</label><input id="dPass" type="password" autocomplete="current-password" required></div>
     <button class="btn primary" type="submit">ログイン</button>
     <div class="msg" id="loginDisplayMsg"></div>
+    <div class="msg offnote" hidden></div>
   </form>
   <a class="small" href="#office">事務所の画面はこちら</a>
 </section>
@@ -436,6 +439,16 @@ const FV = firebase.firestore.FieldValue;
    タブ同士の共有はしない：同じPCで2つ目のタブを開くと保存は使えず失敗するが、
    そのタブは自分で直接つながって動く（1つ目のタブに頼って同期が止まるのを防ぐ） */
 db.enablePersistence().catch(()=>{});
+/* 通信がない時でも画面を開けるように、画面のファイルだけを端末にしまう（sw.js。/kojo/ の中だけに効く） */
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")){
+  navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(()=>{});
+}
+/* 「最後に確認できた時刻」の書き方。今日なら時刻だけ、ちがう日なら日付も */
+function fmtConfirmed(d){
+  if(!d) return "この端末ではまだ確認できていません";
+  const n=new Date(), same=d.toDateString()===n.toDateString();
+  return (same?"":(d.getMonth()+1)+"/"+d.getDate()+" ")+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
 
 /* ================== 小道具 ================== */
 const WD = ["日","月","火","水","木","金","土"];
@@ -474,13 +487,28 @@ try{ setTheme(localStorage.getItem("kojo-theme")||"light"); }catch(e){ setTheme(
 const Live = (()=>{
   let jobsSnap=null, itemsSnap=null, cbs=[];
   const st = {jobsCache:true, itemsCache:true, everSynced:false, lostAt:null, startedAt:Date.now(), error:"", online:navigator.onLine};
+  /* 最後にサーバーで最新を確認できた時刻（この端末に残す。再起動しても「いつの情報か」を出すため。業務データは入れない） */
+  const LAST_KEY = "kojo-lastConfirmed";
+  let lastOk = null;
+  try{ const v = localStorage.getItem(LAST_KEY); if(v) lastOk = new Date(v); }catch(e){}
+  function saveLastOk(){ lastOk = new Date(); try{ localStorage.setItem(LAST_KEY, lastOk.toISOString()); }catch(e){} }
   const api = { data:{jobs:{}}, onChange(cb){ cbs.push(cb); }, status(){
     const ok = st.online && !st.jobsCache && !st.itemsCache;
-    return {ok, everSynced:st.everSynced, lostAt:st.lostAt, startedAt:st.startedAt, error:st.error};
+    return {ok, everSynced:st.everSynced, lostAt:st.lostAt, startedAt:st.startedAt, error:st.error,
+            online:st.online, lastOk};
   }};
+  /* 最終確認時刻は「サーバーから実際に返事をもらえた時」だけ進める。
+     ・サーバーから届いた知らせ（fromCache=false）を受け取った時
+     ・1分ごとに、サーバーへ小さく問い合わせて返事が来た時（変更がなくても「最新を確認した」と言えるように）
+     画面が「つながっているつもり」でも、返事が来なければ時刻は進まない */
+  setInterval(async ()=>{
+    if(!api.status().ok) return;
+    try{ await db.collection("jobs").limit(1).get({source:"server"}); saveLastOk(); }catch(e){}
+  }, 60000);
   function mark(which, snap){
     const before = api.status().ok;
     st[which] = snap.metadata.fromCache;
+    if(!snap.metadata.fromCache && st.online) saveLastOk();   // サーバーから届いた
     const after = api.status().ok;
     if(after) st.everSynced = true;
     if(before && !after) st.lostAt = new Date();
@@ -520,18 +548,34 @@ const show = id => ["start","loading","loginOffice","loginDisplay","noRole","dis
   .forEach(x=>document.getElementById(x).hidden = (x!==id));
 let ME = null;   // {uid, name, email, roles:{admin,office,approver,display}}
 
+/* 通信がない時の説明（ログイン画面などに出す）。通信が戻ったら開き直す */
+const OFFLINE_NOTE = "⚠ 通信がありません。ログインや権限を確認できないため、通信が戻ると自動で開き直します";
+function gateOffline(){
+  document.querySelectorAll(".gate .offnote").forEach(el=>{ el.hidden = navigator.onLine; el.textContent = OFFLINE_NOTE; });
+}
+window.addEventListener("online", ()=>{ if(!ME) location.reload(); });
+window.addEventListener("offline", gateOffline);
+
 if(MODE!=="office" && MODE!=="display"){ show("start"); }
 else auth.onAuthStateChanged(async user=>{
+  gateOffline();
   if(!user){ show(MODE==="office" ? "loginOffice" : "loginDisplay"); return; }
   show("loading");
-  let roles = {};
+  let roles = null, rolesSaved = false;   // rolesSaved：サーバーで確かめられず、この端末に保存済みの（過去に確認した）権限を使っている
   try{ const r = await db.collection("roles").doc(user.uid).get({source:"server"}); roles = r.exists ? r.data() : {}; }
   catch(e){
-    try{ const r = await db.collection("roles").doc(user.uid).get(); roles = r.exists ? r.data() : {}; }catch(e2){ roles = {}; }
+    try{ const r = await db.collection("roles").doc(user.uid).get({source:"cache"}); roles = r.exists ? r.data() : {}; rolesSaved = true; }catch(e2){ roles = null; }
+  }
+  if(roles===null){
+    /* 権限を確かめられない（通信なし・この端末に記録なし）。権限を飛ばして表示はしない */
+    document.querySelector("#loading p").textContent = navigator.onLine
+      ? "権限を確認できませんでした。しばらくしてから開き直してください"
+      : "権限を確認できないため、製作指示を表示できません";
+    return;
   }
   /* rname：管理者が役割に登録した名前（履歴に残す名前。ルールで一致を確認する）
      name ：画面の右上に出す名前（なければGoogleの名前） */
-  ME = {uid:user.uid, email:user.email||"", rname:(roles.name||""), name:(roles.name || user.displayName || user.email || "（名前なし）"), roles};
+  ME = {uid:user.uid, email:user.email||"", rname:(roles.name||""), name:(roles.name || user.displayName || user.email || "（名前なし）"), roles, rolesSaved};
   const can = MODE==="office" ? (roles.admin||roles.office||roles.approver) : (roles.admin||roles.office||roles.approver||roles.display);
   if(!can){
     document.getElementById("noRoleWho").textContent = "ログイン中："+(user.displayName?user.displayName+"（"+(user.email||"")+"）":(user.email||""));
@@ -724,7 +768,9 @@ function initDisplay(){
   }
   function showPage(){
     const main=document.getElementById("main");
-    main.innerHTML = PAGES.length ? PAGES[pageNo].join("") : '<div class="empty">いま表示する製作指示はありません</div>';
+    main.innerHTML = PAGES.length ? PAGES[pageNo].join("")
+      : (Live.status().ok ? '<div class="empty">いま表示する製作指示はありません</div>'
+         : '<div class="empty">表示できる製作指示がありません。<br>最新を確認できていないため、「ない」とは限りません。事務所に確認してください</div>');
     main.querySelectorAll(".card.scroll").forEach(c=>{
       if(c.scrollHeight<=c.clientHeight+1){ const h=c.querySelector(".cont:last-child"); if(h && h.textContent.indexOf("↓")===0) h.remove(); }
     });
@@ -774,8 +820,9 @@ function initDisplay(){
     const el=document.getElementById("connwarn"), st=Live.status();
     let text="", bad=false;
     if(!st.ok){
-      if(!st.everSynced && Date.now()-st.startedAt < 15000) text="接続中…";
-      else { bad=true; text="⚠ 最新の情報を確認できていません（最終確認 "+(st.lostAt?fmtTime(st.lostAt):"―")+"）。表示が古い可能性があります"; }
+      if(!st.everSynced && st.online && Date.now()-st.startedAt < 15000) text="接続中…";
+      else { bad=true; text="⚠ 最新情報ではありません。作業前に事務所へ確認してください（最後に確認："+fmtConfirmed(st.lastOk)+"）"
+                       + (ME && ME.rolesSaved ? "　※保存済みの情報で表示中（古い内容を含むことがあります）" : ""); }
     }
     if(st.error){ bad=true; text="⚠ "+st.error; }
     const hide=!text;
@@ -906,8 +953,9 @@ function initOffice(){
   function renderConn(){
     const s=Live.status(), el=$("officeConn");
     if(s.error){ el.hidden=false; el.textContent="⚠ "+s.error; return; }
-    if(!s.ok && (s.everSynced || Date.now()-s.startedAt>15000)){
-      el.hidden=false; el.textContent="⚠ 最新の情報を確認できていません（最終確認 "+(s.lostAt?fmtTime(s.lostAt):"―")+"）。登録した内容は、通信が戻ってから送られます";
+    if(!s.ok && (s.everSynced || !s.online || Date.now()-s.startedAt>15000)){
+      el.hidden=false; el.textContent="⚠ 最新の情報を確認できていません（最後に確認："+fmtConfirmed(s.lastOk)+"）。登録した内容は、通信が戻ってから送られます"
+        + (ME.rolesSaved ? "。権限は保存済みの情報で、変更されていた場合は送信時に断られます" : "");
     } else el.hidden=true;
   }
   setInterval(renderConn, 1000);
