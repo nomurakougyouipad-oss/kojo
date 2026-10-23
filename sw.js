@@ -8,6 +8,9 @@
    ・通信がある時は、いつも最新の index.html を取りに行き、しまい直す
      → 新しい版を公開すると、次に開いた時から新しい版になる
    ・Firebase の版を変える時は、下の VERSION も変える（古いしまい場所は消える）
+   ・同じアドレス（nomurakougyouipad-oss.github.io）のほかのアプリが、しまい場所を
+     消してしまうことがある。そのため、通信がある時に開くたびに、足りないものを
+     しまい直す（自分で元に戻る）
    ===================================================================== */
 const VERSION = "kojo-shell-1";
 const SDK = [
@@ -46,7 +49,14 @@ self.addEventListener("fetch", e=>{
   const url = new URL(req.url);
   /* Firebase の部品：しまってあるものを使う（版が固定なので中身は変わらない） */
   if(SDK.includes(url.href)){
-    e.respondWith(caches.match(url.href).then(hit=>hit || fetch(req)));
+    e.respondWith((async()=>{
+      const c = await caches.open(VERSION);
+      const hit = await c.match(url.href);
+      if(hit) return hit;
+      const r = await fetch(url.href, {mode:"cors"});   // しまい場所が消えていたら、取り直してしまう
+      if(r.ok) await c.put(url.href, r.clone());
+      return r;
+    })());
     return;
   }
   /* アプリの画面：まず最新を取りに行き、だめならしまってある画面 */
