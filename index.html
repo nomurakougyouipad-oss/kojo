@@ -221,6 +221,59 @@ details.more-f .two{margin-top:10px}
 .roles .add input{padding:6px 8px; border:2px solid var(--line); border-radius:8px; background:var(--card)}
 /* 注番：入力と登録される注番がちがう時、目立たせる */
 #fNoHint.long{color:#b45309;font-weight:700}
+
+/* ================== 工場からの質問 ================== */
+.qdlg{width:min(860px, 96vw); font-size:20px}
+.qdlg.wide{width:min(1000px, 96vw)}
+.qdlg textarea, .qitem textarea{width:100%; font-size:20px; padding:10px 12px; border:2px solid var(--line); border-radius:10px; background:var(--card); color:var(--ink); font-family:inherit}
+.qtarget{background:var(--gray-bg); border-radius:10px; padding:10px 14px; font-size:20px}
+.qtarget .qwhat{font-size:24px; font-weight:800; margin-top:4px}
+.qlabel{font-weight:800; margin-bottom:6px}
+.qsmall{font-size:15px; color:var(--sub); font-weight:400}
+.qnames{display:flex; flex-wrap:wrap; gap:10px}
+.qname{font-size:22px; font-weight:800; padding:12px 20px; border-radius:12px; border:3px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; min-width:120px}
+.qname.on{background:var(--blue); color:#fff; border-color:var(--blue)}
+.qname.other{font-size:18px; color:var(--sub)}
+.qname.other.on{color:#fff}
+.qsel{margin-top:8px; font-size:20px}
+.qsel b{font-size:24px; color:var(--blue)}
+.qwarn, .qwarn2{background:var(--amber-bg); color:var(--amber); font-weight:800; border-radius:10px; padding:8px 12px}
+.qwarn2{display:inline-block; padding:2px 10px}
+.qtools{display:flex; align-items:center; gap:12px; margin-top:8px; flex-wrap:wrap}
+.qtools .btn{font-size:20px; padding:10px 18px}
+.qcount{margin-left:auto; font-size:15px; color:var(--sub)}
+.qmsg{font-weight:800; min-height:1.3em}
+.qmsg.ok{color:var(--green)} .qmsg.bad{color:var(--red)}
+.qdlg .btn.primary{font-size:24px; padding:12px 32px}
+.qtabs{margin-left:0; align-self:flex-start; flex-wrap:wrap}
+.qitem{border:2px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:8px}
+.qih{font-size:18px}
+.qq{background:var(--gray-bg); border-radius:10px; padding:8px 12px}
+.qwho{font-size:15px; color:var(--sub)}
+.qself{font-size:13px; color:var(--sub)}
+.qqt{font-size:20px; white-space:pre-wrap; margin-top:2px}
+.qans{border-left:6px solid var(--green); background:var(--green-bg); border-radius:8px; padding:8px 12px}
+.qans.corr{border-left-color:var(--amber); background:var(--amber-bg)}
+.qah{font-size:14px; color:var(--sub); font-weight:700}
+.qat{font-size:20px; white-space:pre-wrap; font-weight:700}
+.qnone{color:var(--sub); font-weight:700; padding:6px 0}
+.qreply{display:flex; flex-direction:column; gap:6px}
+.qreply .btn{align-self:flex-end}
+.qack{align-self:flex-end}
+#qList{display:flex; flex-direction:column; gap:12px}
+.qs-open{color:var(--red); background:var(--red-bg); border-color:var(--red)}
+.qs-ans {color:var(--green); background:var(--green-bg); border-color:var(--green)}
+/* 工場の札 */
+.qcard{margin-left:auto; display:inline-flex; gap:.4em; align-items:center}
+.qbtn{font-size:.8em; font-weight:800; padding:.15em .8em; border-radius:.5em; border:2px solid var(--blue); color:var(--blue); background:var(--card); cursor:pointer}
+.ansband{display:block; width:100%; border:0; background:var(--green); color:#fff; font-weight:800; font-size:.95em; padding:.35em .8em; cursor:pointer; flex:0 0 auto}
+.ansband[hidden]{display:none}
+#display header #qListBtn{font-size:.7em}
+/* 事務所 */
+#office header .qn{display:inline-block; margin-left:6px; background:var(--red); color:#fff; border-radius:999px; padding:0 8px; font-weight:800}
+.qnotice{display:block; width:100%; text-align:left; background:var(--red-bg); color:var(--red); border:2px solid var(--red); border-radius:10px; padding:8px 14px; margin-bottom:12px; font-weight:800; font-size:17px; cursor:pointer}
+.qnotice[hidden]{display:none}
+.chip.qrow{cursor:pointer; margin-right:6px; font-size:13px}
 </style>
 </head>
 <body>
@@ -287,9 +340,11 @@ details.more-f .two{margin-top:10px}
     <button class="nav" id="nextBtn" title="次のページ（→キー）">▶</button>
     <button id="pauseBtn" title="自動切替を止める／動かす（スペースキー）"></button>
     <button id="themeBtn" title="明るい／暗い（Tキー）">明/暗</button>
+    <button id="qListBtn" title="質問と回答の一覧">質問</button>
   </header>
   <div class="counts" id="counts"></div>
   <div class="connwarn" id="connwarn" hidden></div>
+  <button class="ansband" id="ansBand" hidden></button>
   <div class="syncwarn" id="syncwarn" hidden></div>
   <div class="notice" id="notice"></div>
   <main id="main"></main>
@@ -306,12 +361,15 @@ details.more-f .two{margin-top:10px}
     <h1>事務所：製作指示の登録</h1>
     <div class="who"><b id="meName"></b><span id="meRoles"></span></div>
     <a href="#display" target="_blank" rel="noopener">工場の画面を開く ↗</a>
+    <button id="oQBtn">質問<span class="qn" id="oQCount" hidden></span></button>
     <button id="rolesBtn" hidden>権限の設定</button>
+    <button id="namesBtn" hidden>質問する人の名前</button>
     <button id="oThemeBtn">明/暗</button>
     <button id="logoutBtn">ログアウト</button>
   </header>
   <div class="wrap">
     <div class="offline" id="officeConn" hidden></div>
+    <button class="qnotice" id="oQNotice" hidden></button>
     <div class="toolbar">
       <button class="btn primary" id="newBtn">＋ 新しい製作指示</button>
       <div class="tabs" id="tabs">
@@ -414,6 +472,50 @@ details.more-f .two{margin-top:10px}
     </div>
   </dialog>
 </section>
+
+<!-- ================== 工場からの質問（v1.4） ================== -->
+<!-- 工場：質問を書く -->
+<dialog id="qAskDlg" class="qdlg">
+  <div class="dlg-h"><h2>質問する</h2><button class="btn x" id="qAskClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div class="qtarget" id="qTarget"></div>
+    <div class="qwarn" id="qDup" hidden></div>
+    <div>
+      <div class="qlabel">名前を選んでください</div>
+      <div class="qnames" id="qNames"></div>
+      <div class="qsel" id="qSel"></div>
+    </div>
+    <div>
+      <div class="qlabel">質問 <span class="qsmall">（送る前に、文字をよく見てください。数字・寸法は特に）</span></div>
+      <textarea id="qText" maxlength="500" rows="4" placeholder="例：穴の位置は図面の寸法でよいですか"></textarea>
+      <div class="qtools"><button class="btn" id="qMic" hidden>🎤 話して入力</button><span class="qsmall" id="qMicState"></span><span class="qcount" id="qCount"></span></div>
+    </div>
+    <div class="qmsg" id="qMsg"></div>
+  </div>
+  <div class="dlg-f"><div class="right"><button class="btn" id="qAskCancel">やめる</button><button class="btn primary" id="qSend">送信</button></div></div>
+</dialog>
+
+<!-- 工場・事務所：質問と回答の一覧 -->
+<dialog id="qListDlg" class="qdlg wide">
+  <div class="dlg-h"><h2 id="qListTitle">質問と回答</h2><button class="btn x" id="qListClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div class="tabs qtabs" id="qTabs"></div>
+    <div id="qFilterNote" class="qsmall"></div>
+    <div id="qList"></div>
+  </div>
+</dialog>
+
+<!-- 事務所（管理者）：質問する人の名前 -->
+<dialog id="namesDlg">
+  <div class="dlg-h"><h2>質問する人の名前</h2><button class="btn x" id="namesClose">閉じる</button></div>
+  <div class="dlg-b roles">
+    <p class="hint">工場で質問する時に、この名前から選びます（本人の確認ではありません）。使わなくなった名前は「使う」を外します（前の質問の名前は消えません）。最大50人。</p>
+    <table><thead><tr><th>名前</th><th>使う</th><th></th></tr></thead><tbody id="namesBody"></tbody></table>
+    <div class="add"><input id="newAskName" placeholder="名前（20文字まで）" maxlength="20"><span></span><button class="btn" id="newAskBtn">足す</button></div>
+    <div class="err" id="namesErr"></div>
+  </div>
+  <div class="dlg-f"><div class="right"><button class="btn primary" id="namesSave">保存</button></div></div>
+</dialog>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -687,11 +789,21 @@ function initDisplay(){
           ${tn?`<span class="note">${esc(tn)}</span>`:''}
           ${ws.length?'<span class="sep"></span>':''}
           ${ws.map(w=>`<span class="warn">${esc(w)}</span>`).join("")}
+          ${qCardHTML(job, it)}
         </div>`:''}
       </div>
     </div>`;
   }
 
+  /* 工場からの質問：札の右下に「質問」ボタンと、その品の質問の状態 */
+  function qCardHTML(job, it){
+    const q = (typeof QA!=="undefined") ? QA.itemState(job.no, it.br) : {open:0, answered:0};
+    return '<span class="qcard">'
+      + (q.answered ? '<span class="chip qs-ans">回答あり</span>' : '')
+      + (q.open ? '<span class="chip qs-open">質問 回答待ち</span>' : '')
+      + (it.done ? '' : `<button class="qbtn" data-q="${esc(job.no)}|${esc(it.br)}">質問</button>`)
+      + '</span>';
+  }
   function renderCounts(){
     let open=0, check=0, done=0;
     JOBS.forEach(j=>j.items.forEach(it=>{
@@ -855,9 +967,11 @@ function initDisplay(){
 
   /* 事務所で登録・変更されたら、すぐ作り直す（見ているページはなるべくそのまま） */
   Live.onChange(refresh);
-  window.__display = {get PAGES(){return PAGES}, get pageNo(){return pageNo}, step, togglePause};  // 試験用
+  window.__display = {get PAGES(){return PAGES}, get pageNo(){return pageNo}, step, togglePause,
+    isPaused:()=>paused, refresh:()=>refresh(Live.data)};
   refresh(Live.data);
   setInterval(tick,250); tick();
+  initDisplayQuestions();
 }
 
 /* =====================================================================
@@ -944,7 +1058,7 @@ function initOffice(){
             <div class="w">${it.urgent&&!it.done&&!it.canceled?'<span class="tag-urgent">急ぎ</span> ':''}${esc(x.j.no)}-${esc(it.br)}　${esc(it.what)}　${esc(it.qty)}</div>
             <div class="s">【${esc(it.kind)}】${esc(it.canceled ? "理由："+it.canceled.reason : (it.inst||"").replace(/\n/g," "))}</div>
           </div>
-          ${stateChip(it)}
+          ${qRowChip(x.k, it.br)}${stateChip(it)}
         </div>`; }).join("")}
       </div>`).join("")
       : `<div class="nothing">${empty}${filter==="open"&&isOffice?"。「＋ 新しい製作指示」から登録してください":""}</div>`;
@@ -961,6 +1075,8 @@ function initOffice(){
   setInterval(renderConn, 1000);
 
   $("list").addEventListener("click", async e=>{
+    const qi=e.target.closest("[data-qitem]");
+    if(qi){ const [k,br]=qi.dataset.qitem.split("|"); window.openItemQuestions && window.openItemQuestions(k, br); return; }
     const a=e.target.closest("[data-addto]"), r=e.target.closest("[data-retitle]"), o=e.target.closest("[data-open]");
     if(a){ openForm(null, DATA.jobs[a.dataset.addto].no); return; }
     if(r){
@@ -1206,8 +1322,431 @@ function initOffice(){
     $("newUid").value=""; $("newName").value="";
   };
 
+  /* その品への質問（未回答・回答ずみで工場未確認）。押すと、その品の質問を開く */
+  function qRowChip(k, br){
+    const q = QA.itemState(k, br); if(!q.open && !q.answered) return "";
+    return `<button class="chip qrow ${q.open?"qs-open":"qs-ans"}" data-qitem="${esc(k)}|${esc(br)}">${q.open?"質問 未回答 "+q.open:"質問 回答ずみ"}</button>`;
+  }
+  window.__officeRender = ()=>render();
+  initOfficeQuestions();
   Live.onChange(d=>{ DATA=d; render(); if(editing){ const it=cur(); if(it) renderState(it); } });
   render(); renderConn();
+}
+
+/* =====================================================================
+   工場からの質問（段階1）
+   工場：札の「質問」→ 名前を選んで書く → 送信（サーバーに届いたのを確かめてから「送信しました」）
+   事務所：未回答の件数を出す → 回答・訂正を足す（元の回答は書きかえない）
+   工場：「回答が届きました」の帯 → 読んで「見ました」
+   質問と回答は消せない・書きかえられない（ルールで守る）
+   ===================================================================== */
+const QA = (()=>{
+  const DAYS = 30;                 // ふだんの一覧に出す日数（対応が終わっていない質問は、古くても出す）
+  let byId = {}, recent = {}, active = {}, names = {}, cbs = [], started = false, error = "";
+  const api = {
+    list(){ return Object.values(byId).sort((a,b)=>(b.atMs||0)-(a.atMs||0)); },
+    names(){ return names; },
+    onChange(cb){ cbs.push(cb); },
+    error(){ return error; },
+    /* 品ごとの状態 "注番|枝番" → {open, answered} */
+    itemState(no, br){
+      let open=0, answered=0;
+      for(const q of Object.values(byId)) if(q.jobKey===no && q.br===br){ if(q.state==="open") open++; else if(q.state==="answered") answered++; }
+      return {open, answered};
+    },
+    counts(){
+      let open=0, answered=0;
+      for(const q of Object.values(byId)){ if(q.state==="open") open++; else if(q.state==="answered") answered++; }
+      return {open, answered};
+    },
+  };
+  function toQ(doc){
+    const x = doc.data({serverTimestamps:"estimate"});
+    const at = x.at && x.at.toDate ? x.at.toDate() : null;
+    return Object.assign({}, x, {id:doc.id, at, atMs: at ? at.getTime() : 0,
+      lastAnswerAt: x.lastAnswerAt && x.lastAnswerAt.toDate ? x.lastAnswerAt.toDate() : null});
+  }
+  function merge(){
+    byId = Object.assign({}, recent, active);
+    cbs.forEach(cb=>cb());
+  }
+  api.start = ()=>{
+    if(started) return; started = true;
+    const since = new Date(Date.now() - DAYS*86400000);
+    const fail = e=>{ error = (e && e.code==="permission-denied") ? "質問を読む権限がありません" : "質問を読み込めません（"+(e&&e.code||e)+"）"; cbs.forEach(cb=>cb()); };
+    /* ① 対応が終わっていない質問（未回答・工場未確認）は、日数に関係なく全部 */
+    db.collection("questions").where("state","in",["open","answered"]).onSnapshot(s=>{
+      active = {}; s.forEach(d=>{ active[d.id] = toQ(d); }); error=""; merge(); }, fail);
+    /* ② ふだんの一覧：最近30日 */
+    db.collection("questions").where("at",">=",since).onSnapshot(s=>{
+      recent = {}; s.forEach(d=>{ recent[d.id] = toQ(d); }); error=""; merge(); }, fail);
+    db.collection("settings").doc("askNames").onSnapshot(s=>{
+      names = (s.exists && s.data().entries) || {}; cbs.forEach(cb=>cb()); }, ()=>{});
+  };
+  /* 回答の読み込み（質問ごと。最後の回答IDが変わった時だけ読み直す） */
+  const ansCache = {};
+  api.answers = async (q)=>{
+    const c = ansCache[q.id];
+    if(c && c.last===q.lastAnswerId) return c.list;
+    if(!q.answerCount){ return []; }
+    const s = await db.collection("questions").doc(q.id).collection("answers").orderBy("at").get();
+    const list = s.docs.map(d=>{ const a=d.data({serverTimestamps:"estimate"}); return Object.assign({}, a, {id:d.id, at:a.at&&a.at.toDate?a.at.toDate():null}); });
+    ansCache[q.id] = {last:q.lastAnswerId, list};
+    return list;
+  };
+  return api;
+})();
+
+/* ---------- 共通の小道具 ---------- */
+function qWhen(d){ return d ? fmtStamp(d.toISOString ? d.toISOString() : d) : ""; }
+function qWho(q){ return q.askName ? esc(q.askName)+'<span class="qself">（自己申告）</span>' : '<span class="qself">名前なし</span>'; }
+function qStateChip(q){
+  if(q.state==="open") return '<span class="chip qs-open">未回答</span>';
+  if(q.state==="answered") return '<span class="chip qs-ans">回答あり・工場は未確認</span>';
+  return '<span class="chip st-done">工場が確認ずみ</span>';
+}
+async function qAnswersHTML(q){
+  try{
+    const list = await QA.answers(q);
+    if(!list.length) return '<div class="qnone">まだ回答はありません</div>';
+    return list.map(a=>`<div class="qans${a.kind==="correction"?" corr":""}">
+      <div class="qah">${a.kind==="correction"?"訂正・追記":"回答"}　${esc(a.name||"")}　${esc(qWhen(a.at))}</div>
+      <div class="qat">${esc(a.text)}</div></div>`).join("");
+  }catch(e){ return '<div class="qnone">回答を読み込めませんでした</div>'; }
+}
+
+/* =====================================================================
+   工場の画面
+   ===================================================================== */
+function initDisplayQuestions(){
+  const $=id=>document.getElementById(id);
+  QA.start();
+  let cur = null, sending = false, pausedByMe = false, rec = null, recOn = false;
+  /* 音声入力：会社の許可が出るまで使わない（声が Google に送られるため）。
+     許可が出たら false を true に変えて公開しなおす */
+  const VOICE_ENABLED = false;
+  const SR = VOICE_ENABLED ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+
+  function pauseRotation(on){
+    const d = window.__display; if(!d) return;
+    if(on && !d.isPaused()){ d.togglePause(); pausedByMe = true; }
+    if(!on && pausedByMe){ if(d.isPaused()) d.togglePause(); pausedByMe = false; }
+  }
+  function newId(){ return "q" + Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
+
+  /* ----- 札の「質問」ボタン（表示の作り直しのたびに、まとめて受ける） ----- */
+  $("main").addEventListener("click", e=>{
+    const b = e.target.closest("[data-q]"); if(!b) return;
+    const [no, br] = b.dataset.q.split("|");
+    openAsk(no, br);
+  });
+
+  /* ----- 質問を書く ----- */
+  function nameButtons(){
+    const n = QA.names(), ids = Object.keys(n).filter(id=>n[id] && n[id].active).sort((a,b)=>n[a].name.localeCompare(n[b].name,"ja"));
+    let last = ""; try{ last = localStorage.getItem("kojo-askName")||""; }catch(e){}
+    if(cur.nameId===undefined) cur.nameId = (last && n[last] && n[last].active) ? last : null;
+    $("qNames").innerHTML = ids.map(id=>`<button class="qname${cur.nameId===id?" on":""}" data-n="${esc(id)}">${esc(n[id].name)}</button>`).join("")
+      + `<button class="qname other${cur.nameId===""?" on":""}" data-n="">その他（名前なし）</button>`;
+    $("qSel").innerHTML = cur.nameId===null ? '<span class="qwarn2">名前を選んでください</span>'
+      : "選んでいる名前：<b>"+(cur.nameId ? esc(n[cur.nameId].name) : "名前なし")+"</b>";
+  }
+  $("qNames").addEventListener("click", e=>{
+    const b=e.target.closest("[data-n]"); if(!b || !cur) return;
+    cur.nameId = b.dataset.n; nameButtons();
+  });
+  function openAsk(no, br){
+    const job = (Live.data.jobs||{})[no]; const it = job && job.items && job.items[br];
+    if(!it) return;
+    cur = {qid:newId(), no, br, what:it.what||"", nameId:undefined};
+    $("qTarget").innerHTML = `<b>${esc(no)}-${esc(br)}</b>　${esc(job.title||"")}<div class="qwhat">${esc(it.what||"")}　${esc(it.qty||"")}</div>`;
+    const st = QA.itemState(no, br);
+    $("qDup").hidden = !st.open; $("qDup").textContent = st.open ? "この品には、まだ回答のない質問が "+st.open+" 件あります。同じ内容なら、回答を待ってください" : "";
+    $("qText").value = ""; $("qMsg").textContent = ""; $("qMsg").className="qmsg";
+    $("qSend").disabled = false; $("qSend").textContent = "送信";
+    $("qMic").hidden = !SR; $("qMicState").textContent = "";
+    nameButtons(); updCount();
+    pauseRotation(true);
+    $("qAskDlg").showModal();
+  }
+  function closeAsk(){ stopMic(); $("qAskDlg").close(); cur = null; pauseRotation(false); }
+  $("qAskClose").onclick = closeAsk; $("qAskCancel").onclick = closeAsk;
+  $("qAskDlg").addEventListener("cancel", e=>{ e.preventDefault(); closeAsk(); });
+  function updCount(){ $("qCount").textContent = $("qText").value.length+" / 500"; }
+  $("qText").addEventListener("input", updCount);
+
+  /* ----- 音声入力（使える機種だけ。文字は入力欄に入るだけで、自動では送らない） ----- */
+  function stopMic(){ if(rec && recOn){ try{ rec.stop(); }catch(e){} } recOn=false; $("qMic").textContent="🎤 話して入力"; }
+  $("qMic").onclick = ()=>{
+    if(!SR) return;
+    if(recOn){ stopMic(); return; }
+    rec = new SR(); rec.lang = "ja-JP"; rec.interimResults = true; rec.continuous = false;
+    const base = $("qText").value;
+    rec.onresult = ev=>{
+      let fin="", tmp="";
+      for(let i=0;i<ev.results.length;i++){ const r=ev.results[i]; (r.isFinal ? (fin+=r[0].transcript) : (tmp+=r[0].transcript)); }
+      $("qText").value = (base + (base&&!/\s$/.test(base)?" ":"") + fin + tmp).slice(0,500); updCount();
+      $("qMicState").textContent = tmp ? "聞き取り中…" : "";
+    };
+    rec.onerror = ev=>{ $("qMicState").textContent = "音声を使えませんでした（"+ev.error+"）。文字で入力してください"; };
+    rec.onend = ()=>{ recOn=false; $("qMic").textContent="🎤 話して入力"; if($("qMicState").textContent==="聞き取り中…") $("qMicState").textContent=""; };
+    try{ rec.start(); recOn=true; $("qMic").textContent="■ 止める"; $("qMicState").textContent="話してください（終わったら「止める」）"; }
+    catch(e){ $("qMicState").textContent="音声を使えませんでした。文字で入力してください"; }
+  };
+
+  /* ----- 送信：サーバーに届いたのを確かめてから「送信しました」 ----- */
+  function msg(t, cls){ $("qMsg").textContent = t; $("qMsg").className = "qmsg "+(cls||""); }
+  $("qSend").onclick = async ()=>{
+    if(!cur || sending) return;
+    const text = $("qText").value.trim();
+    if(cur.nameId===null || cur.nameId===undefined){ msg("名前を選んでください（いなければ「その他（名前なし）」）","bad"); return; }
+    if(!text){ msg("質問を書いてください","bad"); return; }
+    if(!navigator.onLine || !Live.status().ok){ msg("通信がないため送れません。書いた文は残しています。急ぎは事務所へ直接（内線・口頭）伝えてください","bad"); return; }
+    stopMic();
+    const n = QA.names(), nm = cur.nameId ? (n[cur.nameId] && n[cur.nameId].name) || "" : "";
+    const ref = db.collection("questions").doc(cur.qid);   // IDは送信の結果が決まるまで同じ（2つにならない）
+    sending = true; $("qSend").disabled = true; msg("送信中…");
+    const check = async ()=>{ try{ const s = await ref.get({source:"server"}); return s.exists; }catch(e){ return null; } };
+    let result;
+    if(cur.retry){
+      const ex = await check();
+      result = ex===true ? "ok" : null;
+    }
+    if(!result){
+      const p = ref.set({ jobKey:cur.no, br:cur.br, what:cur.what.slice(0,200), text, askNameId:cur.nameId||"", askName:nm,
+        by:ME.uid, at:FV.serverTimestamp(), state:"open", answerCount:0, lastAnswerId:"", lastAnswerAt:null, ackAnswerId:"", ackAt:null })
+        .then(()=>"ok", e=>e);
+      result = await Promise.race([p, new Promise(r=>setTimeout(()=>r("timeout"),10000))]);
+    }
+    sending = false;
+    if(result==="ok"){
+      try{ localStorage.setItem("kojo-askName", cur.nameId||""); }catch(e){}
+      msg("送信しました。事務所に届いています","ok"); $("qSend").textContent="送信しました";
+      setTimeout(()=>{ if($("qAskDlg").open) closeAsk(); }, 1800);
+      return;
+    }
+    $("qSend").disabled = false;
+    if(result==="timeout"){
+      cur.retry = true; $("qSend").textContent = "届いたか確かめる";
+      msg("送信を確認できません。通信が戻ると届く場合があります（同じ質問が2つになることはありません）。「届いたか確かめる」を押してください","bad");
+    } else if(result && result.code==="permission-denied"){
+      const ex = await check();
+      if(ex===true){ msg("送信しました。事務所に届いています","ok"); $("qSend").textContent="送信しました"; setTimeout(()=>{ if($("qAskDlg").open) closeAsk(); },1800); return; }
+      msg("送れませんでした。名前の登録が変わったか、品がなくなった可能性があります。画面を開き直して、もう一度お試しください","bad");
+    } else {
+      cur.retry = true;
+      msg("送れませんでした（"+(result&&result.code||result)+"）。書いた文は残しています","bad");
+    }
+  };
+
+  /* ----- 回答のお知らせ・一覧 ----- */
+  let tab = "need";
+  function band(){
+    const c = QA.counts();
+    $("ansBand").hidden = !c.answered;
+    $("ansBand").textContent = c.answered ? "💬 事務所から回答が届きました（"+c.answered+"件）　さわって見る" : "";
+    const b = $("qListBtn"); b.textContent = c.open ? "質問（回答待ち "+c.open+"）" : "質問";
+  }
+  $("ansBand").onclick = ()=>openList("need");
+  $("qListBtn").onclick = ()=>openList(QA.counts().answered ? "need" : "all");
+  function openList(t){ tab = t; pauseRotation(true); $("qListDlg").showModal(); renderList(); }
+  $("qListClose").onclick = ()=>{ $("qListDlg").close(); pauseRotation(false); };
+  $("qListDlg").addEventListener("cancel", e=>{ e.preventDefault(); $("qListDlg").close(); pauseRotation(false); });
+  $("qTabs").addEventListener("click", e=>{ const b=e.target.closest("[data-t]"); if(!b) return; tab=b.dataset.t; renderList(); });
+  async function renderList(){
+    if(!$("qListDlg").open) return;
+    $("qListTitle").textContent = "質問と回答";
+    $("qTabs").innerHTML = [["need","回答が届いた"],["open","回答待ち"],["all","すべて（30日）"]]
+      .map(([k,v])=>`<button data-t="${k}" class="${tab===k?"on":""}">${v}</button>`).join("");
+    $("qFilterNote").textContent = QA.error() || (tab==="all" ? "最近30日の質問と、まだ対応が終わっていない質問" : "");
+    let list = QA.list();
+    if(tab==="need") list = list.filter(q=>q.state==="answered");
+    if(tab==="open") list = list.filter(q=>q.state==="open");
+    if(!list.length){ $("qList").innerHTML = '<div class="qnone">'+(tab==="need"?"新しい回答はありません":tab==="open"?"回答待ちの質問はありません":"質問はありません")+'</div>'; return; }
+    const parts = await Promise.all(list.map(async q=>`
+      <div class="qitem" data-id="${esc(q.id)}">
+        <div class="qih"><b>${esc(q.jobKey)}-${esc(q.br)}</b>　${esc(q.what||"")}　${qStateChip(q)}</div>
+        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div></div>
+        ${await qAnswersHTML(q)}
+        ${q.state==="answered" ? `<button class="btn primary qack" data-ack="${esc(q.id)}">見ました</button>` : ""}
+      </div>`));
+    $("qList").innerHTML = parts.join("");
+  }
+  $("qList").addEventListener("click", async e=>{
+    const b = e.target.closest("[data-ack]"); if(!b) return;
+    const q = QA.list().find(x=>x.id===b.dataset.ack); if(!q) return;
+    b.disabled = true; b.textContent = "送信中…";
+    try{
+      await db.collection("questions").doc(q.id).update({ackAnswerId:q.lastAnswerId, ackAt:FV.serverTimestamp(), state:"acked"});
+      b.textContent = "確認しました";
+    }catch(err){ b.disabled=false; b.textContent="見ました（もう一度）"; alertLine(b, "送れませんでした。通信を確かめてください"); }
+  });
+  function alertLine(after, t){ const d=document.createElement("div"); d.className="qmsg bad"; d.textContent=t; after.after(d); }
+
+  QA.onChange(()=>{ band(); renderList(); if(window.__display) window.__display.refresh(); });
+  band();
+}
+
+/* =====================================================================
+   事務所の画面
+   ===================================================================== */
+function initOfficeQuestions(){
+  const $=id=>document.getElementById(id);
+  const R=ME.roles, isAdmin=!!R.admin, isOffice=isAdmin||!!R.office;
+  QA.start();
+  let tab = "open", itemFilter = null, lastOpen = null;
+
+  /* 回答を送る。回答の作成と、質問の要約の更新を1つのトランザクションで行う（回答㉞の2）。
+     ・回答IDは送る前に1つ決め、やり直しても同じIDを使う（届いていたら二重に保存しない）
+     ・aborted / failed-precondition（競合）はやり直す
+     ・permission-denied は、サーバーの最新の質問を読み、ほかの人の回答が先に入った（回答数や最後の回答IDが
+       変わった）と分かった時だけやり直す。権限がない・原因が分からない時はやり直さない
+     ・やり直しは最大3回まで */
+  async function answerWithRetry(qRef, text){
+    const aid = qRef.collection("answers").doc().id;
+    const aRef = qRef.collection("answers").doc(aid);
+    for(let tries=1; ; tries++){
+      const exists = await aRef.get({source:"server"}).then(s=>s.exists, ()=>false);
+      if(exists) return "already";
+      let seen = null;
+      try{
+        await db.runTransaction(async tx=>{
+          const s = await tx.get(qRef); if(!s.exists) throw new Error("質問が見つかりません");
+          const q = s.data(); seen = {count:q.answerCount, last:q.lastAnswerId};
+          tx.set(aRef, {kind: q.answerCount===0 ? "answer" : "correction", text: text.slice(0,1000), by:ME.uid, name:ME.rname, at:FV.serverTimestamp()});
+          tx.update(qRef, {answerCount:q.answerCount+1, lastAnswerId:aid, lastAnswerAt:FV.serverTimestamp(), state:"answered"});
+        });
+        return "ok";
+      }catch(err){
+        const code = err && err.code;
+        let retry = false;
+        if(code==="aborted" || code==="failed-precondition") retry = true;
+        else if(code==="permission-denied" && seen){
+          const now = await qRef.get({source:"server"}).then(s=>s.data(), ()=>null);
+          if(now && (now.answerCount!==seen.count || now.lastAnswerId!==seen.last)){
+            const mine = await aRef.get({source:"server"}).then(s=>s.exists, ()=>false);
+            if(mine) return "already";
+            retry = true;   // ほかの人の回答が先に入った（古い数で書こうとした）
+          }
+        }
+        if(!retry || tries>=3) throw err;
+        await new Promise(r=>setTimeout(r, 300*tries));
+      }
+    }
+  }
+
+  function beep(){
+    try{
+      const ac = new (window.AudioContext||window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.value = 880; g.gain.value = 0.15; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+0.35);
+    }catch(e){}
+  }
+  function badge(){
+    const c = QA.counts();
+    $("oQCount").hidden = !c.open; $("oQCount").textContent = c.open;
+    $("oQNotice").hidden = !c.open;
+    $("oQNotice").textContent = c.open ? "📨 工場から、まだ回答していない質問が "+c.open+" 件あります（押して見る）" : "";
+    if(lastOpen!==null && c.open>lastOpen) beep();   // 鳴らない場合もある（ブラウザの決まり）。件数の表示が本体
+    lastOpen = c.open;
+  }
+  $("oQBtn").onclick = ()=>{ itemFilter=null; tab = QA.counts().open ? "open" : "all"; openList(); };
+  $("oQNotice").onclick = ()=>{ itemFilter=null; tab="open"; openList(); };
+  /* 製作指示の画面から、その品の質問だけを見る */
+  window.openItemQuestions = (no, br)=>{ itemFilter = {no, br}; tab = "all"; openList(); };
+  function openList(){ $("qListDlg").showModal(); render(); }
+  $("qListClose").onclick = ()=>$("qListDlg").close();
+  $("qTabs").addEventListener("click", e=>{ const b=e.target.closest("[data-t]"); if(!b) return; tab=b.dataset.t; render(); });
+
+  const drafts = {};   // 書きかけの回答（画面の作り直しで消えないように）
+  async function render(){
+    if(!$("qListDlg").open) return;
+    $("qListTitle").textContent = itemFilter ? "質問："+itemFilter.no+"-"+itemFilter.br : "工場からの質問";
+    $("qTabs").innerHTML = [["open","未回答"],["answered","回答ずみ・工場未確認"],["all","すべて（30日＋対応中）"]]
+      .map(([k,v])=>`<button data-t="${k}" class="${tab===k?"on":""}">${v}</button>`).join("");
+    $("qFilterNote").textContent = QA.error() || "名前は工場で選んだもので、本人の確認ではありません。回答は製作指示の変更ではありません（変える時は製作指示を直してください）";
+    let list = QA.list();
+    if(itemFilter) list = list.filter(q=>q.jobKey===itemFilter.no && q.br===itemFilter.br);
+    if(tab==="open") list = list.filter(q=>q.state==="open");
+    if(tab==="answered") list = list.filter(q=>q.state==="answered");
+    if(!list.length){ $("qList").innerHTML = '<div class="qnone">該当する質問はありません</div>'; return; }
+    const parts = await Promise.all(list.map(async q=>`
+      <div class="qitem" data-id="${esc(q.id)}">
+        <div class="qih"><b>${esc(q.jobKey)}-${esc(q.br)}</b>　${esc(q.what||"")}　${qStateChip(q)}</div>
+        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div></div>
+        ${await qAnswersHTML(q)}
+        ${isOffice ? `<div class="qreply">
+          <textarea data-reply="${esc(q.id)}" maxlength="1000" rows="2" placeholder="${q.answerCount?"訂正・追記を書く（元の回答は残ります）":"回答を書く"}">${esc(drafts[q.id]||"")}</textarea>
+          <button class="btn ${q.answerCount?"":"primary"}" data-send="${esc(q.id)}">${q.answerCount?"訂正・追記する":"回答する"}</button>
+          <div class="qmsg" data-msg="${esc(q.id)}"></div></div>` : ""}
+      </div>`));
+    $("qList").innerHTML = parts.join("");
+  }
+  $("qList").addEventListener("input", e=>{ const t=e.target.closest("[data-reply]"); if(t) drafts[t.dataset.reply]=t.value; });
+  $("qList").addEventListener("click", async e=>{
+    const b = e.target.closest("[data-send]"); if(!b) return;
+    const id = b.dataset.send, ta = $("qList").querySelector(`[data-reply="${CSS.escape(id)}"]`), m = $("qList").querySelector(`[data-msg="${CSS.escape(id)}"]`);
+    const text = (ta.value||"").trim();
+    if(!text){ m.className="qmsg bad"; m.textContent="回答を書いてください"; return; }
+    b.disabled = true; m.className="qmsg"; m.textContent="送信中…";
+    const qRef = db.collection("questions").doc(id);
+    try{
+      const r = await answerWithRetry(qRef, text);
+      if(r==="already"){ /* 前の送信が実は届いていた（同じ回答IDで確認）。二重には保存しない */ }
+      delete drafts[id];
+      m.className="qmsg ok"; m.textContent="回答しました。工場の画面に出ます";
+    }catch(err){
+      b.disabled = false; m.className="qmsg bad";
+      m.textContent = err && err.code==="unavailable" ? "通信できません。書いた回答は残しています" :
+        err && err.code==="permission-denied" ? "回答できませんでした（権限、または名前の登録を確かめてください）" : "回答できませんでした（"+(err&&err.code||err.message||err)+"）";
+    }
+  });
+
+  /* ----- 管理者：質問する人の名前（1回に1人分だけ保存する。ルールもそう決めている） ----- */
+  $("namesBtn").hidden = !isAdmin;
+  function renderNames(){
+    const n = QA.names() || {};
+    const ids = Object.keys(n).sort((a,b)=>n[a].name.localeCompare(n[b].name,"ja"));
+    $("namesBody").innerHTML = ids.map(id=>`<tr data-id="${esc(id)}"><td class="n"><input class="nm" value="${esc(n[id].name)}" maxlength="20"></td>
+      <td><input type="checkbox" class="ac" ${n[id].active?"checked":""}></td><td><button class="btn" data-nsave>保存</button></td></tr>`).join("")
+      || '<tr><td colspan="3">まだ登録がありません</td></tr>';
+  }
+  async function saveEntry(id, entry){
+    const ref = db.collection("settings").doc("askNames");
+    const s = await ref.get({source:"server"});
+    if(!s.exists) await ref.set({entries:{}, lastChanged:"", updatedAt:FV.serverTimestamp(), updatedBy:ME.uid});   // 最初は空で作る
+    await ref.update({["entries."+id]: entry, lastChanged:id, updatedAt:FV.serverTimestamp(), updatedBy:ME.uid});
+  }
+  function checkName(nm, exceptId){
+    if(nm.length<1 || nm.length>20) return "名前は1〜20文字にしてください";
+    const n = QA.names() || {};
+    if(Object.entries(n).some(([id,x])=>id!==exceptId && x.active && x.name===nm)) return "使っている名前に同じものがあります："+nm;
+    return "";
+  }
+  function done(msg){ $("namesErr").textContent=""; const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2400); }
+  function fail(err){ $("namesErr").textContent = "保存できませんでした（"+(err&&err.code||err)+"）"; }
+  $("namesBtn").onclick = ()=>{ $("namesErr").textContent=""; renderNames(); $("namesDlg").showModal(); };
+  $("namesClose").onclick = ()=>$("namesDlg").close();
+  $("namesSave").hidden = true;   // 保存は1人ずつ（各行の「保存」と「足す」）
+  $("namesBody").addEventListener("click", async e=>{
+    const b=e.target.closest("[data-nsave]"); if(!b) return;
+    const tr=b.closest("tr[data-id]"), id=tr.dataset.id, nm=tr.querySelector(".nm").value.trim(), ac=tr.querySelector(".ac").checked;
+    const er = (nm.length<1 || nm.length>20) ? "名前は1〜20文字にしてください" : (ac ? checkName(nm, id) : "");
+    if(er){ $("namesErr").textContent = er; return; }
+    b.disabled = true;
+    try{ await saveEntry(id, {name:nm, active:ac}); done("保存しました："+nm); }catch(err){ fail(err); }
+    b.disabled = false;
+  });
+  $("newAskBtn").onclick = async ()=>{
+    const nm = $("newAskName").value.trim(), n = QA.names() || {};
+    const er = checkName(nm, null); if(er){ $("namesErr").textContent = er; return; }
+    if(Object.keys(n).length>=50){ $("namesErr").textContent="50人までです。使わない名前は「使う」を外してください（名前は消せません）"; return; }
+    $("newAskBtn").disabled = true;
+    try{ await saveEntry("n"+Date.now().toString(36), {name:nm, active:true}); $("newAskName").value=""; done("足しました："+nm); }catch(err){ fail(err); }
+    $("newAskBtn").disabled = false;
+  };
+
+  QA.onChange(()=>{ badge(); render(); if(window.__officeRender) window.__officeRender(); if($("namesDlg").open && !$("namesDlg").contains(document.activeElement)) renderNames(); });
+  badge();
 }
 </script>
 </body>
