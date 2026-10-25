@@ -266,7 +266,12 @@ details.more-f .two{margin-top:10px}
 /* 工場の札 */
 .qcard{margin-left:auto; display:inline-flex; gap:.4em; align-items:center}
 .qbtn{font-size:.8em; font-weight:800; padding:.15em .8em; border-radius:.5em; border:2px solid var(--blue); color:var(--blue); background:var(--card); cursor:pointer}
-.ansband{display:block; width:100%; border:0; background:var(--green); color:#fff; font-weight:800; font-size:.95em; padding:.35em .8em; cursor:pointer; flex:0 0 auto}
+.ansband{display:flex; align-items:center; gap:.8em; width:100%; border:0; background:var(--green); color:#fff; font-weight:800; font-size:1.1em; padding:.45em .8em; cursor:pointer; flex:0 0 auto; text-align:left}
+.ansband .abtxt{flex:1 1 auto}
+.ansband .abgo{flex:0 0 auto; background:#fff; color:var(--green); border-radius:999px; padding:.25em 1em; box-shadow:0 2px 6px rgba(0,0,0,.25); animation:abpulse 1.6s ease-in-out infinite}
+@keyframes abpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@media (prefers-reduced-motion: reduce){.ansband .abgo{animation:none}}
+.qansbtn{cursor:pointer; font:inherit; font-weight:800}
 .ansband[hidden]{display:none}
 #display header #qListBtn{font-size:.7em}
 /* 事務所 */
@@ -274,6 +279,24 @@ details.more-f .two{margin-top:10px}
 .qnotice{display:block; width:100%; text-align:left; background:var(--red-bg); color:var(--red); border:2px solid var(--red); border-radius:10px; padding:8px 14px; margin-bottom:12px; font-weight:800; font-size:17px; cursor:pointer}
 .qnotice[hidden]{display:none}
 .chip.qrow{cursor:pointer; margin-right:6px; font-size:13px}
+
+/* 質問の窓：知らせは「送信」ボタンの横に出す（画面が低くても、いつも見える） */
+.qfoot{align-items:center}
+.qfoot .qmsg{flex:1 1 260px; min-width:0; font-size:20px; line-height:1.35}
+.qname.on::before{content:"✓ "}
+.qnames.need{outline:4px solid var(--red); outline-offset:6px; border-radius:12px}
+/* 画面の高さが低い機械（横置きのタッチパネルなど）では、つめて表示する */
+@media (max-height: 820px){
+  .qdlg{font-size:18px}
+  .qdlg .dlg-h{padding:8px 14px} .qdlg .dlg-h h2{font-size:20px}
+  .qdlg .dlg-b{padding:10px 14px; gap:8px}
+  .qdlg .dlg-f{padding:8px 14px}
+  .qdlg .qtarget{padding:6px 12px}
+  .qdlg .qname{padding:8px 16px; font-size:20px}
+  .qdlg .qsel{margin-top:4px}
+  .qdlg textarea{font-size:18px; padding:6px 10px}
+  .qdlg .btn.primary{font-size:22px; padding:10px 28px}
+}
 </style>
 </head>
 <body>
@@ -490,9 +513,8 @@ details.more-f .two{margin-top:10px}
       <textarea id="qText" maxlength="500" rows="4" placeholder="例：穴の位置は図面の寸法でよいですか"></textarea>
       <div class="qtools"><button class="btn" id="qMic" hidden>🎤 話して入力</button><span class="qsmall" id="qMicState"></span><span class="qcount" id="qCount"></span></div>
     </div>
-    <div class="qmsg" id="qMsg"></div>
   </div>
-  <div class="dlg-f"><div class="right"><button class="btn" id="qAskCancel">やめる</button><button class="btn primary" id="qSend">送信</button></div></div>
+  <div class="dlg-f qfoot"><div class="qmsg" id="qMsg" role="status" aria-live="polite"></div><div class="right"><button class="btn" id="qAskCancel">やめる</button><button class="btn primary" id="qSend">送信</button></div></div>
 </dialog>
 
 <!-- 工場・事務所：質問と回答の一覧 -->
@@ -799,7 +821,7 @@ function initDisplay(){
   function qCardHTML(job, it){
     const q = (typeof QA!=="undefined") ? QA.itemState(job.no, it.br) : {open:0, answered:0};
     return '<span class="qcard">'
-      + (q.answered ? '<span class="chip qs-ans">回答あり</span>' : '')
+      + (q.answered ? '<button class="chip qs-ans qansbtn" data-qans="1">回答あり　見る ▶</button>' : '')
       + (q.open ? '<span class="chip qs-open">質問 回答待ち</span>' : '')
       + (it.done ? '' : `<button class="qbtn" data-q="${esc(job.no)}|${esc(it.br)}">質問</button>`)
       + '</span>';
@@ -1453,7 +1475,8 @@ function initDisplayQuestions(){
   }
   $("qNames").addEventListener("click", e=>{
     const b=e.target.closest("[data-n]"); if(!b || !cur) return;
-    cur.nameId = b.dataset.n; nameButtons();
+    cur.nameId = b.dataset.n; nameButtons(); $("qNames").classList.remove("need");
+    if($("qMsg").classList.contains("bad")) msg("");
   });
   function openAsk(no, br){
     const job = (Live.data.jobs||{})[no]; const it = job && job.items && job.items[br];
@@ -1499,8 +1522,12 @@ function initDisplayQuestions(){
   $("qSend").onclick = async ()=>{
     if(!cur || sending) return;
     const text = $("qText").value.trim();
-    if(cur.nameId===null || cur.nameId===undefined){ msg("名前を選んでください（いなければ「その他（名前なし）」）","bad"); return; }
-    if(!text){ msg("質問を書いてください","bad"); return; }
+    if(cur.nameId===null || cur.nameId===undefined){
+      msg("先に、上の名前ボタンを押してください（いなければ「その他（名前なし）」）","bad");
+      const q=$("qNames"); q.classList.add("need"); q.scrollIntoView({block:"center", behavior:"smooth"});
+      setTimeout(()=>q.classList.remove("need"), 2500);
+      return; }
+    if(!text){ msg("質問を書いてください","bad"); $("qText").focus(); return; }
     if(!navigator.onLine || !Live.status().ok){ msg("通信がないため送れません。書いた文は残しています。急ぎは事務所へ直接（内線・口頭）伝えてください","bad"); return; }
     stopMic();
     const n = QA.names(), nm = cur.nameId ? (n[cur.nameId] && n[cur.nameId].name) || "" : "";
@@ -1544,10 +1571,11 @@ function initDisplayQuestions(){
   function band(){
     const c = QA.counts();
     $("ansBand").hidden = !c.answered;
-    $("ansBand").textContent = c.answered ? "💬 事務所から回答が届きました（"+c.answered+"件）　さわって見る" : "";
+    $("ansBand").innerHTML = c.answered ? '<span class="abtxt">💬 事務所から回答が届きました（'+c.answered+'件）</span><span class="abgo">ここを押して見る ▶</span>' : "";
     const b = $("qListBtn"); b.textContent = c.open ? "質問（回答待ち "+c.open+"）" : "質問";
   }
   $("ansBand").onclick = ()=>openList("need");
+  $("main").addEventListener("click", e=>{ if(e.target.closest("[data-qans]")) openList("need"); });
   $("qListBtn").onclick = ()=>openList(QA.counts().answered ? "need" : "all");
   function openList(t){ tab = t; pauseRotation(true); $("qListDlg").showModal(); renderList(); }
   $("qListClose").onclick = ()=>{ $("qListDlg").close(); pauseRotation(false); };
