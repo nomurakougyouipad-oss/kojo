@@ -1853,12 +1853,19 @@ function initOfficeQuestions(){
    ・図面は Cloud Storage の drawings/{注番}/{枝番}/{20文字のID}.pdf に置く（上書き・削除しない）
    ・今の図面は、品の drawingPdf に1つだけ持つ。付けるたびに版（rev）が1つ増える
    ・読む・置くは、ログインした本人の証明（IDトークン）つきで直接行う。公開リンクは作らない・保存しない
-   ・表示は pdf.js（版を固定。図面を開く時にだけ読みこむ。通信がない時は「読み込めません」）
+   ・表示は pdf.js 6.4.299 の legacy 版（古めの Android Chrome でも動く版）。本体と worker は同じ版に固定し、
+     取り寄せた中身が決めておいた指紋（SHA-256）と同じ時だけ使う。図面を開く時にだけ読みこむ
+   ・PDF の中の仕掛け（スクリプト等）は動かさない：isEvalSupported:false、enableXfa:false
    ===================================================================== */
 const DRW = (()=>{
   const BUCKET = firebaseConfig.storageBucket;
   const API = "https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o";
-  const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  /* pdf.js：版と中身の指紋を固定（3.11.174 は CVE-2024-4367 があるため使わない） */
+  const PDFJS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.4.299/legacy/build/";
+  const PDFJS_SHA = {
+    "pdf.min.mjs":        "bccc24ea711db8e44503629519904a5292d73b9daaa214bbe7cdcc282b0f4259",
+    "pdf.worker.min.mjs": "145d2dd3ab0c86151011dba95acfa2d5336e2accd59388ea43dbee0efddaaec6"
+  };
   const MAX = 30 * 1024 * 1024;
   const $ = id => document.getElementById(id);
 
@@ -1926,28 +1933,34 @@ const DRW = (()=>{
     if(c==="denied" || c==="permission-denied") return "図面を見る（付ける）権限がありません。管理者に確認してください";
     if(c==="notfound") return "図面のファイルが見つかりません。事務所に確認してください";
     if(c==="pdfjs-load") return "図面を表示する部品を読み込めません。通信を確かめてください";
+    if(c==="pdfjs-bad") return "図面を表示する部品の中身が正しくないため、使いませんでした。事務所に知らせてください";
     if(c==="bad-pdf") return "図面のファイルを開けません（壊れているか、PDFではありません）";
     return "図面を読み込めません（" + (c || e) + "）";
   }
 
   /* ----- pdf.js（開く時にだけ読みこむ） ----- */
+  /* 取り寄せて指紋を確かめ、同じなら このページの中の一時アドレス（blob）から動かす */
+  async function fetchChecked(name){
+    let b;
+    try{
+      const r = await fetch(PDFJS + name, { mode:"cors" });
+      if(!r.ok) throw 0;
+      b = await r.arrayBuffer();
+    }catch(e){ throw {code:"pdfjs-load"}; }
+    const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", b))).map(x=>x.toString(16).padStart(2,"0")).join("");
+    if(h !== PDFJS_SHA[name]) throw {code:"pdfjs-bad"};
+    return URL.createObjectURL(new Blob([b], { type:"text/javascript" }));
+  }
   let libP = null;
   function loadLib(){
-    if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
-    if(!libP) libP = new Promise((ok, ng)=>{
-      const s = document.createElement("script");
-      s.src = PDFJS + "pdf.min.js";
-      s.onload = async ()=>{
-        try{
-          /* worker は別のアドレスにあるので、中身を取り寄せて同じページの中で動かす */
-          const w = await fetch(PDFJS + "pdf.worker.min.js").then(r=>{ if(!r.ok) throw 0; return r.text(); });
-          pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([w], {type:"text/javascript"}));
-        }catch(e){ pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; }
-        ok(window.pdfjsLib);
-      };
-      s.onerror = ()=>{ libP = null; s.remove(); ng({code:"pdfjs-load"}); };
-      document.head.appendChild(s);
-    });
+    if(!libP) libP = (async()=>{
+      const [mainUrl, workerUrl] = await Promise.all([fetchChecked("pdf.min.mjs"), fetchChecked("pdf.worker.min.mjs")]);
+      let lib;
+      try{ lib = await import(mainUrl); }catch(e){ throw {code:"pdfjs-load"}; }
+      if(!lib || !lib.getDocument || !lib.GlobalWorkerOptions) throw {code:"pdfjs-load"};
+      lib.GlobalWorkerOptions.workerSrc = workerUrl;
+      return lib;
+    })().catch(e=>{ libP = null; throw e; });
     return libP;
   }
 
@@ -1972,7 +1985,7 @@ const DRW = (()=>{
       const [lib, bytes] = await Promise.all([loadLib(), fetchPdf(info.path)]);
       if(seq !== V.seq) return;
       let doc;
-      try{ doc = await lib.getDocument({ data: bytes.slice(0) }).promise; }catch(e){ throw {code:"bad-pdf"}; }
+      try{ doc = await lib.getDocument({ data: bytes.slice(0), isEvalSupported:false, enableXfa:false }).promise; }catch(e){ throw {code:"bad-pdf"}; }
       if(seq !== V.seq) return;
       V.doc = doc; V.pages = doc.numPages; V.page = 1;
       vmsg(""); $("pdfCanvas").hidden = false;
@@ -2009,7 +2022,7 @@ const DRW = (()=>{
     const cv = $("pdfCanvas"), w = Math.floor(vp.width), h = Math.floor(vp.height);
     const tmp = document.createElement("canvas"); tmp.width = w; tmp.height = h;
     if(V.task){ try{ V.task.cancel(); }catch(e){} }
-    V.task = page.render({ canvasContext: tmp.getContext("2d"), viewport: vp });
+    V.task = page.render({ canvas: tmp, canvasContext: tmp.getContext("2d"), viewport: vp });
     try{ await V.task.promise; }catch(e){ return; }   // 途中で取り消された
     V.task = null;
     cv.width = w; cv.height = h;
