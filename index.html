@@ -297,6 +297,31 @@ details.more-f .two{margin-top:10px}
   .qdlg textarea{font-size:18px; padding:6px 10px}
   .qdlg .btn.primary{font-size:22px; padding:10px 28px}
 }
+
+/* ===== 図面PDF ===== */
+.drwbtn small{display:block; font-size:.7em; font-weight:700; opacity:.85}
+.drwchip{cursor:pointer; font:inherit; font-size:14px; font-weight:800; color:var(--sub); background:var(--card); border-color:var(--line)}
+.drwchip.has{color:var(--blue); border-color:var(--blue)}
+.pdfdlg{width:100vw; height:100vh; max-width:100vw; max-height:100vh; margin:0; border-radius:0; display:none; flex-direction:column; padding:0}
+.pdfdlg[open]{display:flex}
+.pdfbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; padding:8px 12px; border-bottom:2px solid var(--line); background:var(--card)}
+.pdft{flex:1 1 300px; min-width:0; font-size:20px}
+.pdft b{margin-right:12px}
+.pdfrev{font-weight:800; color:var(--blue)}
+.pdfrev.old{color:#fff; background:var(--red); border-radius:8px; padding:2px 10px}
+.pdfbtns{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.pdfbtns .btn{font-size:20px; padding:8px 16px; min-width:56px}
+.pdfpage{font-weight:800; min-width:4em; text-align:center}
+.pdfbox{flex:1 1 auto; overflow:auto; position:relative; background:#5b5f66; touch-action:none; user-select:none}
+.pdfbox canvas{display:block; margin:4px auto; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.pdfmsg{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; color:#fff; font-size:24px; font-weight:800}
+.drwnow{font-size:20px}
+.drwrev{font-weight:800; color:var(--blue); margin-right:8px}
+.drwrow{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding:8px 0; border-top:1px solid var(--line)}
+.drwrow .drwname{flex:1 1 200px; min-width:0; word-break:break-all}
+.drwrow.old .drwrev{color:var(--sub)}
+.drwbar{height:12px; border-radius:6px; background:var(--gray-bg); overflow:hidden}
+.drwbar > div{height:100%; width:0; background:var(--blue); transition:width .2s}
 </style>
 </head>
 <body>
@@ -528,6 +553,40 @@ details.more-f .two{margin-top:10px}
 </dialog>
 
 <!-- 事務所（管理者）：質問する人の名前 -->
+<!-- 図面PDFを見る窓（工場・事務所で共通） -->
+<dialog id="pdfDlg" class="pdfdlg">
+  <div class="pdfbar">
+    <div class="pdft"><b id="pdfTitle">図面</b><span id="pdfRev" class="pdfrev"></span></div>
+    <div class="pdfbtns">
+      <button class="btn" id="pdfPrev">◀ 前</button><span id="pdfPage" class="pdfpage"></span><button class="btn" id="pdfNext">次 ▶</button>
+      <button class="btn" id="pdfOut">－</button><span id="pdfZoom" class="pdfpage"></span><button class="btn" id="pdfIn">＋</button>
+      <button class="btn" id="pdfFit">全体</button>
+      <button class="btn primary" id="pdfClose">閉じる</button>
+    </div>
+  </div>
+  <div class="pdfbox" id="pdfBox"><canvas id="pdfCanvas" hidden></canvas><div class="pdfmsg" id="pdfMsg" hidden></div></div>
+</dialog>
+
+<!-- 事務所：品の図面（今の図面・新しい版を付ける・旧版） -->
+<dialog id="drwDlg" class="qdlg">
+  <div class="dlg-h"><h2>図面（PDF）</h2><button class="btn x" id="drwClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div class="qtarget" id="drwTarget"></div>
+    <div><div class="qlabel">今の図面</div><div id="drwCur"></div></div>
+    <div class="qtools">
+      <button class="btn primary" id="drwView">図面を見る</button>
+      <button class="btn" id="drwPick">図面を付ける（PDF）</button>
+      <button class="btn" id="drwRetry" hidden>登録をやり直す</button>
+      <input type="file" id="drwFile" accept="application/pdf,.pdf" hidden>
+    </div>
+    <div class="qsmall" id="drwNote"></div>
+    <div class="drwbar" id="drwBar" hidden><div id="drwBarIn"></div></div>
+    <div class="qsmall">PDFだけ・30MBまで。JWWの図面は、PDFに保存してから付けてください。付けた図面は消せません（新しい版を付けると、前の版は「旧版」として残ります）</div>
+    <div><div class="qlabel">これまでの図面</div><div id="drwHist"></div></div>
+  </div>
+  <div class="dlg-f qfoot"><div class="qmsg" id="drwMsg" role="status" aria-live="polite"></div></div>
+</dialog>
+
 <dialog id="namesDlg">
   <div class="dlg-h"><h2>質問する人の名前</h2><button class="btn x" id="namesClose">閉じる</button></div>
   <div class="dlg-b roles">
@@ -650,6 +709,7 @@ const Live = (()=>{
         id:doc.id,
         done: x.done ? {by:x.done.by, name:x.done.name, at:toIso(x.done.at)} : null,
         canceled: x.canceled ? {by:x.canceled.by, name:x.canceled.name, at:toIso(x.canceled.at), reason:x.canceled.reason} : null,
+        drawingPdf: x.drawingPdf && x.drawingPdf.fileId ? Object.assign({}, x.drawingPdf, {at:toIso(x.drawingPdf.at)}) : null,
         createdAt: toIso(x.createdAt), updatedAt: toIso(x.updatedAt) });
     });
     api.data = {jobs};
@@ -748,7 +808,8 @@ function initDisplay(){
       no:j.no, title:j.title,
       items:Object.values(j.items||{}).filter(it=>!it.canceled).sort((a,b)=>a.br.localeCompare(b.br)).map(it=>({
         br:it.br, kind:it.kind, what:it.what, qty:it.qty, due:parseYmd(it.due), urgent:!!it.urgent,
-        inst:it.inst||"", manual:it.manual||null, done:it.done?{by:it.done.by, at:new Date(it.done.at)}:null }))
+        inst:it.inst||"", manual:it.manual||null, done:it.done?{by:it.done.by, at:new Date(it.done.at)}:null,
+        drawingPdf:it.drawingPdf||null }))
     })).filter(j=>j.items.length);
     SUMMARY = {};
     Object.entries(data.summary||{}).forEach(([no,s])=>{ SUMMARY[no] = {last: s.last ? parseYmd(s.last) : null}; });
@@ -823,6 +884,7 @@ function initDisplay(){
     return '<span class="qcard">'
       + (q.answered ? '<button class="chip qs-ans qansbtn" data-qans="1">回答あり　見る ▶</button>' : '')
       + (q.open ? '<span class="chip qs-open">質問 回答待ち</span>' : '')
+      + (it.drawingPdf ? `<button class="qbtn drwbtn" data-drw-view="${esc(job.no)}|${esc(it.br)}">図面を見る<small>第${esc(it.drawingPdf.rev)}版</small></button>` : '')
       + (it.done ? '' : `<button class="qbtn" data-q="${esc(job.no)}|${esc(it.br)}">質問</button>`)
       + '</span>';
   }
@@ -971,6 +1033,7 @@ function initDisplay(){
   document.getElementById("prevBtn").onclick=()=>step(-1);
   document.getElementById("nextBtn").onclick=()=>step(1);
   document.addEventListener("keydown", e=>{
+    if(document.querySelector("dialog[open]")) return;   // 窓（質問・図面）を開いている間は、ページ送りしない
     const sc=document.querySelector("#main .card.scroll");
     if(e.key==="ArrowRight") step(1);
     else if(e.key==="ArrowLeft") step(-1);
@@ -994,6 +1057,7 @@ function initDisplay(){
   refresh(Live.data);
   setInterval(tick,250); tick();
   initDisplayQuestions();
+  initDisplayDrawings();
 }
 
 /* =====================================================================
@@ -1080,7 +1144,7 @@ function initOffice(){
             <div class="w">${it.urgent&&!it.done&&!it.canceled?'<span class="tag-urgent">急ぎ</span> ':''}${esc(x.j.no)}-${esc(it.br)}　${esc(it.what)}　${esc(it.qty)}</div>
             <div class="s">【${esc(it.kind)}】${esc(it.canceled ? "理由："+it.canceled.reason : (it.inst||"").replace(/\n/g," "))}</div>
           </div>
-          ${qRowChip(x.k, it.br)}${stateChip(it)}
+          ${drwRowChip(x.k, it)}${qRowChip(x.k, it.br)}${stateChip(it)}
         </div>`; }).join("")}
       </div>`).join("")
       : `<div class="nothing">${empty}${filter==="open"&&isOffice?"。「＋ 新しい製作指示」から登録してください":""}</div>`;
@@ -1345,12 +1409,19 @@ function initOffice(){
   };
 
   /* その品への質問（未回答・回答ずみで工場未確認）。押すと、その品の質問を開く */
+  /* 図面PDF：品の行の「図面」ボタン（今の版を出す。押すと図面の窓） */
+  function drwRowChip(k, it){
+    const d = it.drawingPdf;
+    if(!d && (!isOffice || it.done || it.canceled)) return "";
+    return `<button class="chip drwchip${d ? " has" : ""}" data-drw="${esc(k)}|${esc(it.br)}">${d ? "図面 第" + esc(d.rev) + "版" : "図面なし"}</button>`;
+  }
   function qRowChip(k, br){
     const q = QA.itemState(k, br); if(!q.open && !q.answered) return "";
     return `<button class="chip qrow ${q.open?"qs-open":"qs-ans"}" data-qitem="${esc(k)}|${esc(br)}">${q.open?"質問 未回答 "+q.open:"質問 回答ずみ"}</button>`;
   }
   window.__officeRender = ()=>render();
   initOfficeQuestions();
+  initOfficeDrawings();
   Live.onChange(d=>{ DATA=d; render(); if(editing){ const it=cur(); if(it) renderState(it); } });
   render(); renderConn();
 }
@@ -1775,6 +1846,372 @@ function initOfficeQuestions(){
 
   QA.onChange(()=>{ badge(); render(); if(window.__officeRender) window.__officeRender(); if($("namesDlg").open && !$("namesDlg").contains(document.activeElement)) renderNames(); });
   badge();
+}
+
+/* =====================================================================
+   図面PDF（v1.5）
+   ・図面は Cloud Storage の drawings/{注番}/{枝番}/{20文字のID}.pdf に置く（上書き・削除しない）
+   ・今の図面は、品の drawingPdf に1つだけ持つ。付けるたびに版（rev）が1つ増える
+   ・読む・置くは、ログインした本人の証明（IDトークン）つきで直接行う。公開リンクは作らない・保存しない
+   ・表示は pdf.js（版を固定。図面を開く時にだけ読みこむ。通信がない時は「読み込めません」）
+   ===================================================================== */
+const DRW = (()=>{
+  const BUCKET = firebaseConfig.storageBucket;
+  const API = "https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o";
+  const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  const MAX = 30 * 1024 * 1024;
+  const $ = id => document.getElementById(id);
+
+  async function token(){
+    const u = auth.currentUser; if(!u) throw {code:"no-auth"};
+    return u.getIdToken();
+  }
+  function newFileId(){
+    const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", a = new Uint8Array(20);
+    crypto.getRandomValues(a); return Array.from(a, v=>c[v % c.length]).join("");
+  }
+  const pathOf = (jobKey, br, fileId) => "drawings/" + jobKey + "/" + br + "/" + fileId + ".pdf";
+
+  /* ----- PDFを読む（本人の証明つき） ----- */
+  const cache = new Map();   // 開いたPDFを少しだけ覚えておく（同じ図面を開き直す時に速い）
+  async function fetchPdf(path){
+    if(cache.has(path)) return cache.get(path);
+    if(!navigator.onLine) throw {code:"offline"};
+    const ctrl = new AbortController(), tm = setTimeout(()=>ctrl.abort(), 120000);
+    let r;
+    try{ r = await fetch(API + "/" + encodeURIComponent(path) + "?alt=media",
+           { headers:{ Authorization: "Firebase " + await token() }, cache:"no-store", signal:ctrl.signal }); }
+    catch(e){ throw {code: e && e.name==="AbortError" ? "timeout" : "network"}; }
+    finally{ clearTimeout(tm); }
+    if(!r.ok) throw {code: r.status===403 ? "denied" : r.status===404 ? "notfound" : "http-"+r.status};
+    const b = new Uint8Array(await r.arrayBuffer());
+    cache.set(path, b); if(cache.size > 3) cache.delete(cache.keys().next().value);
+    return b;
+  }
+
+  /* ----- PDFを置く（本人の証明つき。新しい名前で足すだけ） ----- */
+  function uploadPdf(path, file, onProgress){
+    return new Promise(async (ok, ng)=>{
+      let t; try{ t = await token(); }catch(e){ ng(e); return; }
+      const x = new XMLHttpRequest();
+      x.open("POST", API + "?name=" + encodeURIComponent(path));
+      x.setRequestHeader("Authorization", "Firebase " + t);
+      x.setRequestHeader("Content-Type", "application/pdf");
+      x.timeout = 300000;
+      x.upload.onprogress = ev => { if(ev.lengthComputable && onProgress) onProgress(ev.loaded / ev.total); };
+      x.onload = () => (x.status >= 200 && x.status < 300) ? ok() : ng({code: x.status===403 ? "denied" : "http-"+x.status});
+      x.onerror = () => ng({code:"network"});
+      x.ontimeout = () => ng({code:"timeout"});
+      x.send(file);
+    });
+  }
+
+  /* ----- 選んだファイルを確かめる（名前・種類・大きさ・中身の頭が %PDF-） ----- */
+  async function checkFile(f){
+    if(!f) return "ファイルを選んでください";
+    if(!/\.pdf$/i.test(f.name)) return "PDFのファイル（.pdf）を選んでください。JWWの図面は、PDFに保存してから選んでください";
+    if(f.type && f.type !== "application/pdf") return "PDFのファイルではないようです（" + f.type + "）";
+    if(f.size <= 0) return "ファイルが空です";
+    if(f.size > MAX) return "ファイルが大きすぎます（" + (f.size/1048576).toFixed(1) + "MB）。30MBまでです";
+    const head = new Uint8Array(await f.slice(0, 5).arrayBuffer());
+    if(String.fromCharCode(...head) !== "%PDF-") return "PDFのファイルではないようです（中身がPDFの形ではありません）";
+    if(f.name.length > 200) return "ファイルの名前が長すぎます（200文字まで）";
+    return "";
+  }
+
+  function errText(e){
+    const c = e && e.code;
+    if(c==="offline" || c==="network") return "図面を読み込めません。通信を確かめてください";
+    if(c==="timeout") return "時間がかかりすぎたため、止めました。通信を確かめて、もう一度お試しください";
+    if(c==="denied" || c==="permission-denied") return "図面を見る（付ける）権限がありません。管理者に確認してください";
+    if(c==="notfound") return "図面のファイルが見つかりません。事務所に確認してください";
+    if(c==="pdfjs-load") return "図面を表示する部品を読み込めません。通信を確かめてください";
+    if(c==="bad-pdf") return "図面のファイルを開けません（壊れているか、PDFではありません）";
+    return "図面を読み込めません（" + (c || e) + "）";
+  }
+
+  /* ----- pdf.js（開く時にだけ読みこむ） ----- */
+  let libP = null;
+  function loadLib(){
+    if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if(!libP) libP = new Promise((ok, ng)=>{
+      const s = document.createElement("script");
+      s.src = PDFJS + "pdf.min.js";
+      s.onload = async ()=>{
+        try{
+          /* worker は別のアドレスにあるので、中身を取り寄せて同じページの中で動かす */
+          const w = await fetch(PDFJS + "pdf.worker.min.js").then(r=>{ if(!r.ok) throw 0; return r.text(); });
+          pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([w], {type:"text/javascript"}));
+        }catch(e){ pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; }
+        ok(window.pdfjsLib);
+      };
+      s.onerror = ()=>{ libP = null; s.remove(); ng({code:"pdfjs-load"}); };
+      document.head.appendChild(s);
+    });
+    return libP;
+  }
+
+  /* =================================================================
+     図面を見る窓（工場・事務所で共通）
+     ・指1本で動かす、指2本で広げる・縮める、＋／－／全体、ページの前・次
+     ================================================================= */
+  const V = { doc:null, page:1, pages:0, zoom:1, fit:1, task:null, pointers:new Map(), pinch:null, onClose:null, seq:0 };
+  function vmsg(t){ $("pdfMsg").textContent = t || ""; $("pdfMsg").hidden = !t; }
+  async function open(info, title, opt){
+    opt = opt || {};
+    const seq = ++V.seq;
+    V.onClose = opt.onClose || null;
+    $("pdfTitle").textContent = title || "図面";
+    $("pdfRev").textContent = info.rev ? ("第" + info.rev + "版" + (opt.old ? "（旧版）" : "") + "　" + (info.at ? fmtStamp(info.at) + " 登録" : "")) : "";
+    $("pdfRev").classList.toggle("old", !!opt.old);
+    $("pdfCanvas").getContext("2d").clearRect(0, 0, $("pdfCanvas").width, $("pdfCanvas").height);
+    $("pdfCanvas").hidden = true; V.doc = null; V.pages = 0; V.page = 1; V.zoom = 1; updBar();
+    vmsg("図面を読み込んでいます…");
+    if(!$("pdfDlg").open) $("pdfDlg").showModal();
+    try{
+      const [lib, bytes] = await Promise.all([loadLib(), fetchPdf(info.path)]);
+      if(seq !== V.seq) return;
+      let doc;
+      try{ doc = await lib.getDocument({ data: bytes.slice(0) }).promise; }catch(e){ throw {code:"bad-pdf"}; }
+      if(seq !== V.seq) return;
+      V.doc = doc; V.pages = doc.numPages; V.page = 1;
+      vmsg(""); $("pdfCanvas").hidden = false;
+      await renderPage(true);
+    }catch(e){ if(seq === V.seq){ vmsg(errText(e)); } }
+  }
+  function close(){
+    V.seq++; if(V.task){ try{ V.task.cancel(); }catch(e){} V.task = null; }
+    if(V.doc){ try{ V.doc.destroy(); }catch(e){} V.doc = null; }
+    if($("pdfDlg").open) $("pdfDlg").close();
+    const cb = V.onClose; V.onClose = null; if(cb) cb();
+  }
+  function updBar(){
+    $("pdfPage").textContent = V.pages ? (V.page + " / " + V.pages + " ページ") : "";
+    $("pdfPrev").disabled = !V.doc || V.page <= 1;
+    $("pdfNext").disabled = !V.doc || V.page >= V.pages;
+    $("pdfZoom").textContent = V.doc ? Math.round(V.zoom * 100) + "%" : "";
+    $("pdfPrev").hidden = $("pdfNext").hidden = V.pages <= 1;
+  }
+  /* 画面の幅に合わせた大きさ（fit）× 拡大率（zoom）で描く。大きすぎる時は細かさを少し下げる */
+  async function renderPage(resetFit, keep){
+    if(!V.doc) return;
+    const page = await V.doc.getPage(V.page);
+    const box = $("pdfBox"), base = page.getViewport({ scale:1 });
+    if(resetFit){
+      V.fit = Math.min((box.clientWidth - 16) / base.width, (box.clientHeight - 16) / base.height);
+      V.zoom = 1;
+    }
+    const cssScale = V.fit * V.zoom;
+    let px = (window.devicePixelRatio || 1);
+    const MAXPX = 24e6, need = base.width * base.height * cssScale * cssScale * px * px;
+    if(need > MAXPX) px = px * Math.sqrt(MAXPX / need);
+    const vp = page.getViewport({ scale: cssScale * px });
+    const cv = $("pdfCanvas"), w = Math.floor(vp.width), h = Math.floor(vp.height);
+    const tmp = document.createElement("canvas"); tmp.width = w; tmp.height = h;
+    if(V.task){ try{ V.task.cancel(); }catch(e){} }
+    V.task = page.render({ canvasContext: tmp.getContext("2d"), viewport: vp });
+    try{ await V.task.promise; }catch(e){ return; }   // 途中で取り消された
+    V.task = null;
+    cv.width = w; cv.height = h;
+    cv.getContext("2d").drawImage(tmp, 0, 0);
+    cv.style.width = Math.floor(base.width * cssScale) + "px";
+    cv.style.height = Math.floor(base.height * cssScale) + "px";
+    cv.style.transform = "";
+    if(keep){ box.scrollLeft = keep.x * cv.clientWidth - keep.cx; box.scrollTop = keep.y * cv.clientHeight - keep.cy; }
+    updBar();
+  }
+  /* 見ている場所（画面の中の cx,cy）を中心に、拡大率を変える */
+  function zoomTo(z, cx, cy){
+    if(!V.doc) return;
+    const box = $("pdfBox"), cv = $("pdfCanvas");
+    z = Math.max(1, Math.min(8, z));
+    if(cx == null){ cx = box.clientWidth / 2; cy = box.clientHeight / 2; }
+    const keep = { x:(box.scrollLeft + cx) / cv.clientWidth, y:(box.scrollTop + cy) / cv.clientHeight, cx, cy };
+    V.zoom = z; renderPage(false, keep);
+  }
+  function initViewer(){
+    $("pdfClose").onclick = close;
+    $("pdfDlg").addEventListener("cancel", e=>{ e.preventDefault(); close(); });
+    $("pdfDlg").addEventListener("keydown", e=>{
+      if(e.key==="ArrowRight"||e.key==="PageDown"){ e.preventDefault(); if(V.page < V.pages){ V.page++; renderPage(true); } }
+      else if(e.key==="ArrowLeft"||e.key==="PageUp"){ e.preventDefault(); if(V.page > 1){ V.page--; renderPage(true); } }
+      else if(e.key==="+"){ zoomTo(V.zoom * 1.5); } else if(e.key==="-"){ zoomTo(V.zoom / 1.5); }
+      e.stopPropagation();
+    });
+    $("pdfPrev").onclick = ()=>{ if(V.page > 1){ V.page--; renderPage(true); } };
+    $("pdfNext").onclick = ()=>{ if(V.page < V.pages){ V.page++; renderPage(true); } };
+    $("pdfIn").onclick = ()=>zoomTo(V.zoom * 1.5);
+    $("pdfOut").onclick = ()=>zoomTo(V.zoom / 1.5);
+    $("pdfFit").onclick = ()=>renderPage(true);
+    /* 指の操作：1本で動かす、2本で広げる・縮める（ブラウザの拡大は使わない） */
+    const box = $("pdfBox"), cv = $("pdfCanvas");
+    box.addEventListener("pointerdown", e=>{
+      box.setPointerCapture(e.pointerId);
+      V.pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+      if(V.pointers.size === 2){
+        const [a, b] = [...V.pointers.values()], r = box.getBoundingClientRect();
+        V.pinch = { d0: Math.hypot(a.x-b.x, a.y-b.y), z0: V.zoom, cx:(a.x+b.x)/2 - r.left, cy:(a.y+b.y)/2 - r.top, s:1 };
+      }
+    });
+    box.addEventListener("pointermove", e=>{
+      const p = V.pointers.get(e.pointerId); if(!p) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y;
+      p.x = e.clientX; p.y = e.clientY;
+      if(V.pinch && V.pointers.size >= 2){
+        const [a, b] = [...V.pointers.values()];
+        const s = Math.max(1 / V.pinch.z0, Math.min(8 / V.pinch.z0, Math.hypot(a.x-b.x, a.y-b.y) / V.pinch.d0));
+        V.pinch.s = s;
+        cv.style.transformOrigin = (box.scrollLeft + V.pinch.cx) + "px " + (box.scrollTop + V.pinch.cy) + "px";
+        cv.style.transform = "scale(" + s + ")";
+      } else if(V.pointers.size === 1){
+        box.scrollLeft -= dx; box.scrollTop -= dy;
+      }
+    });
+    const up = e=>{
+      V.pointers.delete(e.pointerId);
+      if(V.pinch && V.pointers.size < 2){
+        const pc = V.pinch; V.pinch = null;
+        cv.style.transform = ""; cv.style.transformOrigin = "";
+        if(Math.abs(pc.s - 1) > 0.02) zoomTo(pc.z0 * pc.s, pc.cx, pc.cy);
+      }
+    };
+    box.addEventListener("pointerup", up); box.addEventListener("pointercancel", up);
+    box.addEventListener("wheel", e=>{ if(e.ctrlKey){ e.preventDefault(); const r = box.getBoundingClientRect(); zoomTo(V.zoom * (e.deltaY < 0 ? 1.25 : 0.8), e.clientX - r.left, e.clientY - r.top); } }, {passive:false});
+    box.addEventListener("dblclick", e=>{ const r = box.getBoundingClientRect(); zoomTo(V.zoom >= 2 ? 1 : V.zoom * 2, e.clientX - r.left, e.clientY - r.top); });
+  }
+
+  return { pathOf, newFileId, fetchPdf, uploadPdf, checkFile, errText, open, close, initViewer, MAX,
+           get state(){ return { page:V.page, pages:V.pages, zoom:V.zoom, loaded:!!V.doc }; } };
+})();
+
+/* ---------- 工場の画面：札の「図面を見る」 ---------- */
+function initDisplayDrawings(){
+  DRW.initViewer();
+  let pausedByMe = false;
+  function pauseRotation(on){
+    const d = window.__display; if(!d) return;
+    if(on && !d.isPaused()){ d.togglePause(); pausedByMe = true; }
+    if(!on && pausedByMe){ if(d.isPaused()) d.togglePause(); pausedByMe = false; }
+  }
+  document.getElementById("main").addEventListener("click", e=>{
+    const b = e.target.closest("[data-drw-view]"); if(!b) return;
+    const [no, br] = b.dataset.drwView.split("|");
+    const job = (Live.data.jobs || {})[no], it = job && job.items && job.items[br];
+    if(!it || !it.drawingPdf) return;
+    pauseRotation(true);
+    DRW.open(it.drawingPdf, no + "-" + br + "　" + (it.what || ""), { onClose: ()=>pauseRotation(false) });
+  });
+}
+
+/* ---------- 事務所：品ごとの「図面」窓（今の図面・新しい版を付ける・旧版の一覧） ---------- */
+function initOfficeDrawings(){
+  DRW.initViewer();
+  const $ = id => document.getElementById(id);
+  const R = ME.roles, canAttach = !!(R.admin || R.office);
+  let cur = null, busy = false, pending = null;   // pending：PDFは置けたが、記録がまだの時（同じファイルIDで記録だけやり直す）
+
+  function item(){ const j = Live.data.jobs[cur.k]; return j && j.items[cur.br]; }
+  function msg(t, cls){ $("drwMsg").textContent = t || ""; $("drwMsg").className = "qmsg " + (cls || ""); }
+
+  function render(){
+    const it = item(); if(!it){ $("drwDlg").close(); cur = null; return; }
+    const d = it.drawingPdf, open = !it.done && !it.canceled;
+    $("drwTarget").innerHTML = `<b>${esc(cur.k)}-${esc(cur.br)}</b>　${esc(it.what || "")}` + (it.drawing ? `<div class="qsmall">図面番号：${esc(it.drawing)}${it.rev ? "　改訂：" + esc(it.rev) : ""}</div>` : "");
+    $("drwCur").innerHTML = d
+      ? `<div class="drwnow"><span class="drwrev">第${esc(d.rev)}版</span>　${esc(d.name)}<div class="qsmall">${esc(fmtStamp(d.at))}　${esc(d.byName || "")} が登録　${(d.size/1048576).toFixed(1)}MB</div></div>`
+      : '<div class="qsmall">まだ図面（PDF）が付いていません</div>';
+    $("drwView").hidden = !d;
+    $("drwPick").hidden = !canAttach;
+    $("drwPick").disabled = !open || busy;
+    $("drwPick").textContent = d ? "新しい版を付ける（PDF）" : "図面を付ける（PDF）";
+    $("drwNote").textContent = !open ? (it.done ? "完了した品には、図面を付けられません" : "取り消した品には、図面を付けられません") : "";
+    $("drwRetry").hidden = !pending;
+  }
+  async function loadHistory(){
+    $("drwHist").innerHTML = '<div class="qsmall">読み込んでいます…</div>';
+    try{
+      const s = await db.collection("jobs").doc(cur.k).collection("kojo_items").doc(cur.br).collection("events")
+        .where("type", "==", "drawing").get();
+      const rows = s.docs.map(x=>x.data({serverTimestamps:"estimate"})).map(e=>({ to:e.to, detail:e.detail, name:e.name, at:toIso(e.at) }))
+        .sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+      const it = item(), nowId = it && it.drawingPdf ? it.drawingPdf.fileId : "";
+      $("drwHist").innerHTML = rows.length ? rows.map(r=>{
+        const m = /^第(\d+)版 (.*)$/.exec(r.detail || ""), rev = m ? m[1] : "?", nm = m ? m[2] : r.detail;
+        const isNow = r.to === nowId;
+        return `<div class="drwrow${isNow ? "" : " old"}"><span class="drwrev">第${esc(rev)}版</span><span class="drwname">${esc(nm)}</span>`
+          + `<span class="qsmall">${r.at ? esc(fmtStamp(r.at)) : ""}　${esc(r.name || "")}</span>`
+          + `<span class="chip ${isNow ? "qs-ans" : "st-none"}">${isNow ? "今の図面" : "旧版"}</span>`
+          + `<button class="btn" data-drw-old="${esc(r.to)}|${esc(rev)}|${esc(r.at || "")}" ${isNow ? "hidden" : ""}>見る</button></div>`;
+      }).join("") : '<div class="qsmall">図面の履歴はまだありません</div>';
+    }catch(e){ $("drwHist").innerHTML = '<div class="qsmall">履歴を読み込めません（' + esc(e && e.code || e) + '）</div>'; }
+  }
+  function openDlg(k, br){
+    cur = { k, br }; pending = null; busy = false; msg("");
+    $("drwFile").value = ""; $("drwBar").hidden = true;
+    render(); $("drwDlg").showModal(); loadHistory();
+  }
+  window.openItemDrawings = openDlg;
+
+  $("list").addEventListener("click", e=>{
+    const b = e.target.closest("[data-drw]"); if(!b) return;
+    e.stopPropagation();
+    const [k, br] = b.dataset.drw.split("|"); openDlg(k, br);
+  }, true);
+  $("drwClose").onclick = ()=>{ if(busy) return; $("drwDlg").close(); cur = null; };
+  $("drwDlg").addEventListener("cancel", e=>{ e.preventDefault(); if(!busy){ $("drwDlg").close(); cur = null; } });
+  $("drwView").onclick = ()=>{ const it = item(); if(it && it.drawingPdf) DRW.open(it.drawingPdf, cur.k + "-" + cur.br + "　" + (it.what || "")); };
+  $("drwHist").addEventListener("click", e=>{
+    const b = e.target.closest("[data-drw-old]"); if(!b) return;
+    const [fid, rev, at] = b.dataset.drwOld.split("|"), it = item();
+    DRW.open({ path: DRW.pathOf(cur.k, cur.br, fid), rev, at }, cur.k + "-" + cur.br + "　" + (it ? it.what || "" : ""), { old:true });
+  });
+  $("drwPick").onclick = ()=>{ if(!busy) $("drwFile").click(); };
+  $("drwFile").onchange = async ()=>{
+    const f = $("drwFile").files[0]; $("drwFile").value = "";
+    if(!f || !cur) return;
+    const bad = await DRW.checkFile(f); if(bad){ msg(bad, "bad"); return; }
+    const it = item(), next = it.drawingPdf ? it.drawingPdf.rev + 1 : 1;
+    if(!confirm("「" + f.name + "」を、第" + next + "版の図面として付けますか？\n（前の版は消えずに「旧版」として残ります）")) return;
+    await attach(f, next);
+  };
+  $("drwRetry").onclick = ()=>{ if(pending && !busy) record(pending); };
+
+  async function attach(f, rev){
+    const fileId = DRW.newFileId(), path = DRW.pathOf(cur.k, cur.br, fileId);
+    busy = true; render(); $("drwBar").hidden = false; $("drwBarIn").style.width = "0%";
+    msg("図面を送っています… 0%");
+    try{
+      await DRW.uploadPdf(path, f, p=>{ $("drwBarIn").style.width = Math.round(p*100) + "%"; msg("図面を送っています… " + Math.round(p*100) + "%"); });
+    }catch(e){
+      busy = false; $("drwBar").hidden = true; render();
+      msg("図面を送れませんでした。" + DRW.errText(e).replace("図面を読み込めません。", ""), "bad"); return;
+    }
+    await record({ fileId, path, name:f.name.slice(0,200), size:f.size, rev });
+  }
+  /* PDFが置けたあとで、今の図面の指定と履歴を、ひとまとめで記録する */
+  async function record(p){
+    busy = true; render(); msg("記録しています…");
+    const it = item(), before = it && it.drawingPdf ? it.drawingPdf : null;
+    if(before && before.fileId === p.fileId){   // 前の送信が、あとから届いていた
+      pending = null; busy = false; $("drwBar").hidden = true; render();
+      msg("第" + before.rev + "版の図面を登録しました。工場の画面にも出ます", "ok"); loadHistory(); return;
+    }
+    const rev = before ? before.rev + 1 : 1;
+    if(p.rev !== rev){ busy = false; pending = null; render(); msg("ほかの人が先に図面を付けました。内容を確かめて、もう一度付けてください", "bad"); loadHistory(); return; }
+    const iRef = db.collection("jobs").doc(cur.k).collection("kojo_items").doc(cur.br), b = db.batch(), ev = iRef.collection("events").doc();
+    const info = { fileId:p.fileId, path:p.path, name:p.name, size:p.size, rev, at:FV.serverTimestamp(), by:ME.uid, byName:ME.rname };
+    b.set(ev, { at:FV.serverTimestamp(), by:ME.uid, name:ME.rname, type:"drawing", detail:("第" + rev + "版 " + p.name).slice(0,500),
+                from: before ? before.fileId : "", to: p.fileId });
+    b.update(iRef, { drawingPdf: info, lastEvent: ev.id, updatedAt: FV.serverTimestamp(), updatedBy: ME.uid });
+    try{
+      await Promise.race([b.commit(), new Promise((_, ng)=>setTimeout(()=>ng({code:"timeout"}), 20000))]);
+      pending = null; busy = false; $("drwBar").hidden = true; render();
+      msg("第" + rev + "版の図面を登録しました。工場の画面にも出ます", "ok"); loadHistory();
+    }catch(e){
+      pending = p; busy = false; render();
+      msg("図面のファイルは送れましたが、登録できませんでした（" + (e && e.code || e) + "）。「登録をやり直す」を押してください", "bad");
+    }
+  }
 }
 </script>
 </body>
