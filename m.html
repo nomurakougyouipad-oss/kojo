@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="工場の仕事">
+<meta name="theme-color" content="#1f2937">
+<link rel="apple-touch-icon" href="m-icon.png">
+<link rel="icon" href="m-icon.png">
+<title>工場の仕事</title>
+<style>
+  :root{ --ink:#111; --sub:#555; --line:#d0d4da; --blue:#1a56c4; --red:#c22; --green:#15803d; --amber:#b45309; --purple:#6d28d9; --bg:#f4f6f8; --dark:#1f2937 }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; color:var(--ink); background:var(--bg); -webkit-text-size-adjust:100%}
+  header{position:sticky; top:0; z-index:5; background:var(--dark); color:#fff; padding:calc(12px + env(safe-area-inset-top)) 16px 12px; display:flex; align-items:center; gap:10px}
+  header .t{font-size:20px; font-weight:800; flex:1} header .who{font-size:15px; opacity:.85}
+  main{max-width:560px; margin:0 auto; padding:14px 14px calc(30px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:12px}
+  section{display:flex; flex-direction:column; gap:12px}
+  [hidden]{display:none !important}
+  .card{background:#fff; border:2px solid var(--line); border-radius:14px; padding:14px 16px}
+  .msg{font-size:21px; font-weight:800; line-height:1.5} .msg.ok{color:var(--green)} .msg.bad{color:var(--red)}
+  .sub{color:var(--sub); font-size:16px; line-height:1.7}
+  .big{display:block; width:100%; font-size:21px; font-weight:800; padding:17px; border-radius:14px; border:2px solid var(--blue); background:var(--blue); color:#fff; text-align:center; cursor:pointer; font-family:inherit}
+  .big.light{background:#fff; color:var(--blue)} .big.green{background:var(--green); border-color:var(--green)} .big.red{background:#fff; color:var(--red); border-color:var(--red)}
+  .big.purple{background:var(--purple); border-color:var(--purple)}
+  .big:disabled{opacity:.5}
+  .link{background:none; border:0; color:var(--sub); text-decoration:underline; font-size:15px; padding:8px; cursor:pointer; font-family:inherit}
+  .target{background:#e8eefb; border-radius:12px; padding:12px 14px; font-size:18px; font-weight:800}
+  .target small{display:block; font-weight:600; color:var(--sub); font-size:14px}
+  input.txt, textarea{width:100%; font-size:18px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; background:#fff; font-family:inherit}
+  textarea{min-height:92px; resize:vertical} textarea.need{border-color:#c2410c}
+  .items{display:flex; flex-direction:column; gap:10px}
+  .item{display:block; width:100%; text-align:left; background:#fff; border:2px solid var(--line); border-radius:14px; padding:13px 16px; cursor:pointer; font-family:inherit; color:var(--ink)}
+  .item b{font-size:19px} .item .w{font-size:17px; margin-top:3px} .item .s{color:var(--sub); font-size:14px; margin-top:3px}
+  .item .s .over{color:var(--red); font-weight:800} .item .s .soon{color:var(--amber); font-weight:800}
+  .item.insp{border-color:var(--purple)} .item .by{color:var(--purple); font-size:15px; font-weight:700; margin-top:3px}
+  .item.ans{border-color:var(--green)}
+  .tag{display:inline-block; font-size:13px; font-weight:800; border-radius:999px; padding:1px 9px; margin-right:6px; border:2px solid; vertical-align:2px}
+  .tag.urgent{color:#fff; background:var(--red); border-color:var(--red)} .tag.drw{color:var(--blue); border-color:var(--blue)}
+  .tag.ans{color:#fff; background:var(--green); border-color:var(--green)} .tag.open{color:var(--red); border-color:var(--red)} .tag.acked{color:var(--sub); border-color:var(--line)}
+  .tabs{display:flex; gap:6px} .tabs button{flex:1; padding:13px 0; border-radius:12px; border:2px solid var(--line); background:#fff; font-size:19px; font-weight:800; color:#444; font-family:inherit}
+  .tabs button.on{background:var(--dark); color:#fff; border-color:var(--dark)}
+  .tabs button .cnt{display:inline-block; min-width:1.6em; margin-left:6px; padding:0 6px; border-radius:999px; background:var(--purple); color:#fff; font-size:15px}
+  .tabs button .cnt.g{background:var(--green)}
+  .row{display:flex; gap:10px} .row .big{flex:1}
+  .th{display:flex; flex-wrap:wrap; gap:8px}
+  .th .p{position:relative; width:96px; height:96px; border-radius:10px; overflow:hidden; background:#ddd; border:0; padding:0}
+  .th .p img{width:100%; height:100%; object-fit:cover; display:block}
+  .th .p button{position:absolute; top:3px; right:3px; width:30px; height:30px; border-radius:50%; border:0; background:rgba(0,0,0,.65); color:#fff; font-size:18px; font-weight:800}
+  .th .p.up::after{content:"✓"; position:absolute; left:4px; bottom:2px; color:#fff; font-weight:900; text-shadow:0 0 4px #000}
+  .th .p .k{position:absolute; left:0; bottom:0; right:0; background:rgba(0,0,0,.55); color:#fff; font-size:12px; font-weight:800; padding:1px 4px}
+  .lab{font-weight:800; font-size:16px}
+  .note{color:var(--sub); font-size:14px}
+  .stat{font-size:17px; font-weight:700; min-height:1.4em} .stat.bad{color:var(--red)} .stat.ok{color:var(--green)}
+  .bar{height:12px; border-radius:6px; background:#e5e7eb; overflow:hidden} .bar div{height:100%; width:0; background:var(--blue); transition:width .2s}
+  .left{font-weight:700; color:var(--sub); text-align:center}
+  ol.how{margin:0; padding-left:1.4em; font-size:18px; line-height:1.9}
+  .empty{color:var(--sub); text-align:center; padding:20px 0; font-size:16px}
+  /* 品のくわしい画面 */
+  .jhead{background:#fff; border:2px solid var(--line); border-radius:14px; padding:14px 16px}
+  .jhead .no{font-size:24px; font-weight:900} .jhead .ti{color:var(--sub); font-size:15px; margin-top:2px}
+  .jhead .what{font-size:21px; font-weight:800; margin-top:6px}
+  .jhead .due{font-size:17px; font-weight:800; margin-top:6px} .jhead .due .over{color:var(--red)} .jhead .due .soon{color:var(--amber)}
+  .inst{background:#fff; border:2px solid var(--line); border-radius:14px; padding:14px 16px; font-size:18px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere}
+  .kv{background:#fff; border:2px solid var(--line); border-radius:14px; padding:6px 16px}
+  .kv div{display:flex; gap:12px; padding:7px 0; border-bottom:1px solid #eee; font-size:16px} .kv div:last-child{border-bottom:0}
+  .kv span{color:var(--sub); min-width:6em}
+  .acts{display:grid; grid-template-columns:1fr 1fr; gap:10px} .acts .big{font-size:19px; padding:15px 6px}
+  /* 質問 */
+  .qbox{background:#fff; border:2px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:8px}
+  .qbox.a{border-color:var(--green)} .qbox .h{font-size:14px; color:var(--sub); font-weight:700} .qbox .tx{font-size:18px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere}
+  /* 図面・写真を大きく見る（画面いっぱい） */
+  .full{position:fixed; inset:0; z-index:50; background:#111; display:flex; flex-direction:column}
+  .full .fbar{display:flex; flex-direction:column; gap:6px; padding:calc(8px + env(safe-area-inset-top)) 8px 8px; background:var(--dark); color:#fff}
+  .full .frow{display:flex; align-items:center; gap:6px}
+  .full .frow b{flex:1; min-width:0; font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .full .frow .sp{flex:1}
+  .full .fbar button{font-size:17px; font-weight:800; padding:9px 13px; border-radius:10px; border:2px solid #fff; background:transparent; color:#fff; font-family:inherit}
+  .full .fbar button.close{background:#fff; color:var(--dark); flex:none}
+  .full .fbar #pdfPage{font-size:15px; font-weight:700; min-width:3.5em; text-align:center}
+  .full .fbox{flex:1; overflow:auto; touch-action:none; position:relative; background:#555}
+  .full .fbox canvas{display:block; margin:8px auto; background:#fff}
+  .full .fbox img{display:block; max-width:100%; max-height:100%; margin:auto; position:absolute; inset:0}
+  .full .fmsg{color:#fff; font-size:18px; font-weight:700; text-align:center; padding:30px 16px}
+  /* 製作依頼 */
+  .kinds{display:flex; flex-wrap:wrap; gap:8px} .kinds button{padding:11px 16px; border-radius:12px; border:2px solid var(--line); background:#fff; font-size:18px; font-weight:800; color:#444; font-family:inherit}
+  .kinds button.on{background:var(--dark); color:#fff; border-color:var(--dark)}
+  .tag.req{color:var(--blue); border-color:var(--blue)} .tag.ret{color:#fff; background:var(--red); border-color:var(--red)}
+  .item.ret{border-color:var(--red)}
+  .qbox.r{border-color:var(--blue)} .qbox.ret{border-color:var(--red)} .qbox.ret .h{color:var(--red)}
+  .target .link{float:right; padding:0 0 0 8px; font-size:15px}
+  input.txt[type=date]{min-height:52px}
+</style>
+</head>
+<body>
+<header><span class="t">🏭 工場の仕事</span><span class="who" id="who"></span></header>
+<main>
+  <section id="sLoad"><div class="card"><div class="msg">読み込んでいます…</div></div></section>
+
+  <section id="sMsg" hidden>
+    <div class="card"><div class="msg" id="mTitle"></div><div class="sub" id="mSub"></div></div>
+    <div id="mActs" style="display:flex; flex-direction:column; gap:10px"></div>
+  </section>
+
+  <section id="sIos" hidden>
+    <div class="card"><div class="msg">iPhone では、先にホーム画面に追加します</div>
+      <div class="sub">ホーム画面に追加した「工場の仕事」の中で登録します（Safari のままだと、登録が消えやすいため）</div></div>
+    <div class="card"><ol class="how"><li>画面の下の［共有］ボタン（□に↑）を押す</li><li>［ホーム画面に追加］→ 右上の［追加］を押す</li><li>ホーム画面にできた「工場の仕事」を開く</li></ol></div>
+    <div class="left" id="iosLeft"></div>
+    <button class="link" id="iosAnyway">このまま登録する（おすすめしません）</button>
+  </section>
+
+  <section id="sReg" hidden>
+    <div class="card"><div class="msg">このスマホを登録します</div><div class="sub">事務所で出してもらったQRから開きました</div></div>
+    <div class="target">名前：<span id="rName"></span></div>
+    <button class="big" id="rGo">登録する</button>
+    <div class="stat" id="rStat"></div>
+    <div class="left" id="rLeft"></div>
+    <div class="sub">登録したあとは、ホーム画面のアイコンから開くだけです。QRはもう要りません。</div>
+  </section>
+
+  <!-- 一覧（仕事・検品・質問）。上のタブで切りかえる -->
+  <section id="sList" hidden>
+    <div class="tabs" id="lTabs"><button data-m="work">仕事</button><button data-m="insp">検品<span class="cnt" id="inspCnt" hidden></span></button><button data-m="qa">質問<span class="cnt g" id="qaCnt" hidden></span></button><button data-m="req">依頼</button></div>
+    <div class="note" id="lNote"></div>
+    <input class="txt" id="search" type="search" placeholder="🔍 注番・品名でさがす" autocomplete="off">
+    <button class="big" id="rNew" hidden>＋ 製作依頼を出す</button>
+    <div class="items" id="items"></div>
+    <div class="stat bad" id="lStat"></div>
+  </section>
+
+  <!-- 品のくわしい画面：指示・図面・写真 → 写真を送る・質問する -->
+  <section id="sJob" hidden>
+    <button class="link" id="jBack" style="align-self:flex-start">← 一覧にもどる</button>
+    <div class="jhead" id="jHead"></div>
+    <div class="stat bad" id="jGone" hidden>この品は、事務所で完了か取り消しになりました</div>
+    <button class="big light" id="jDrw" hidden></button>
+    <div class="lab">指示</div>
+    <div class="inst" id="jInst"></div>
+    <div class="kv" id="jKv" hidden></div>
+    <div class="qbox r" id="jReq" hidden></div>
+    <div class="acts" id="jActs">
+      <button class="big light" id="jProg">📷 途中の写真</button>
+      <button class="big green" id="jDone">✅ 完成を送る</button>
+    </div>
+    <button class="big light" id="jAsk">❓ 事務所に質問する</button>
+    <div class="lab" id="jPhLab"></div>
+    <div class="th" id="jPh"></div>
+  </section>
+
+  <section id="sItem" hidden>
+    <button class="link" id="iBack" style="align-self:flex-start">← 品の画面にもどる</button>
+    <div class="target" id="iTarget"></div>
+    <div class="tabs" id="iTabs"><button data-t="progress">途中</button><button data-t="done">完成</button><button data-t="question">質問</button></div>
+    <div class="row"><button class="big light" id="iCam">📷 撮る</button></div>
+    <button class="link" id="iLib" style="align-self:flex-start">アルバムから選ぶ</button>
+    <div class="th" id="iTh"></div>
+    <div class="note" id="iLimit"></div>
+    <div class="lab" id="iNoteLab"></div>
+    <textarea id="iNote" maxlength="200"></textarea>
+    <button class="big" id="iSend"></button>
+    <div class="bar" id="iBarW" hidden><div id="iBar"></div></div>
+    <div class="stat" id="iStat" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="sInsp" hidden>
+    <button class="link" id="kBack" style="align-self:flex-start">← 一覧にもどる</button>
+    <div class="target" id="kTarget"></div>
+    <div class="card"><div class="msg">現物を見て、よければ「検品OK」を押してください</div>
+      <div class="sub">押すと、この品は「完了」になります。直すところがある時は、押さずに事務所に伝えてください（事務所で差し戻せます）。</div></div>
+    <button class="big light" id="kJob">品の指示・図面・写真を見る</button>
+    <button class="big purple" id="kGo">検品OK（完了にする）</button>
+    <div class="stat" id="kStat" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- 自分の質問と回答 -->
+  <section id="sQ" hidden>
+    <button class="link" id="qBack" style="align-self:flex-start">← 一覧にもどる</button>
+    <div class="target" id="qTarget"></div>
+    <div id="qBody" style="display:flex; flex-direction:column; gap:12px"></div>
+    <button class="big green" id="qAck" hidden>回答を見ました</button>
+    <div class="stat" id="qStat" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- 製作依頼を出す（v2.1）：事務所に届く → 事務所が確かめて工場の仕事にする -->
+  <section id="sReqForm" hidden>
+    <button class="link" id="rqBack" style="align-self:flex-start">← 一覧にもどる</button>
+    <div class="card"><div class="msg">製作依頼を出す</div><div class="sub">事務所に届きます。事務所が確かめて、工場の仕事にします</div></div>
+    <div class="lab">注番</div>
+    <div class="target" id="rqNoSel" hidden></div>
+    <div id="rqNoPick" style="display:flex; flex-direction:column; gap:8px">
+      <input class="txt" id="rqNoQ" type="search" placeholder="🔍 注番・件名でさがす" autocomplete="off">
+      <div class="items" id="rqNoList"></div>
+      <button class="link" id="rqNoUnknown" style="align-self:flex-start">一覧にない・わからない</button>
+    </div>
+    <div id="rqSiteBox" hidden style="display:flex; flex-direction:column; gap:8px"><div class="lab">件名・現場名</div><input class="txt" id="rqSite" maxlength="100" placeholder="例：東温市 水元の現場"></div>
+    <div class="lab">品名</div><input class="txt" id="rqWhat" maxlength="200" placeholder="例：ポンプ架台">
+    <div class="lab">数量</div><input class="txt" id="rqQty" maxlength="50" placeholder="例：2台">
+    <div class="lab">種類</div><div class="kinds" id="rqKind"></div>
+    <div class="lab">いつまでに（なくてもOK）</div><input class="txt" id="rqDue" type="date">
+    <div class="lab">くわしく（なくてもOK）</div><textarea id="rqText" maxlength="1000" placeholder="例：寸法は写真の手書きのとおり"></textarea>
+    <div class="lab">写真（3枚まで。手書きの絵・現場の写真）</div>
+    <div class="row"><button class="big light" id="rqCam">📷 撮る</button></div>
+    <button class="link" id="rqLib" style="align-self:flex-start">アルバムから選ぶ</button>
+    <div class="th" id="rqTh"></div>
+    <button class="big" id="rqSend">製作依頼を送る</button>
+    <div class="bar" id="rqBarW" hidden><div id="rqBar"></div></div>
+    <div class="stat" id="rqStat" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- 自分の製作依頼 -->
+  <section id="sReq" hidden>
+    <button class="link" id="rBack" style="align-self:flex-start">← 一覧にもどる</button>
+    <div id="rBody" style="display:flex; flex-direction:column; gap:12px"></div>
+    <button class="big light" id="rItem" hidden>品の画面を見る</button>
+    <button class="big red" id="rWithdraw" hidden>この依頼を取り下げる</button>
+    <div class="stat" id="rStat" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="sDone" hidden>
+    <div class="card" style="text-align:center"><div class="msg ok" id="dTitle"></div><div class="sub" id="dSub"></div></div>
+    <button class="big red" id="dUndo" hidden>取り消す</button>
+    <div class="left" id="dLeft"></div>
+    <div class="stat" id="dStat"></div>
+    <button class="big light" id="dAgain">同じ品で続けて撮る</button>
+    <button class="big light" id="dBack">一覧にもどる</button>
+  </section>
+</main>
+
+<!-- 図面（PDF）を見る：画面いっぱい。指1本で動かす、2本で広げる・縮める -->
+<div class="full" id="pdfView" hidden>
+  <div class="fbar">
+    <div class="frow"><b id="pdfTitle">図面</b><button class="close" id="pdfClose">閉じる</button></div>
+    <div class="frow"><button id="pdfPrev">◀</button><span id="pdfPage"></span><button id="pdfNext">▶</button><span class="sp"></span>
+      <button id="pdfOut">－</button><button id="pdfIn">＋</button><button id="pdfFit">全体</button></div>
+  </div>
+  <div class="fbox" id="pdfBox"><canvas id="pdfCanvas" hidden></canvas><div class="fmsg" id="pdfMsg" hidden></div></div>
+</div>
+<!-- 写真を大きく見る -->
+<div class="full" id="phView" hidden>
+  <div class="fbar"><div class="frow"><b id="phTitle"></b><button class="close" id="phClose">閉じる</button></div></div>
+  <div class="fbox" style="touch-action:auto"><img id="phImg" alt=""></div>
+</div>
+
+<input type="file" id="fCam" accept="image/*" capture="environment" hidden>
+<input type="file" id="fLib" accept="image/*" multiple hidden>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =====================================================================
+   工場の仕事（スマホ用）v2.0
+   ・最初に1回だけ、事務所の「登録用のQR」（10分・1回だけ）で、このスマホを登録する（匿名ログイン）
+   ・上のタブ：仕事（品の一覧 → 指示・図面・写真 → 途中・完成の写真、質問）／検品／質問（自分の質問と回答）／依頼（製作依頼。v2.1）
+   ・アプリに入っているもの（案件・品・指示・図面・写真・自分の質問と回答）は全部見られる（オーナー 10/28）
+       ただし「今の仕事」だけ（オーナー 10/29）：取り消していない品で、未完了か完成から60日以内。図面は今の版だけ
+       見るのは画面の中だけ。図面・写真をスマホのファイルとして保存する機能は付けない
+       読むのは Firestore から直接（Rules v2.0）。今までの phoneList（短い一覧）は使わない
+   ・検品（v1.9）：「完成」を送ると「検品待ち」。工場の人が「検品」の一覧から現物を見て「検品OK」→ 完了（3分だけ取り消せる）
+   ・写真はスマホの中で長い辺1600の JPEG に作り直す（撮影場所などの情報が消える）
+   ・送る順番：写真をすべて置く → 置けたのを確かめる → 記録を1回で書く（全部できるか、何もしないか）
+   ・工場や事務所の画面にログインしている端末でも、そのログインには手を出さない（名前つきの別アプリ）
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyB9VQ7HkSk_GVfCgqnBnwVRV7JTpyUQe-Q",
+  authDomain: "yotsuba-kojo.firebaseapp.com",
+  projectId: "yotsuba-kojo",
+  storageBucket: "yotsuba-kojo.firebasestorage.app",
+  messagingSenderId: "222387197689",
+  appId: "1:222387197689:web:20a1868917c6124239f428"
+};
+(function(){
+  const $ = id => document.getElementById(id);
+  const app = firebase.initializeApp(firebaseConfig, "phone");
+  const auth = app.auth(), db = app.firestore(), FV = firebase.firestore.FieldValue;
+  const API = "https://firebasestorage.googleapis.com/v0/b/" + firebaseConfig.storageBucket + "/o";
+  const MAX_SIDE = 1600, MAX_BYTES = 2 * 1024 * 1024, UNDO_MS = 3 * 60e3;
+  /* スマホが読めるのは「今の仕事」だけ（Rules v2.0）：取り消していない品で、未完了か完成から60日以内。
+     問い合わせは Rules の条件の中に入れる（時計のずれを見て58日）。件数が多い時のために上限と「もっと見る」 */
+  const WAIT_DAYS = 58, PAGE = 30, CAP_OPEN = 500, CAP_RECENT = 300;
+  const LIMIT = { progress:5, done:5, question:3 };
+  const KIND = { progress:"途中", done:"完成", question:"質問" };
+  const RID_RE = /^[A-Za-z0-9]{28}$/;
+  const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  let rid = (new URLSearchParams(location.search).get("r") || "").replace(/[^A-Za-z0-9]/g, "");
+  let me = null, cur = null, iosAnyway = false, timer = null, mode = "work", insp = null, jobKey = null, qOpen = null;
+  const doneLocal = new Set(), inspLocal = new Set();
+  /* 読んだもの：品（未完了・最近完成した品）、案件の件名、自分の質問 */
+  let openItems = {}, recentItems = {}, items = {}, qs = {}, reqs = {}, rq = null, rOpen = null, nippo = null;
+  const titles = {}, titleLoading = new Set(), unsubs = [];
+
+  function show(id){ ["sLoad","sMsg","sIos","sReg","sList","sJob","sItem","sInsp","sQ","sReqForm","sReq","sDone"].forEach(x=>$(x).hidden = x!==id); window.scrollTo(0, 0); }
+  function message(title, sub, cls, acts){
+    $("mTitle").textContent = title; $("mTitle").className = "msg " + (cls||""); $("mSub").textContent = sub || "";
+    $("mActs").innerHTML = ""; (acts||[]).forEach(a=>{ const b = document.createElement("button"); b.className = "big " + (a.cls||""); b.textContent = a.label; b.onclick = a.go; $("mActs").appendChild(b); });
+    show("sMsg");
+  }
+  const reloadBtn = { label:"開き直す", cls:"light", go: ()=>location.reload() };
+  function newId(){
+    const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", r = new Uint8Array(20);
+    crypto.getRandomValues(r); return Array.from(r, x=>A[x % 62]).join("");
+  }
+  function cleanUrl(){ try{ history.replaceState(null, "", location.pathname); }catch(e){} }
+  const ymdText = s=>{ if(!s) return ""; const p = String(s).split("-"); return p.length===3 ? (+p[1]) + "/" + (+p[2]) : String(s); };
+  const leftText = ms=>{ const s = Math.max(0, Math.round(ms/1000)); return Math.floor(s/60) + "分" + String(s%60).padStart(2,"0") + "秒"; };
+  const toMs = t => t && t.toDate ? t.toDate().getTime() : (typeof t === "number" ? t : 0);
+  const stamp = t => { const ms = toMs(t); if(!ms) return ""; const d = new Date(ms); return (d.getMonth()+1) + "/" + d.getDate() + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+  /* 期限：あとN日／今日まで／N日遅れ（このスマホの暦日） */
+  function dueInfo(s){
+    if(!s) return { text:"", cls:"" };
+    const p = String(s).split("-").map(Number); if(p.length !== 3 || p.some(isNaN)) return { text:"", cls:"" };
+    const d = new Date(p[0], p[1]-1, p[2]), t = new Date(); t.setHours(0,0,0,0);
+    const n = Math.round((d - t) / 86400000);
+    return n < 0 ? { text:(-n) + "日 遅れ", cls:"over" } : n === 0 ? { text:"今日まで", cls:"over" } : { text:"あと" + n + "日", cls: n <= 3 ? "soon" : "" };
+  }
+
+  /* ---------------- はじめ ---------------- */
+  async function start(){
+    if(!navigator.onLine){ message("通信がありません", "電波のある所（Wi-Fi など）で開き直してください", "bad", [reloadBtn]); return; }
+    const user = await new Promise(ok=>{ const un = auth.onAuthStateChanged(u=>{ un(); ok(u); }); });
+    if(rid) return regFlow(user);
+    if(!user) return notRegistered();
+    return loadMe(user);
+  }
+  async function loadMe(user){
+    let d;
+    try{ d = await db.collection("devices").doc(user.uid).get(); }
+    catch(e){ message("読み込めませんでした", "通信を確かめて、開き直してください（" + (e && e.code || e) + "）", "bad", [reloadBtn]); return; }
+    if(!d.exists) return notRegistered();
+    const x = d.data();
+    if(!x.active) return stopped();
+    me = { uid:user.uid, name:x.name }; $("who").textContent = x.name;
+    startData(); openList("work");
+  }
+  function notRegistered(){
+    message("このスマホは、まだ登録されていません", "事務所で「登録用のQR」を出してもらい、スマホのカメラで読んでください。");
+  }
+  function stopped(){
+    $("who").textContent = ""; stopData(); forget();
+    message("このスマホは止められています", "事務所に聞いてください。もう一度使う時は、事務所で新しい登録用のQRを出してもらい、そのQRを読んでください。", "bad");
+  }
+
+  /* ---------------- 登録（最初の1回だけ） ---------------- */
+  async function regFlow(user){
+    if(!RID_RE.test(rid)){ message("登録用のQRを読み取れませんでした", "もう一度、スマホのカメラでQRを読んでください", "bad"); return; }
+    if(isIOS && !standalone && !iosAnyway){ iosGuide(); return; }
+    let r;
+    try{
+      if(user){
+        const mine = await db.collection("devices").doc(user.uid).get();
+        if(mine.exists){
+          const m = mine.data();
+          // 登録に使ったQRの URL のまま開いた時（iPhone はホーム画面のアイコンにこの URL が残るため、毎回ここを通る）
+          if(m.regId === rid){ cleanUrl(); rid = ""; return m.active ? loadMe(user) : stopped(); }
+          // 登録ずみのスマホで、ほかのQRを読んだ時 → そのまま一覧へ（そのQRは使わない）
+          if(m.active){ cleanUrl(); rid = ""; return loadMe(user); }
+          await auth.signOut(); user = null;      // 止められたスマホで新しいQRを読んだ時は、新しく登録しなおす
+        }
+      }
+      if(!user) user = (await auth.signInAnonymously()).user;
+      r = await db.collection("devReg").doc(rid).get();
+    }catch(e){ message("登録の画面を開けませんでした", "通信を確かめて、もう一度QRを読んでください（" + (e && e.code || e) + "）", "bad", [reloadBtn]); return; }
+    if(!r.exists){ message("この登録用のQRは使えません", "事務所で、もう一度QRを出してもらってください", "bad"); return; }
+    const x = r.data(), exp = (x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().getTime() : 0) + 10 * 60e3;
+    if(x.state !== "open"){ message("この登録用のQRは、もう使われています", "事務所で、もう一度QRを出してもらってください", "bad"); return; }
+    if(Date.now() > exp){ message("この登録用のQRは時間切れです", "事務所で、もう一度QRを出してもらってください", "bad"); return; }
+    showReg(x.name, exp, user);
+  }
+  function iosGuide(){
+    show("sIos");
+    $("iosLeft").textContent = "登録用のQRは10分だけ使えます。続けて追加してください";
+  }
+  $("iosAnyway").onclick = ()=>{ iosAnyway = true; show("sLoad"); regFlow(auth.currentUser); };
+  function showReg(name, exp, user){
+    $("rName").textContent = name; $("rStat").textContent = ""; $("rStat").className = "stat"; $("rGo").disabled = false;
+    show("sReg");
+    clearInterval(timer);
+    const tick = ()=>{ const ms = exp - Date.now(); $("rLeft").textContent = ms > 0 ? "このQRが使えるのは、あと " + leftText(ms) : "時間切れです";
+      if(ms <= 0){ clearInterval(timer); $("rGo").disabled = true; } };
+    tick(); timer = setInterval(tick, 1000);
+    $("rGo").onclick = async ()=>{
+      $("rGo").disabled = true; $("rStat").textContent = "登録しています…";
+      const b = db.batch();
+      b.set(db.collection("devices").doc(user.uid), { name, regId:rid, active:true, createdAt:FV.serverTimestamp() });
+      b.update(db.collection("devReg").doc(rid), { state:"used", usedBy:user.uid, usedAt:FV.serverTimestamp() });
+      try{ await b.commit(); }
+      catch(e){
+        clearInterval(timer);
+        message("登録できませんでした", "時間切れか、このQRはもう使われています。事務所で、もう一度QRを出してもらってください（" + (e && e.code || e) + "）", "bad");
+        return;
+      }
+      clearInterval(timer); cleanUrl(); rid = "";
+      me = { uid:user.uid, name }; $("who").textContent = name;
+      message("登録できました ✓", name + " さんのスマホで、仕事の中身を見たり、写真を送ったりできるようになりました。"
+        + (isIOS ? "" : "ブラウザのメニューから「ホーム画面に追加」しておくと、次からすぐに開けます。"), "ok",
+        [{ label:"使い始める", go: ()=>{ startData(); openList("work"); } }]);
+    };
+  }
+
+  /* ---------------- 読む（品・件名・自分の質問）。変わったらすぐ画面に出る ---------------- */
+  function stopData(){ while(unsubs.length){ try{ unsubs.pop()(); }catch(e){} } }
+  /* 止められた時：読んだ中身を画面と記憶から消す（スマホに保存はしていない。開いている画面の中にある分も消す） */
+  function forget(){
+    openItems = {}; recentItems = {}; items = {}; qs = {}; jobKey = null; jobLast = null; qOpen = null; insp = null;
+    reqs = {}; rOpen = null; nippo = null; if(rq){ rq.photos.forEach(p=>URL.revokeObjectURL(p.url)); rq = null; }
+    imgCache.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} }); imgCache.clear();
+    ["items", "jHead", "jInst", "jKv", "jPh", "jReq", "qBody", "kTarget", "qTarget", "rBody", "rqTh", "rqNoList", "rqNoSel"].forEach(id=>{ $(id).innerHTML = ""; });
+    try{ PDF.close(); }catch(e){}
+    $("phView").hidden = true; $("phImg").removeAttribute("src");
+  }
+  let capOpen = false, capRecent = false;
+  function startData(){
+    if(unsubs.length) return;
+    const fail = async e=>{
+      stopData();
+      if(e && e.code === "permission-denied" && auth.currentUser){        // 止められた時など：登録を確かめなおす
+        let d = null; try{ d = await db.collection("devices").doc(auth.currentUser.uid).get(); }catch(x){}
+        if(d && (!d.exists || !d.data().active)) return d.exists ? stopped() : (forget(), notRegistered());
+      }
+      $("lStat").textContent = "読み込めませんでした。通信を確かめて、開き直してください（" + (e && e.code || e) + "）";
+    };
+    const row = d => Object.assign({}, d.data(), { key:d.ref.parent.parent.id + "~" + d.id, jobKey:d.ref.parent.parent.id, br:d.id });
+    // 未完了の品（取り消しは入れない）
+    unsubs.push(db.collectionGroup("kojo_items").where("canceled", "==", null).where("done", "==", null).limit(CAP_OPEN).onSnapshot(s=>{
+      openItems = {}; s.forEach(d=>{ const x = row(d); openItems[x.key] = x; }); capOpen = s.size >= CAP_OPEN; merge(); }, fail));
+    // 最近完成した品（この中から検品待ちをさがす。取り消しは入れない）
+    const since = new Date(Date.now() - WAIT_DAYS * 86400000);
+    unsubs.push(db.collectionGroup("kojo_items").where("canceled", "==", null).where("done.at", ">=", since).limit(CAP_RECENT).onSnapshot(s=>{
+      recentItems = {}; s.forEach(d=>{ const x = row(d); recentItems[x.key] = x; }); capRecent = s.size >= CAP_RECENT; merge(); }, fail));
+    // 自分の製作依頼（v2.1）
+    unsubs.push(db.collection("requests").where("by", "==", me.uid).onSnapshot(s=>{
+      reqs = {}; s.forEach(d=>{ reqs[d.id] = Object.assign({}, d.data(), { id:d.id }); });
+      if(!$("sList").hidden && mode === "req") renderList(); if(!$("sReq").hidden && rOpen) renderReq(); }, fail));
+    // 自分の質問
+    unsubs.push(db.collection("questions").where("by", "==", me.uid).onSnapshot(s=>{
+      qs = {}; s.forEach(d=>{ qs[d.id] = Object.assign({}, d.data(), { id:d.id }); });
+      renderCounts(); if(!$("sList").hidden && mode === "qa") renderList(); if(!$("sQ").hidden && qOpen) renderQ(); }, fail));
+  }
+  function merge(){
+    items = {};
+    Object.values(openItems).forEach(x=>{ if(!x.canceled && !x.done) items[x.key] = Object.assign({}, x, { wait:false }); });
+    Object.values(recentItems).forEach(x=>{
+      if(!x.canceled && x.done && x.done.via === "phone" && !x.inspected) items[x.key] = Object.assign({}, x, { wait:true });
+    });
+    Object.values(items).forEach(x=>needTitle(x.jobKey));
+    renderCounts();
+    if(!$("sList").hidden) renderList();
+    if(!$("sJob").hidden && jobKey) renderJob();
+  }
+  /* 件名は案件ごとに1回だけ読む */
+  function needTitle(k){
+    if(k in titles || titleLoading.has(k)) return;
+    titleLoading.add(k);
+    db.collection("jobs").doc(k).get().then(s=>{ titles[k] = s.exists ? String(s.data().title || "") : ""; }, ()=>{ titles[k] = ""; })
+      .then(()=>{ titleLoading.delete(k);
+        if(!$("sJob").hidden && jobKey && jobKey.split("~")[0] === k) renderJob();
+        if(!$("sList").hidden && $("search").value.trim()) renderList(); });
+  }
+  const answered = q => q.state === "answered";
+  function renderCounts(){
+    const nI = Object.values(items).filter(x=>x.wait && !inspLocal.has(x.key)).length;
+    const nQ = Object.values(qs).filter(answered).length;
+    $("inspCnt").textContent = nI; $("inspCnt").hidden = !nI;
+    $("qaCnt").textContent = nQ; $("qaCnt").hidden = !nQ;
+  }
+
+  /* ---------------- 一覧（仕事・検品・質問） ---------------- */
+  let shown = PAGE;
+  function openList(m){
+    if(m && m !== mode) shown = PAGE;
+    if(m) mode = m;
+    show("sList"); renderList();
+  }
+  /* 「もっと見る」：はじめは PAGE 件だけ出す（画面をごちゃつかせない・重くしない） */
+  function pageOf(arr, html){
+    const rest = arr.length - shown;
+    return arr.slice(0, shown).map(html).join("") + (rest > 0 ? `<button class="big light" data-more="1">もっと見る（あと ${rest} 件）</button>` : "");
+  }
+  const norm = s => String(s||"").normalize("NFKC").toLowerCase();
+  function qOfItem(x){ return Object.values(qs).filter(q=>q.jobKey === x.jobKey && q.br === x.br); }
+  function renderList(){
+    const q = norm($("search").value.trim());
+    renderCounts();
+    $("lTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.m === mode));
+    $("search").hidden = mode === "qa" || mode === "req";
+    $("rNew").hidden = mode !== "req";
+    $("lNote").textContent = mode === "insp" ? "完成が送られた品です。現物を見て検品してください" : mode === "qa" ? "自分が出した質問です。回答が届いたら、読んで「回答を見ました」を押してください"
+      : mode === "req" ? "自分が出した製作依頼です。事務所が確かめて、工場の仕事にします" : "";
+    if(mode !== "qa" && (capOpen || capRecent)) $("lNote").textContent += (mode === "insp" ? "（" : "") + "品がとても多いので、一部だけ出しています。さがすで探してください" + (mode === "insp" ? "）" : "");
+    if(mode === "qa") return renderQList();
+    if(mode === "req") return renderReqList();
+    const arr = Object.values(items).filter(x=> mode === "insp" ? (x.wait && !inspLocal.has(x.key)) : (!x.wait && !doneLocal.has(x.key)))
+      .filter(x=>!q || norm(x.jobKey + "-" + x.br + " " + x.what + " " + (titles[x.jobKey]||"")).includes(q))
+      .sort((a,b)=>String(a.due||"9").localeCompare(String(b.due||"9")) || String(a.jobKey).localeCompare(String(b.jobKey)) || String(a.br).localeCompare(String(b.br)));
+    $("items").innerHTML = arr.length ? pageOf(arr, x=>{
+      const di = dueInfo(x.due), qa = qOfItem(x).some(answered);
+      return `<button class="item${x.wait ? " insp" : ""}" data-k="${esc(x.key)}">`
+        + `<b>${esc(x.jobKey)}-${esc(x.br)}</b><div class="w">${x.urgent && !x.wait ? '<span class="tag urgent">急ぎ</span>' : ""}${esc(x.what)}　${esc(x.qty||"")}</div>`
+        + (x.wait ? '<div class="by">完成：' + esc(x.done && x.done.name || "") + ' さん</div>'
+                  : '<div class="s">' + (x.due ? '期限 ' + esc(ymdText(x.due)) + '　<span class="' + di.cls + '">' + esc(di.text) + '</span>' : "")
+                    + (x.drawingPdf ? '　<span class="tag drw">図面</span>' : "") + (qa ? '<span class="tag ans">回答あり</span>' : "") + '</div>')
+        + `</button>`; })
+      : '<div class="empty">' + (q ? "見つかりません" : mode === "insp" ? "今、検品待ちの品はありません" : "今、作る品はありません") + '</div>';
+  }
+  function renderQList(){
+    const arr = Object.values(qs).sort((a,b)=>toMs(b.at) - toMs(a.at));
+    $("items").innerHTML = arr.length ? pageOf(arr, q=>{
+      const tag = q.state === "answered" ? '<span class="tag ans">回答あり</span>' : q.state === "acked" ? '<span class="tag acked">見ました</span>' : '<span class="tag open">回答待ち</span>';
+      return `<button class="item${q.state === "answered" ? " ans" : ""}" data-q="${esc(q.id)}"><b>${esc(q.jobKey)}-${esc(q.br)}</b>`
+        + `<div class="w">${tag}${esc(String(q.text||"").slice(0, 60))}</div><div class="s">${esc(q.what||"")}　${esc(stamp(q.at))}</div></button>`; })
+      : '<div class="empty">まだ質問はありません。品の画面の「事務所に質問する」から出せます</div>';
+  }
+  $("search").addEventListener("input", ()=>{ shown = PAGE; renderList(); });
+  $("lTabs").addEventListener("click", e=>{ const b = e.target.closest("[data-m]"); if(!b) return; if(mode !== b.dataset.m) shown = PAGE; mode = b.dataset.m; $("lStat").textContent = ""; renderList(); });
+  /* 自分の製作依頼の一覧 */
+  const RST = { open:["確認中", "req"], accepted:["工場の仕事になりました", "ans"], returned:["差し戻し", "ret"], withdrawn:["取り下げ", "acked"] };
+  const noText = q => q.no ? esc(q.no) + "　" + esc(q.noName || "") : "注番わからない：" + esc(q.site || "");
+  function renderReqList(){
+    const arr = Object.values(reqs).sort((a,b)=>toMs(b.at) - toMs(a.at));
+    $("items").innerHTML = arr.length ? pageOf(arr, q=>{
+      const st = RST[q.state] || [q.state, "acked"];
+      return `<button class="item${q.state === "returned" ? " ret" : ""}" data-r="${esc(q.id)}"><b>${esc(q.what)}　${esc(q.qty)}</b>`
+        + `<div class="w"><span class="tag ${st[1]}">${esc(st[0])}</span>${noText(q)}</div>`
+        + `<div class="s">${esc(stamp(q.at))}${q.state === "accepted" && q.item ? "　→ " + esc(q.item.jobKey) + "-" + esc(q.item.br) : ""}</div></button>`; })
+      : '<div class="empty">まだ製作依頼はありません。上の「＋ 製作依頼を出す」から出せます</div>';
+  }
+  $("items").addEventListener("click", e=>{
+    const rb = e.target.closest("[data-r]"); if(rb){ openReq(rb.dataset.r); return; }
+    if(e.target.closest("[data-more]")){ shown += PAGE; renderList(); return; }
+    const qb = e.target.closest("[data-q]"); if(qb){ openQ(qb.dataset.q); return; }
+    const b = e.target.closest("[data-k]"); if(!b) return;
+    mode === "insp" ? openInsp(b.dataset.k) : openJob(b.dataset.k);
+  });
+
+  /* ---------------- 品のくわしい画面 ---------------- */
+  let jobLast = null;
+  function openJob(key){
+    if(!items[key]){ openList(); return; }
+    jobKey = key; jobLast = null;
+    renderJob(); show("sJob"); loadPhotos(key); loadJobReq(key);
+  }
+  function renderJob(){
+    const live = items[jobKey], x = live || jobLast; if(!x) return;
+    jobLast = x;
+    const di = dueInfo(x.due);
+    $("jHead").innerHTML = `<div class="no">${esc(x.jobKey)}-${esc(x.br)}</div><div class="ti">${esc(titles[x.jobKey] || "")}${x.kind ? "【" + esc(x.kind) + "】" : ""}</div>`
+      + `<div class="what">${x.urgent && !x.wait ? '<span class="tag urgent">急ぎ</span>' : ""}${esc(x.what)}　${esc(x.qty||"")}</div>`
+      + (x.wait ? `<div class="due" style="color:var(--purple)">検品待ち（完成：${esc(x.done && x.done.name || "")} さん）</div>`
+                : (x.due ? `<div class="due">期限 ${esc(ymdText(x.due))}　<span class="${di.cls}">${esc(di.text)}</span></div>` : ""));
+    $("jInst").textContent = x.inst || "（指示の文はありません）";
+    const kv = [["図番", [x.drawing, x.rev ? "Rev." + x.rev : ""].filter(Boolean).join("　")], ["設置場所", x.place], ["現場納品日", ymdText(x.deliver)]].filter(r=>r[1]);
+    $("jKv").hidden = !kv.length;
+    $("jKv").innerHTML = kv.map(r=>`<div><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("");
+    $("jDrw").hidden = !(x.drawingPdf && x.drawingPdf.fileId);
+    if(!$("jDrw").hidden) $("jDrw").textContent = "📄 図面を見る（第" + (x.drawingPdf.rev || 1) + "版）";
+    // 検品待ちの品は写真・質問を送らない（完成は送ってある）。一覧から消えた品（事務所で完了・取り消し）も送らない
+    $("jGone").hidden = !!live;
+    $("jActs").hidden = $("jAsk").hidden = !live || !!x.wait;
+  }
+  $("jBack").onclick = ()=>{ jobKey = null; openList(); };
+  $("jProg").onclick = ()=>openItem(jobKey, "progress");
+  $("jDone").onclick = ()=>openItem(jobKey, "done");
+  $("jAsk").onclick = ()=>openItem(jobKey, "question");
+  $("jDrw").onclick = ()=>{ const x = jobLast; if(x && x.drawingPdf && x.drawingPdf.fileId)
+    PDF.open("drawings/" + x.jobKey + "/" + x.br + "/" + x.drawingPdf.fileId + ".pdf", x.jobKey + "-" + x.br + "　" + x.what + "（第" + (x.drawingPdf.rev || 1) + "版）"); };
+  /* この品の写真（途中・完成。新しい順に30枚まで） */
+  async function loadPhotos(key){
+    const x = items[key]; $("jPh").innerHTML = ""; $("jPhLab").textContent = "";
+    let s;
+    try{ s = await db.collection("jobs").doc(x.jobKey).collection("kojo_items").doc(x.br).collection("photos").orderBy("at", "desc").limit(30).get(); }
+    catch(e){ if(jobKey === key) $("jPhLab").textContent = "写真を読み込めませんでした"; return; }
+    if(jobKey !== key) return;
+    const ps = s.docs.map(d=>d.data()).filter(p=>p && typeof p.path === "string");
+    $("jPhLab").textContent = ps.length ? "この品の写真（" + ps.length + "枚）" : "この品の写真はまだありません";
+    $("jPh").innerHTML = ps.map(p=>`<button class="p" data-ph="${esc(p.path)}" data-cap="${esc(KIND[p.kind]||"")}　${esc(p.name||"")}　${esc(stamp(p.at))}"><img alt="" data-src="${esc(p.path)}"><span class="k">${esc(KIND[p.kind]||"")}</span></button>`).join("");
+    fillImgs($("jPh"));
+  }
+  $("jPh").addEventListener("click", e=>{ const b = e.target.closest("[data-ph]"); if(b) showPhoto(b.dataset.ph, b.dataset.cap); });
+
+  /* ---------------- 写真・図面のファイル（本人の証明つきで1件ずつ読む。画面の中だけで見る） ---------------- */
+  const imgCache = new Map();
+  async function fileUrl(path){
+    if(imgCache.has(path)) return imgCache.get(path);
+    const t = await auth.currentUser.getIdToken();
+    const r = await fetch(API + "/" + encodeURIComponent(path) + "?alt=media", { headers:{ Authorization:"Firebase " + t }, cache:"no-store" });
+    if(!r.ok) throw { code: r.status === 403 ? "denied" : "http-" + r.status };
+    const u = URL.createObjectURL(await r.blob());
+    imgCache.set(path, u); return u;
+  }
+  function fillImgs(root){
+    root.querySelectorAll("img[data-src]").forEach(async img=>{
+      try{ img.src = await fileUrl(img.dataset.src); img.removeAttribute("data-src"); }catch(e){ img.alt = "×"; }
+    });
+  }
+  async function showPhoto(path, cap){
+    $("phTitle").textContent = cap || ""; $("phImg").removeAttribute("src"); $("phView").hidden = false;
+    try{ $("phImg").src = await fileUrl(path); }catch(e){ $("phTitle").textContent = "写真を読み込めませんでした"; }
+  }
+  $("phClose").onclick = ()=>{ $("phView").hidden = true; };
+
+  /* ---------------- 撮って送る ---------------- */
+  function openItem(key, tab){
+    const x = items[key]; if(!x || x.wait){ openList(); return; }
+    if(cur) cur.photos.forEach(p=>URL.revokeObjectURL(p.url));
+    cur = { key, no:x.jobKey, br:x.br, what:x.what, tab: tab || "progress", photos:[], qid:null, sendId:null, sending:false };
+    $("iNote").value = ""; $("iStat").textContent = ""; $("iStat").className = "stat"; $("iBarW").hidden = true;
+    renderItem(); show("sItem");
+  }
+  function renderItem(){
+    const t = cur.tab, n = cur.photos.length;
+    $("iTarget").innerHTML = esc(cur.no) + "-" + esc(cur.br) + "<small>" + esc(cur.what) + "</small>";
+    $("iTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.t === t));
+    $("iTh").innerHTML = cur.photos.map(p=>`<div class="p${p.done?" up":""}"><img alt="" src="${p.url}">${cur.sending ? "" : `<button data-del="${p.key}" aria-label="この写真を外す">×</button>`}</div>`).join("");
+    $("iLimit").textContent = n ? n + "枚（" + KIND[t] + "は " + LIMIT[t] + " 枚まで）" : KIND[t] + "は " + LIMIT[t] + " 枚まで送れます";
+    $("iNoteLab").textContent = t === "question" ? "質問を書く（ここは必要）" : "ひとこと（なくてもOK）";
+    $("iNote").placeholder = t === "question" ? "例：穴の位置は図面の寸法でよいですか" : "例：溶接まで終わりました";
+    $("iNote").classList.toggle("need", t === "question");
+    $("iSend").textContent = t === "done" ? "完成を送る（検品待ちにする）" : t === "question" ? "質問を送る" + (n ? "（写真 " + n + " 枚）" : "") : "送る（" + n + "枚）";
+    $("iSend").className = "big" + (t === "done" ? " green" : "");
+    [$("iCam"), $("iLib"), $("iSend"), $("iBack")].forEach(b=>b.disabled = cur.sending);
+    $("iTabs").querySelectorAll("button").forEach(b=>b.disabled = cur.sending);
+  }
+  function stat(t, cls){ $("iStat").textContent = t; $("iStat").className = "stat " + (cls||""); }
+  $("iTabs").addEventListener("click", e=>{ const b = e.target.closest("[data-t]"); if(!b || !cur || cur.sending) return; cur.tab = b.dataset.t; stat(""); renderItem(); });
+  $("iBack").onclick = ()=>{ if(cur && cur.sending) return; const k = cur && cur.key; if(k && items[k]) openJob(k); else openList(); };
+  $("iCam").onclick = ()=>{ $("fCam").value = ""; $("fCam").click(); };
+  $("iLib").onclick = ()=>{ $("fLib").value = ""; $("fLib").click(); };
+  $("iTh").addEventListener("click", e=>{
+    const b = e.target.closest("[data-del]"); if(!b || !cur || cur.sending) return;
+    const p = cur.photos.find(x=>x.key === b.dataset.del); if(p) URL.revokeObjectURL(p.url);
+    cur.photos = cur.photos.filter(x=>x.key !== b.dataset.del); stat(""); renderItem();
+  });
+  async function addFiles(files){
+    if(!cur) return;
+    for(const f of files){
+      if(cur.photos.length >= LIMIT.progress){ stat("写真は " + LIMIT.progress + " 枚までです", "bad"); break; }
+      stat("写真を準備しています…");
+      try{
+        const s = await shrink(f);
+        cur.photos.push({ key:newId(), id:newId(), blob:s.blob, w:s.w, h:s.h, url:URL.createObjectURL(s.blob), done:"" });
+        stat("");
+      }catch(e){ stat((e && e.message) || "写真として読めませんでした", "bad"); }
+      renderItem();
+    }
+  }
+  // 撮った写真・選んだ写真は、いま開いている画面へ（品の写真か、製作依頼の写真）
+  $("fCam").onchange = ()=>{ const fs = Array.from($("fCam").files || []); $("sReqForm").hidden ? addFiles(fs) : addReqFiles(fs); };
+  $("fLib").onchange = ()=>{ const fs = Array.from($("fLib").files || []); $("sReqForm").hidden ? addFiles(fs) : addReqFiles(fs); };
+
+  async function shrink(file){
+    const src = URL.createObjectURL(file);
+    try{
+      const img = new Image(); img.decoding = "async"; img.src = src;
+      await img.decode().catch(()=>{ throw { message:"写真として読めませんでした" }; });
+      const w0 = img.naturalWidth, h0 = img.naturalHeight;
+      if(w0 < 32 || h0 < 32) throw { message:"写真が小さすぎます" };
+      const k = Math.min(1, MAX_SIDE / Math.max(w0, h0)), w = Math.round(w0*k), h = Math.round(h0*k);
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);      // 向きはブラウザが直してから描く（撮影場所などの情報は残らない）
+      for(const q of [0.85, 0.75, 0.65, 0.5]){
+        const b = await new Promise(ok=>cv.toBlob(ok, "image/jpeg", q));
+        if(b && b.size <= MAX_BYTES) return { blob:b, w, h };
+      }
+      throw { message:"写真が大きすぎます" };
+    }finally{ URL.revokeObjectURL(src); }
+  }
+  function put(path, blob, onProgress){
+    return new Promise(async (ok, ng)=>{
+      let t; try{ t = await auth.currentUser.getIdToken(); }catch(e){ ng({code:"no-auth"}); return; }
+      const x = new XMLHttpRequest();
+      x.open("POST", API + "?name=" + encodeURIComponent(path));
+      x.setRequestHeader("Authorization", "Firebase " + t);
+      x.setRequestHeader("Content-Type", "image/jpeg");
+      x.timeout = 120000;
+      x.upload.onprogress = ev=>{ if(ev.lengthComputable && onProgress) onProgress(ev.loaded / ev.total); };
+      x.onload = ()=> (x.status >= 200 && x.status < 300) ? ok() : ng({ code: x.status === 403 ? "denied" : "http-" + x.status });
+      x.onerror = ()=> ng({ code:"network" }); x.ontimeout = ()=> ng({ code:"timeout" });
+      x.send(blob);
+    });
+  }
+  const pathOf = (t, p) => t === "question" ? "photos/q/" + cur.qid + "/" + p.id + ".jpg" : "photos/i/" + cur.no + "/" + cur.br + "/" + p.id + ".jpg";
+
+  $("iSend").onclick = async ()=>{
+    if(!cur || cur.sending) return;
+    const t = cur.tab, note = $("iNote").value.trim(), n = cur.photos.length;
+    if(t !== "question" && !n){ stat("先に「📷 撮る」で写真を撮ってください", "bad"); return; }
+    if(t === "question" && !note){ stat("質問を書いてください", "bad"); $("iNote").focus(); return; }
+    if(n > LIMIT[t]){ stat(KIND[t] + "の写真は " + LIMIT[t] + " 枚までです。× で外してください", "bad"); return; }
+    if(!navigator.onLine){ stat("通信がありません。電波のある所で、もう一度「送る」を押してください", "bad"); return; }
+    if(t === "question" && !cur.qid) cur.qid = db.collection("questions").doc().id;
+    cur.sending = true; renderItem();
+    /* ① 写真をすべて置く（置けたものは、やり直しの時に送りなおさない） */
+    $("iBarW").hidden = !n;
+    for(let i = 0; i < n; i++){
+      const p = cur.photos[i], path = pathOf(t, p);
+      if(p.done === path) continue;
+      stat("写真を送っています（" + (i+1) + "/" + n + "）");
+      try{
+        await put(path, p.blob, f=>{ $("iBar").style.width = Math.round(((i + f) / n) * 100) + "%"; });
+        p.done = path; renderItem();
+      }catch(e){
+        p.id = newId(); p.done = "";        // 届いたか分からない写真は、次は新しい名前で送る（同じ名前には上書きできない）
+        cur.sending = false; renderItem(); $("iBarW").hidden = true;
+        stat(e.code === "denied" ? "写真を送れませんでした。このスマホが止められている可能性があります。事務所に聞いてください"
+          : "写真を送れませんでした（" + (i+1) + "枚目）。電波のある所で、もう一度「送る」を押してください", "bad");
+        return;
+      }
+    }
+    $("iBar").style.width = "100%";
+    /* ② 記録を1回で書く（全部できるか、何もしないか） */
+    stat("記録しています…");
+    let res;
+    try{ res = await Promise.race([commit(t, note), new Promise(ok=>setTimeout(()=>ok("timeout"), 20000))]); }
+    catch(e){ res = e; }
+    if(res === "timeout" || (res && res.code)){
+      const done = await recorded(t);
+      if(done !== true){
+        cur.sending = false; renderItem(); $("iBarW").hidden = true;
+        if(res && res.code === "permission-denied") stat(t === "done"
+            ? "完成にできませんでした。すでに完成・完了・取り消しになっているか、このスマホが止められている可能性があります（写真は「途中」として送ることもできます）"
+            : "記録できませんでした。品がなくなったか、このスマホが止められている可能性があります", "bad");
+        else stat("記録を確かめられませんでした（通信）。もう一度「送る」を押してください（写真は送りなおしません）", "bad");
+        return;
+      }
+    }
+    sent(t, n, note);
+  };
+  /* 記録：途中／完成は品の写真、完成は品を完成（検品待ち）＋履歴も一緒に。質問は写真つきの質問 */
+  function commit(t, note){
+    const sendId = cur.sendId || (cur.sendId = newId());
+    const b = db.batch();
+    if(t === "question"){
+      const q = { jobKey:cur.no, br:cur.br, what:cur.what, text:note.slice(0, 500), askNameId:"", askName:me.name, via:"phone",
+        by:me.uid, at:FV.serverTimestamp(), state:"open", answerCount:0, lastAnswerId:"", lastAnswerAt:null, ackAnswerId:"", ackAt:null };
+      if(cur.photos.length) q.photos = cur.photos.map(p=>({ id:p.id, path:p.done, w:p.w, h:p.h, size:p.blob.size, at:Date.now(), name:me.name, src:"phone" }));
+      b.set(db.collection("questions").doc(cur.qid), q);
+      return b.commit();
+    }
+    const item = db.collection("jobs").doc(cur.no).collection("kojo_items").doc(cur.br);
+    cur.photos.forEach(p=>b.set(item.collection("photos").doc(p.id), { kind: t, path:p.done, w:p.w, h:p.h, size:p.blob.size,
+      at:FV.serverTimestamp(), byUid:me.uid, name:me.name, note:note.slice(0, 200), sendId }));
+    if(t === "done"){
+      const ev = item.collection("events").doc();
+      b.set(ev, { at:FV.serverTimestamp(), by:me.uid, name:me.name, type:"done", detail:"スマホで完成写真 " + cur.photos.length + "枚" });
+      b.update(item, { done:{ by:me.uid, name:me.name, at:FV.serverTimestamp(), via:"phone", photo:cur.photos[0].id }, manual:null,
+        updatedAt:FV.serverTimestamp(), updatedBy:me.uid, lastEvent:ev.id });
+    }
+    return b.commit();
+  }
+  /* 記録が実は届いていたか（自分が送った分だけ確かめられる） */
+  async function recorded(t){
+    try{
+      if(t === "question") return (await db.collection("questions").doc(cur.qid).get()).exists;
+      const s = await db.collection("jobs").doc(cur.no).collection("kojo_items").doc(cur.br).collection("photos").doc(cur.photos[0].id).get();
+      return s.exists;
+    }catch(e){ return null; }
+  }
+  function sent(t, n, note){
+    const key = cur.key, info = { no:cur.no, br:cur.br };
+    cur.photos.forEach(p=>URL.revokeObjectURL(p.url));
+    cur = null;
+    $("dStat").textContent = ""; $("dStat").className = "stat"; $("dUndo").hidden = true; $("dLeft").textContent = "";
+    $("dAgain").hidden = t === "done";
+    $("dAgain").onclick = ()=>openItem(key, t === "question" ? "question" : "progress");
+    if(t === "done"){
+      doneLocal.add(key);
+      $("dTitle").textContent = "完成を送りました ✓"; $("dSub").textContent = info.no + "-" + info.br + " は「検品待ち」になりました（写真 " + n + " 枚）。工場の人がスマホで「検品OK」を押すと完了です";
+      undoable(key, info, Date.now() + UNDO_MS, "done");
+    } else if(t === "question"){
+      $("dTitle").textContent = "質問を送りました ✓"; $("dSub").textContent = "事務所に届いています。回答は「質問」のタブで見られます";
+    } else {
+      $("dTitle").textContent = "送りました ✓"; $("dSub").textContent = n + "枚。事務所と、この品の画面で見られます";
+    }
+    show("sDone");
+  }
+  /* 取り消し（押した本人が3分だけ。過ぎたら事務所の「再開」で）
+       kind "done"：完成（検品待ち）を取り消す → 品はまた未完了
+       kind "insp"：検品OKを取り消す → 品はまた検品待ち */
+  function undoable(key, info, until, kind){
+    const isInsp = kind === "insp";
+    $("dUndo").textContent = isInsp ? "検品OKを取り消す" : "完成を取り消す";
+    $("dUndo").hidden = false; $("dUndo").disabled = false;
+    clearInterval(timer);
+    const tick = ()=>{ const ms = until - Date.now();
+      if(ms <= 0){ clearInterval(timer); $("dUndo").hidden = true; $("dLeft").textContent = "取り消す時は、事務所に「再開」を頼んでください"; return; }
+      $("dLeft").textContent = "まちがえた時は、あと " + leftText(ms) + " だけ取り消せます"; };
+    tick(); timer = setInterval(tick, 1000);
+    $("dUndo").onclick = async ()=>{
+      $("dUndo").disabled = true; $("dStat").textContent = "取り消しています…"; $("dStat").className = "stat";
+      const item = db.collection("jobs").doc(info.no).collection("kojo_items").doc(info.br), ev = item.collection("events").doc(), b = db.batch();
+      if(isInsp){
+        b.set(ev, { at:FV.serverTimestamp(), by:me.uid, name:me.name, type:"uninspect", detail:"スマホで検品OKを取り消した" });
+        b.update(item, { inspected:null, updatedAt:FV.serverTimestamp(), updatedBy:me.uid, lastEvent:ev.id });
+      } else {
+        b.set(ev, { at:FV.serverTimestamp(), by:me.uid, name:me.name, type:"reopen", detail:"スマホで完成を取り消した" });
+        b.update(item, { done:null, updatedAt:FV.serverTimestamp(), updatedBy:me.uid, lastEvent:ev.id });
+      }
+      try{
+        await b.commit();
+        clearInterval(timer); (isInsp ? inspLocal : doneLocal).delete(key);
+        $("dUndo").hidden = true; $("dLeft").textContent = "";
+        if(isInsp){ $("dTitle").textContent = "検品OKを取り消しました"; $("dSub").textContent = "品はまた「検品待ち」です"; }
+        else { $("dTitle").textContent = "完成を取り消しました"; $("dSub").textContent = "完成の写真は残っています。品はまた「未完了」です"; $("dAgain").hidden = false; }
+      }catch(e){
+        $("dUndo").hidden = true; $("dStat").className = "stat bad";
+        $("dStat").textContent = "取り消せませんでした（3分を過ぎたか、ほかの人が変更しました）。事務所に「再開」を頼んでください";
+      }
+    };
+  }
+  $("dBack").onclick = ()=>{ clearInterval(timer); openList(); };
+
+  /* ---------------- 製作依頼（v2.1） ---------------- */
+  const KINDS = ["配管", "架台", "鉄骨", "金物", "その他"];
+  const thumbsHtml = ps => (Array.isArray(ps) && ps.length) ? '<div class="th">' + ps.filter(p=>p && typeof p.path === "string").map(p=>`<button class="p" data-ph="${esc(p.path)}"><img alt="" data-src="${esc(p.path)}"></button>`).join("") + '</div>' : "";
+  /* 品の画面：製作依頼から作った品なら、依頼の中身（文と写真）も出す */
+  async function loadJobReq(key){
+    const x = items[key], box = $("jReq");
+    box.hidden = !(x && x.req); box.innerHTML = "";
+    if(!x || !x.req) return;
+    box.innerHTML = `<div class="h">📝 製作依頼から（${esc(x.req.name || "")} さん）</div>`;
+    let q = null;
+    try{ const d = await db.collection("requests").doc(x.req.id).get(); q = d.exists ? d.data() : null; }catch(e){ q = null; }
+    if(jobKey !== key || !q) return;
+    box.innerHTML += (q.text ? `<div class="tx">${esc(q.text)}</div>` : "") + thumbsHtml(q.photos);
+    fillImgs(box);
+  }
+  $("jReq").addEventListener("click", e=>{ const b = e.target.closest("[data-ph]"); if(b) showPhoto(b.dataset.ph, "製作依頼の写真"); });
+  /* 自分の依頼のくわしい画面 */
+  function openReq(id){ if(!reqs[id]) return; rOpen = id; $("rStat").textContent = ""; $("rStat").className = "stat"; disarmW(); show("sReq"); renderReq(); }
+  function renderReq(){
+    const q = reqs[rOpen]; if(!q) return;
+    let html = `<div class="qbox r"><div class="h">製作依頼　${esc(stamp(q.at))}</div>`
+      + `<div class="tx"><b>${esc(q.what)}　${esc(q.qty)}</b>【${esc(q.kind)}】</div>`
+      + `<div class="h">${noText(q)}${q.due ? "　いつまでに " + esc(ymdText(q.due)) : ""}</div>`
+      + (q.text ? `<div class="tx">${esc(q.text)}</div>` : "") + thumbsHtml(q.photos) + `</div>`;
+    if(q.state === "open") html += `<div class="qbox"><div class="h">いまの状態</div><div class="tx">事務所で確認中です</div></div>`;
+    if(q.state === "accepted") html += `<div class="qbox a"><div class="h">工場の仕事になりました　${esc(q.closedName || "")}　${esc(stamp(q.closedAt))}</div><div class="tx">${q.item ? esc(q.item.jobKey) + "-" + esc(q.item.br) : ""}</div></div>`;
+    if(q.state === "returned") html += `<div class="qbox ret"><div class="h">差し戻されました　${esc(q.closedName || "")}　${esc(stamp(q.closedAt))}</div><div class="tx">${esc(q.reason || "")}</div><div class="h">直して出しなおす時は、「依頼」のタブの「＋ 製作依頼を出す」から</div></div>`;
+    if(q.state === "withdrawn") html += `<div class="qbox"><div class="h">取り下げました　${esc(stamp(q.closedAt))}</div></div>`;
+    $("rBody").innerHTML = html; fillImgs($("rBody"));
+    const key = q.item ? q.item.jobKey + "~" + q.item.br : "";
+    $("rItem").hidden = !(q.state === "accepted" && key && items[key]);
+    $("rWithdraw").hidden = q.state !== "open";
+  }
+  $("rBody").addEventListener("click", e=>{ const b = e.target.closest("[data-ph]"); if(b) showPhoto(b.dataset.ph, "製作依頼の写真"); });
+  $("rBack").onclick = ()=>{ rOpen = null; openList("req"); };
+  $("rItem").onclick = ()=>{ const q = reqs[rOpen]; if(q && q.item && items[q.item.jobKey + "~" + q.item.br]) openJob(q.item.jobKey + "~" + q.item.br); };
+  /* 取り下げ：2回押し（押しまちがい防止） */
+  let wTimer = null;
+  function disarmW(){ clearTimeout(wTimer); $("rWithdraw").textContent = "この依頼を取り下げる"; $("rWithdraw").dataset.armed = ""; $("rWithdraw").disabled = false; }
+  $("rWithdraw").onclick = async ()=>{
+    const q = reqs[rOpen]; if(!q || q.state !== "open") return;
+    if(!$("rWithdraw").dataset.armed){ $("rWithdraw").dataset.armed = "1"; $("rWithdraw").textContent = "もう一度押すと取り下げます"; wTimer = setTimeout(disarmW, 4000); return; }
+    clearTimeout(wTimer); $("rWithdraw").disabled = true; $("rStat").textContent = "取り下げています…"; $("rStat").className = "stat";
+    try{
+      await db.collection("requests").doc(q.id).update({ state:"withdrawn", closedAt:FV.serverTimestamp(), closedBy:me.uid, closedName:me.name });
+      $("rStat").textContent = "取り下げました"; $("rStat").className = "stat ok";
+    }catch(e){
+      disarmW(); $("rStat").className = "stat bad";
+      $("rStat").textContent = "取り下げられませんでした。事務所がもう受けたか、差し戻した可能性があります";
+    }
+  };
+  /* 依頼を出す */
+  $("rNew").onclick = ()=>openReqForm();
+  function rqStat(t, cls){ $("rqStat").textContent = t; $("rqStat").className = "stat " + (cls||""); }
+  function openReqForm(){
+    if(rq) rq.photos.forEach(p=>URL.revokeObjectURL(p.url));
+    rq = { id:db.collection("requests").doc().id, no:"", noName:"", unknown:false, kind:"", photos:[], sending:false };
+    ["rqNoQ", "rqSite", "rqWhat", "rqQty", "rqDue", "rqText"].forEach(id=>{ $(id).value = ""; });
+    rqStat(""); $("rqBarW").hidden = true;
+    renderNoSel(); renderKinds(); renderReqPhotos();
+    show("sReqForm");
+    loadNippo();
+  }
+  async function loadNippo(){
+    if(nippo){ renderNoList(); return; }
+    $("rqNoList").innerHTML = '<div class="note">注番の一覧を読み込んでいます…</div>';
+    try{
+      const d = await db.collection("nippoMirror").doc("jobs").get();
+      const it = d.exists ? (d.data().items || {}) : {};
+      nippo = Object.values(it).filter(j=>j && typeof j.no === "string" && !j.closed).sort((a,b)=>String(b.no).localeCompare(String(a.no)));
+    }catch(e){ nippo = null; $("rqNoList").innerHTML = '<div class="note">注番の一覧を読み込めませんでした。「一覧にない・わからない」を押して送れます</div>'; return; }
+    renderNoList();
+  }
+  function renderNoList(){
+    const q = norm($("rqNoQ").value.trim());
+    if(!q){ $("rqNoList").innerHTML = '<div class="note">注番か件名の一部を入れると、候補が出ます</div>'; return; }
+    const arr = (nippo || []).filter(j=>norm(j.no + " " + (j.name || "") + " " + (j.owner || "")).includes(q)).slice(0, 8);
+    $("rqNoList").innerHTML = arr.length ? arr.map(j=>`<button class="item" data-no="${esc(j.no)}"><b>${esc(j.no)}</b><div class="w">${esc(j.name || "")}</div><div class="s">担当 ${esc(j.owner || "")}</div></button>`).join("")
+      : '<div class="note">見つかりません。ない時は「一覧にない・わからない」を押してください</div>';
+  }
+  function renderNoSel(){
+    const chosen = rq && (rq.no || rq.unknown);
+    $("rqNoSel").hidden = !chosen; $("rqNoPick").hidden = !!chosen; $("rqSiteBox").hidden = !(rq && rq.unknown);
+    $("rqNoSel").innerHTML = !chosen ? "" : (rq.unknown ? "注番わからない" : esc(rq.no) + "<small>" + esc(rq.noName) + "</small>")
+      + '<button class="link" id="rqNoChange">変える</button>';
+  }
+  $("rqNoQ").addEventListener("input", renderNoList);
+  $("rqNoList").addEventListener("click", e=>{
+    const b = e.target.closest("[data-no]"); if(!b || !rq || rq.sending) return;
+    const j = (nippo || []).find(x=>x.no === b.dataset.no); if(!j) return;
+    rq.no = j.no; rq.noName = j.name || ""; rq.unknown = false; rqStat(""); renderNoSel();
+  });
+  $("rqNoUnknown").onclick = ()=>{ if(!rq || rq.sending) return; rq.no = ""; rq.noName = ""; rq.unknown = true; rqStat(""); renderNoSel(); $("rqSite").focus(); };
+  $("rqNoSel").addEventListener("click", e=>{ if(!e.target.closest("#rqNoChange") || !rq || rq.sending) return; rq.no = ""; rq.noName = ""; rq.unknown = false; renderNoSel(); renderNoList(); $("rqNoQ").focus(); });
+  function renderKinds(){ $("rqKind").innerHTML = KINDS.map(k=>`<button type="button" data-k="${k}" class="${rq && rq.kind === k ? "on" : ""}">${k}</button>`).join(""); }
+  $("rqKind").addEventListener("click", e=>{ const b = e.target.closest("[data-k]"); if(!b || !rq || rq.sending) return; rq.kind = b.dataset.k; rqStat(""); renderKinds(); });
+  function renderReqPhotos(){
+    if(!rq) return;
+    $("rqTh").innerHTML = rq.photos.map(p=>`<div class="p${p.done ? " up" : ""}"><img alt="" src="${p.url}">${rq.sending ? "" : `<button data-rdel="${p.key}" aria-label="この写真を外す">×</button>`}</div>`).join("");
+    [$("rqCam"), $("rqLib"), $("rqSend"), $("rqBack")].forEach(b=>b.disabled = rq.sending);
+  }
+  $("rqTh").addEventListener("click", e=>{
+    const b = e.target.closest("[data-rdel]"); if(!b || !rq || rq.sending) return;
+    const p = rq.photos.find(x=>x.key === b.dataset.rdel); if(p) URL.revokeObjectURL(p.url);
+    rq.photos = rq.photos.filter(x=>x.key !== b.dataset.rdel); rqStat(""); renderReqPhotos();
+  });
+  $("rqCam").onclick = ()=>{ $("fCam").value = ""; $("fCam").click(); };
+  $("rqLib").onclick = ()=>{ $("fLib").value = ""; $("fLib").click(); };
+  async function addReqFiles(files){
+    for(const f of files){
+      if(!rq) return;
+      if(rq.photos.length >= 3){ rqStat("写真は3枚までです", "bad"); break; }
+      rqStat("写真を準備しています…");
+      try{ const s = await shrink(f); rq.photos.push({ key:newId(), id:newId(), blob:s.blob, w:s.w, h:s.h, url:URL.createObjectURL(s.blob), done:"" }); rqStat(""); }
+      catch(e){ rqStat((e && e.message) || "写真として読めませんでした", "bad"); }
+      renderReqPhotos();
+    }
+  }
+  $("rqBack").onclick = ()=>{ if(rq && rq.sending) return; openList("req"); };
+  $("rqSend").onclick = async ()=>{
+    if(!rq || rq.sending) return;
+    const what = $("rqWhat").value.trim(), qty = $("rqQty").value.trim(), due = $("rqDue").value, text = $("rqText").value.trim(), site = $("rqSite").value.trim();
+    if(!rq.no && !rq.unknown){ rqStat("注番を選ぶか、「一覧にない・わからない」を押してください", "bad"); return; }
+    if(rq.unknown && !site){ rqStat("件名・現場名を書いてください", "bad"); $("rqSite").focus(); return; }
+    if(!what){ rqStat("品名を書いてください", "bad"); $("rqWhat").focus(); return; }
+    if(!qty){ rqStat("数量を書いてください（例：2台）", "bad"); $("rqQty").focus(); return; }
+    if(!rq.kind){ rqStat("種類を選んでください", "bad"); return; }
+    if(due && !/^20\d{2}-\d{2}-\d{2}$/.test(due)){ rqStat("いつまでにの日付が正しくありません", "bad"); return; }
+    if(!navigator.onLine){ rqStat("通信がありません。電波のある所で、もう一度「送る」を押してください", "bad"); return; }
+    rq.sending = true; renderReqPhotos();
+    const n = rq.photos.length; $("rqBarW").hidden = !n;
+    for(let i = 0; i < n; i++){
+      const p = rq.photos[i], path = "photos/r/" + rq.id + "/" + p.id + ".jpg";
+      if(p.done === path) continue;
+      rqStat("写真を送っています（" + (i+1) + "/" + n + "）");
+      try{ await put(path, p.blob, f=>{ $("rqBar").style.width = Math.round(((i + f) / n) * 100) + "%"; }); p.done = path; renderReqPhotos(); }
+      catch(e){
+        p.id = newId(); p.done = ""; rq.sending = false; renderReqPhotos(); $("rqBarW").hidden = true;
+        rqStat(e.code === "denied" ? "写真を送れませんでした。このスマホが止められている可能性があります。事務所に聞いてください"
+          : "写真を送れませんでした（" + (i+1) + "枚目）。電波のある所で、もう一度「送る」を押してください", "bad");
+        return;
+      }
+    }
+    rqStat("送っています…");
+    const ref = db.collection("requests").doc(rq.id);
+    const doc = { by:me.uid, name:me.name, at:FV.serverTimestamp(), no:rq.unknown ? "" : rq.no, noName:rq.unknown ? "" : rq.noName, site:rq.unknown ? site.slice(0, 100) : "",
+      what:what.slice(0, 200), qty:qty.slice(0, 50), kind:rq.kind, due:due || "", text:text.slice(0, 1000),
+      photos:rq.photos.map(p=>({ id:p.id, path:p.done, w:p.w, h:p.h, size:p.blob.size, at:Date.now(), name:me.name, src:"phone" })),
+      state:"open", closedAt:null, closedBy:null, closedName:null, reason:null, item:null };
+    let res;
+    try{ res = await Promise.race([ref.set(doc), new Promise(ok=>setTimeout(()=>ok("timeout"), 20000))]); }catch(e){ res = e; }
+    if(res === "timeout" || (res && res.code)){
+      let got = null; try{ got = (await ref.get()).exists; }catch(e){}
+      if(got !== true){
+        rq.sending = false; renderReqPhotos(); $("rqBarW").hidden = true;
+        rqStat(res && res.code === "permission-denied" ? "送れませんでした。注番の一覧が変わったか、このスマホが止められている可能性があります。もう一度選びなおして送ってください"
+          : "送れたか確かめられませんでした（通信）。もう一度「送る」を押してください（写真は送りなおしません）", "bad");
+        return;
+      }
+    }
+    rq.photos.forEach(p=>URL.revokeObjectURL(p.url)); rq = null; mode = "req";
+    $("dStat").textContent = ""; $("dStat").className = "stat"; $("dUndo").hidden = true; $("dLeft").textContent = ""; $("dAgain").hidden = true;
+    $("dTitle").textContent = "製作依頼を送りました ✓"; $("dSub").textContent = "事務所に届きました。事務所が確かめて、工場の仕事にします。「依頼」のタブで見られます";
+    show("sDone");
+  };
+
+  /* ---------------- 検品（v1.9） ---------------- */
+  function openInsp(key){
+    const x = items[key]; if(!x || !x.wait){ openList(); return; }
+    insp = { key, no:x.jobKey, br:x.br, what:x.what, dn:(x.done && x.done.name) || "", sending:false };
+    $("kTarget").innerHTML = esc(x.jobKey) + "-" + esc(x.br) + "<small>" + esc(x.what) + "</small><small>完成：" + esc(insp.dn) + " さん</small>";
+    $("kStat").textContent = ""; $("kStat").className = "stat"; $("kGo").disabled = false;
+    show("sInsp");
+  }
+  $("kBack").onclick = ()=>{ if(insp && insp.sending) return; openList(); };
+  $("kJob").onclick = ()=>{ if(insp && !insp.sending) openJob(insp.key); };
+  $("kGo").onclick = async ()=>{
+    if(!insp || insp.sending) return;
+    if(!navigator.onLine){ $("kStat").textContent = "通信がありません。電波のある所で、もう一度押してください"; $("kStat").className = "stat bad"; return; }
+    insp.sending = true; $("kGo").disabled = true; $("kStat").textContent = "記録しています…"; $("kStat").className = "stat";
+    const item = db.collection("jobs").doc(insp.no).collection("kojo_items").doc(insp.br), ev = item.collection("events").doc(), b = db.batch();
+    b.set(ev, { at:FV.serverTimestamp(), by:me.uid, name:me.name, type:"inspect", detail:"スマホで検品OK" });
+    b.update(item, { inspected:{ by:me.uid, name:me.name, at:FV.serverTimestamp(), via:"phone" }, updatedAt:FV.serverTimestamp(), updatedBy:me.uid, lastEvent:ev.id });
+    let res;
+    try{ res = await Promise.race([b.commit(), new Promise(ok=>setTimeout(()=>ok("timeout"), 20000))]); }
+    catch(e){ res = e; }
+    if(res === "timeout" || (res && res.code)){
+      insp.sending = false; $("kGo").disabled = false; $("kStat").className = "stat bad";
+      $("kStat").textContent = (res && res.code === "permission-denied")
+        ? "検品OKにできませんでした。もう検品OKになっているか、事務所が差し戻した可能性があります。一覧にもどって確かめてください"
+        : "記録を確かめられませんでした（通信）。一覧にもどって、まだ「検品」にあれば、もう一度押してください";
+      return;
+    }
+    const key = insp.key, info = { no:insp.no, br:insp.br };
+    insp = null; inspLocal.add(key);
+    $("dStat").textContent = ""; $("dStat").className = "stat"; $("dLeft").textContent = "";
+    $("dAgain").hidden = true;
+    $("dTitle").textContent = "検品OKにしました ✓"; $("dSub").textContent = info.no + "-" + info.br + " は完了です";
+    undoable(key, info, Date.now() + UNDO_MS, "insp");
+    show("sDone");
+  };
+
+  /* ---------------- 自分の質問と回答 ---------------- */
+  function openQ(id){ if(!qs[id]) return; qOpen = id; $("qStat").textContent = ""; $("qStat").className = "stat"; $("qBody").innerHTML = ""; show("sQ"); renderQ(); }
+  let qSeq = 0;
+  async function renderQ(){
+    const q = qs[qOpen]; if(!q) return;
+    const seq = ++qSeq;
+    $("qTarget").innerHTML = esc(q.jobKey) + "-" + esc(q.br) + "<small>" + esc(q.what||"") + "</small>";
+    const ph = ps => (Array.isArray(ps) && ps.length) ? '<div class="th">' + ps.filter(p=>p && typeof p.path === "string").map(p=>`<button class="p" data-ph="${esc(p.path)}"><img alt="" data-src="${esc(p.path)}"></button>`).join("") + '</div>' : "";
+    let html = `<div class="qbox"><div class="h">自分の質問　${esc(stamp(q.at))}</div><div class="tx">${esc(q.text)}</div>${ph(q.photos)}</div>`;
+    if(q.answerCount){
+      let ans = [];
+      try{ const s = await db.collection("questions").doc(q.id).collection("answers").orderBy("at").get(); ans = s.docs.map(d=>d.data()); }
+      catch(e){ if(seq === qSeq){ $("qStat").textContent = "回答を読み込めませんでした。通信を確かめてください"; $("qStat").className = "stat bad"; } }
+      if(seq !== qSeq || qOpen !== q.id) return;
+      html += ans.map(a=>`<div class="qbox a"><div class="h">${a.kind === "correction" ? "回答の訂正・追記" : "事務所からの回答"}　${esc(a.name||"")}　${esc(stamp(a.at))}</div><div class="tx">${esc(a.text)}</div>${ph(a.photos)}</div>`).join("");
+    } else html += '<div class="qbox"><div class="h">事務所からの回答</div><div class="tx">まだ回答はありません</div></div>';
+    $("qBody").innerHTML = html; fillImgs($("qBody"));
+    $("qAck").hidden = q.state !== "answered"; $("qAck").disabled = false;
+    if(q.state === "acked"){ $("qStat").textContent = "見ました ✓"; $("qStat").className = "stat ok"; }
+  }
+  $("qBody").addEventListener("click", e=>{ const b = e.target.closest("[data-ph]"); if(b) showPhoto(b.dataset.ph, ""); });
+  $("qBack").onclick = ()=>{ qOpen = null; openList("qa"); };
+  $("qAck").onclick = async ()=>{
+    const q = qs[qOpen]; if(!q || q.state !== "answered") return;
+    $("qAck").disabled = true; $("qStat").textContent = "記録しています…"; $("qStat").className = "stat";
+    try{
+      await db.collection("questions").doc(q.id).update({ state:"acked", ackAnswerId:q.lastAnswerId, ackAt:FV.serverTimestamp() });
+      $("qAck").hidden = true; $("qStat").textContent = "見ました ✓（工場のモニターのお知らせが消えます）"; $("qStat").className = "stat ok";
+    }catch(e){
+      $("qAck").disabled = false; $("qStat").className = "stat bad";
+      $("qStat").textContent = "記録できませんでした。新しい訂正が届いた可能性があります。もう一度読んでから押してください";
+    }
+  };
+
+  /* ---------------- 図面（PDF）を見る ----------------
+     pdf.js 6.4.299 legacy（工場・事務所の画面と同じ版）。取り寄せた中身が決めておいた指紋（SHA-256）と同じ時だけ使う。
+     PDF の中の仕掛けは動かさない（isEvalSupported:false、enableXfa:false）。ファイルとして保存はしない */
+  const PDF = (()=>{
+    const LIB = "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.4.299/legacy/build/";
+    const SHA = { "pdf.min.mjs":"bccc24ea711db8e44503629519904a5292d73b9daaa214bbe7cdcc282b0f4259",
+                  "pdf.worker.min.mjs":"145d2dd3ab0c86151011dba95acfa2d5336e2accd59388ea43dbee0efddaaec6" };
+    const V = { doc:null, page:1, pages:0, zoom:1, fit:1, task:null, pointers:new Map(), pinch:null, seq:0 };
+    async function fetchChecked(name){
+      let b;
+      try{ const r = await fetch(LIB + name, { mode:"cors" }); if(!r.ok) throw 0; b = await r.arrayBuffer(); }catch(e){ throw { code:"pdfjs-load" }; }
+      const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", b))).map(x=>x.toString(16).padStart(2,"0")).join("");
+      if(h !== SHA[name]) throw { code:"pdfjs-bad" };
+      return URL.createObjectURL(new Blob([b], { type:"text/javascript" }));
+    }
+    let libP = null;
+    function loadLib(){
+      if(!libP) libP = (async()=>{
+        const [mainUrl, workerUrl] = await Promise.all([fetchChecked("pdf.min.mjs"), fetchChecked("pdf.worker.min.mjs")]);
+        let lib; try{ lib = await import(mainUrl); }catch(e){ throw { code:"pdfjs-load" }; }
+        if(!lib || !lib.getDocument || !lib.GlobalWorkerOptions) throw { code:"pdfjs-load" };
+        lib.GlobalWorkerOptions.workerSrc = workerUrl; return lib;
+      })().catch(e=>{ libP = null; throw e; });
+      return libP;
+    }
+    async function bytesOf(path){
+      if(!navigator.onLine) throw { code:"offline" };
+      const t = await auth.currentUser.getIdToken();
+      let r;
+      try{ r = await fetch(API + "/" + encodeURIComponent(path) + "?alt=media", { headers:{ Authorization:"Firebase " + t }, cache:"no-store" }); }
+      catch(e){ throw { code:"network" }; }
+      if(!r.ok) throw { code: r.status === 403 ? "denied" : r.status === 404 ? "notfound" : "http-" + r.status };
+      return new Uint8Array(await r.arrayBuffer());
+    }
+    function errText(e){
+      const c = e && e.code;
+      if(c === "offline" || c === "network") return "図面を読み込めません。通信を確かめてください";
+      if(c === "denied") return "図面を見る権限がありません。このスマホが止められている可能性があります";
+      if(c === "notfound") return "図面のファイルが見つかりません。事務所に確認してください";
+      if(c === "pdfjs-load") return "図面を表示する部品を読み込めません。通信を確かめてください";
+      if(c === "pdfjs-bad") return "図面を表示する部品の中身が正しくないため、使いませんでした。事務所に知らせてください";
+      if(c === "bad-pdf") return "図面のファイルを開けません（壊れているか、PDFではありません）";
+      return "図面を読み込めません（" + (c || e) + "）";
+    }
+    function msg(t){ $("pdfMsg").textContent = t || ""; $("pdfMsg").hidden = !t; }
+    async function open(path, title){
+      const seq = ++V.seq;
+      $("pdfTitle").textContent = title || "図面"; $("pdfView").hidden = false;
+      $("pdfCanvas").hidden = true; V.doc = null; V.pages = 0; V.page = 1; V.zoom = 1; bar();
+      msg("図面を読み込んでいます…");
+      try{
+        const [lib, bytes] = await Promise.all([loadLib(), bytesOf(path)]);
+        if(seq !== V.seq) return;
+        let doc; try{ doc = await lib.getDocument({ data:bytes, isEvalSupported:false, enableXfa:false }).promise; }catch(e){ throw { code:"bad-pdf" }; }
+        if(seq !== V.seq){ try{ doc.destroy(); }catch(e){} return; }
+        V.doc = doc; V.pages = doc.numPages; V.page = 1; msg(""); $("pdfCanvas").hidden = false;
+        await render(true);
+      }catch(e){ if(seq === V.seq) msg(errText(e)); }
+    }
+    function close(){
+      V.seq++; if(V.task){ try{ V.task.cancel(); }catch(e){} V.task = null; }
+      if(V.doc){ try{ V.doc.destroy(); }catch(e){} V.doc = null; }
+      const cv = $("pdfCanvas"); cv.width = cv.height = 0; $("pdfView").hidden = true;
+    }
+    function bar(){
+      $("pdfPage").textContent = V.pages ? V.page + "/" + V.pages : "";
+      $("pdfPrev").hidden = $("pdfNext").hidden = V.pages <= 1;
+      $("pdfPrev").disabled = V.page <= 1; $("pdfNext").disabled = V.page >= V.pages;
+    }
+    async function render(resetFit, keep){
+      if(!V.doc) return;
+      const page = await V.doc.getPage(V.page), box = $("pdfBox"), base = page.getViewport({ scale:1 });
+      if(resetFit){ V.fit = Math.max(0.05, Math.min((box.clientWidth - 16) / base.width, (box.clientHeight - 16) / base.height)); V.zoom = 1; }
+      const css = V.fit * V.zoom;
+      let px = window.devicePixelRatio || 1;
+      const MAXPX = 16e6, need = base.width * base.height * css * css * px * px;   // スマホの記憶が足りなくならないように
+      if(need > MAXPX) px = px * Math.sqrt(MAXPX / need);
+      const vp = page.getViewport({ scale: css * px }), cv = $("pdfCanvas"), w = Math.floor(vp.width), h = Math.floor(vp.height);
+      const tmp = document.createElement("canvas"); tmp.width = w; tmp.height = h;
+      if(V.task){ try{ V.task.cancel(); }catch(e){} }
+      V.task = page.render({ canvas:tmp, canvasContext:tmp.getContext("2d"), viewport:vp });
+      try{ await V.task.promise; }catch(e){ return; }
+      V.task = null; cv.width = w; cv.height = h; cv.getContext("2d").drawImage(tmp, 0, 0);
+      cv.style.width = Math.floor(base.width * css) + "px"; cv.style.height = Math.floor(base.height * css) + "px"; cv.style.transform = "";
+      if(keep){ box.scrollLeft = keep.x * cv.clientWidth - keep.cx; box.scrollTop = keep.y * cv.clientHeight - keep.cy; }
+      bar();
+    }
+    function zoomTo(z, cx, cy){
+      if(!V.doc) return;
+      const box = $("pdfBox"), cv = $("pdfCanvas");
+      z = Math.max(1, Math.min(8, z));
+      if(cx == null){ cx = box.clientWidth / 2; cy = box.clientHeight / 2; }
+      const keep = { x:(box.scrollLeft + cx) / Math.max(1, cv.clientWidth), y:(box.scrollTop + cy) / Math.max(1, cv.clientHeight), cx, cy };
+      V.zoom = z; render(false, keep);
+    }
+    $("pdfClose").onclick = close;
+    $("pdfPrev").onclick = ()=>{ if(V.page > 1){ V.page--; render(true); } };
+    $("pdfNext").onclick = ()=>{ if(V.page < V.pages){ V.page++; render(true); } };
+    $("pdfIn").onclick = ()=>zoomTo(V.zoom * 1.5);
+    $("pdfOut").onclick = ()=>zoomTo(V.zoom / 1.5);
+    $("pdfFit").onclick = ()=>render(true);
+    /* 指1本で動かす、2本で広げる・縮める */
+    const box = $("pdfBox"), cv = $("pdfCanvas");
+    box.addEventListener("pointerdown", e=>{
+      try{ box.setPointerCapture(e.pointerId); }catch(x){}
+      V.pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+      if(V.pointers.size === 2){ const [a, b] = [...V.pointers.values()], r = box.getBoundingClientRect();
+        V.pinch = { d0:Math.max(1, Math.hypot(a.x-b.x, a.y-b.y)), z0:V.zoom, cx:(a.x+b.x)/2 - r.left, cy:(a.y+b.y)/2 - r.top, s:1 }; }
+    });
+    box.addEventListener("pointermove", e=>{
+      const p = V.pointers.get(e.pointerId); if(!p) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+      if(V.pinch && V.pointers.size >= 2){ const [a, b] = [...V.pointers.values()];
+        const s = Math.max(1 / V.pinch.z0, Math.min(8 / V.pinch.z0, Math.hypot(a.x-b.x, a.y-b.y) / V.pinch.d0)); V.pinch.s = s;
+        cv.style.transformOrigin = (box.scrollLeft + V.pinch.cx) + "px " + (box.scrollTop + V.pinch.cy) + "px"; cv.style.transform = "scale(" + s + ")";
+      } else if(V.pointers.size === 1){ box.scrollLeft -= dx; box.scrollTop -= dy; }
+    });
+    const up = e=>{ V.pointers.delete(e.pointerId);
+      if(V.pinch && V.pointers.size < 2){ const pc = V.pinch; V.pinch = null; cv.style.transform = ""; cv.style.transformOrigin = "";
+        if(Math.abs(pc.s - 1) > 0.02) zoomTo(pc.z0 * pc.s, pc.cx, pc.cy); } };
+    box.addEventListener("pointerup", up); box.addEventListener("pointercancel", up);
+    box.addEventListener("dblclick", e=>{ const r = box.getBoundingClientRect(); zoomTo(V.zoom >= 2 ? 1 : V.zoom * 2, e.clientX - r.left, e.clientY - r.top); });
+    return { open, close, get state(){ return { page:V.page, pages:V.pages, zoom:V.zoom, loaded:!!V.doc }; } };
+  })();
+  window.__pdf = PDF;
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  start();
+})();
+</script>
+</body>
+</html>

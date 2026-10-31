@@ -5,14 +5,16 @@
    ・製作指示などの業務データ、ログイン情報、パスワードはここではしまわない
      （業務データは Firestore 自身の保存のしくみが別に持つ）
    ・効くのは /kojo/ の中だけ。ほかの GitHub Pages のアプリには関係しない
+   ・しまうのは画面（/kojo/ と /kojo/index.html）だけ。写真を送るスマホ用の m.html はしまわない
    ・通信がある時は、いつも最新の index.html を取りに行き、しまい直す
      → 新しい版を公開すると、次に開いた時から新しい版になる
-   ・Firebase の版を変える時は、下の VERSION も変える（古いしまい場所は消える）
+   ・Firebase の版を変える時や、しまい方を変えた時は、下の VERSION も変える（古いしまい場所は消える）
+     （2：写真の機能と一緒に公開。m.html を扱わないようにした版）
    ・同じアドレス（nomurakougyouipad-oss.github.io）のほかのアプリが、しまい場所を
      消してしまうことがある。そのため、通信がある時に開くたびに、足りないものを
      しまい直す（自分で元に戻る）
    ===================================================================== */
-const VERSION = "kojo-shell-1";
+const VERSION = "kojo-shell-2";
 const SDK = [
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js",
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js",
@@ -59,14 +61,15 @@ self.addEventListener("fetch", e=>{
     })());
     return;
   }
-  /* アプリの画面：まず最新を取りに行き、だめならしまってある画面 */
-  const isPage = url.origin===self.location.origin &&
-    (req.mode==="navigate" || url.pathname===new URL(PAGE).pathname);
-  if(isPage && url.pathname.startsWith(new URL(self.registration.scope).pathname)){
+  /* アプリの画面（/kojo/ と /kojo/index.html だけ）：まず最新を取りに行き、だめならしまってある画面
+     ほかのファイル（写真を送るスマホ用の m.html など）は、ここでは扱わない（そのまま通信する） */
+  const scopePath = new URL(self.registration.scope).pathname, pagePath = new URL(PAGE).pathname;
+  const isPage = url.origin===self.location.origin && (url.pathname===scopePath || url.pathname===pagePath);
+  if(isPage){
     e.respondWith(pageNetworkFirst());
     return;
   }
-  /* それ以外（Firestore・ログインの通信など）には手を出さない */
+  /* それ以外（Firestore・ログインの通信、m.html など）には手を出さない */
 });
 
 async function pageNetworkFirst(){

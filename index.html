@@ -278,6 +278,40 @@ details.more-f .two{margin-top:10px}
 #office header .qn{display:inline-block; margin-left:6px; background:var(--red); color:#fff; border-radius:999px; padding:0 8px; font-weight:800}
 .qnotice{display:block; width:100%; text-align:left; background:var(--red-bg); color:var(--red); border:2px solid var(--red); border-radius:10px; padding:8px 14px; margin-bottom:12px; font-weight:800; font-size:17px; cursor:pointer}
 .qnotice[hidden]{display:none}
+/* v2.1 製作依頼 */
+.reqnotice{background:var(--blue-bg, #e8eefb); color:var(--blue, #1a56c4); border-color:var(--blue, #1a56c4)}
+.phnotice{background:#dff3f1; color:#0f6b63; border-color:#0f6b63}
+:root[data-theme="dark"] .phnotice{background:#103330; color:#7fe0d4; border-color:#7fe0d4}
+.phnew .phgh b{color:var(--ink)}
+.phnew .phall{margin-top:6px}
+.reqnote{background:var(--blue-bg, #e8eefb); color:var(--blue, #1a56c4); border:2px solid var(--blue, #1a56c4); border-radius:10px; padding:8px 14px; font-weight:800; font-size:16px}
+.reqnote[hidden]{display:none}
+.rq{border:2px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:6px; margin-bottom:10px}
+.rq.open{border-color:var(--blue, #1a56c4)}
+.rq .rqh{display:flex; flex-wrap:wrap; gap:.6em; align-items:baseline}
+.rq .rqh b{font-size:21px}
+.rq .rqw{font-size:20px; font-weight:700}
+.rq .rqt{white-space:pre-wrap; overflow-wrap:anywhere}
+.rq .rqs{font-size:16px; color:var(--sub)}
+.rq .rqacts{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px}
+.rq .rqback{display:flex; flex-direction:column; gap:6px}
+.rq .rqback[hidden]{display:none}
+.chip.rq-open{color:#fff; background:var(--blue, #1a56c4); border-color:var(--blue, #1a56c4)}
+.chip.rq-acc{color:var(--green, #15803d); border-color:var(--green, #15803d)}
+.chip.rq-ret{color:var(--red); border-color:var(--red)}
+.chip.rq-wd{color:var(--sub); border-color:var(--line)}
+/* 段階2-④ 人で絞る・日報の注番の未照合 */
+.person{display:inline-flex; align-items:center; gap:6px; font-weight:700}
+.person select{font-size:17px; padding:6px 10px; border:2px solid var(--line); border-radius:10px; background:var(--card); color:var(--ink); font-family:inherit; max-width:14em}
+.personnote{background:var(--gray-bg); border:2px solid var(--line); border-radius:10px; padding:6px 14px; margin-bottom:12px; font-weight:700}
+.personnote[hidden]{display:none}
+.nipnotice{border:2px solid var(--line); border-radius:10px; padding:8px 14px; margin-bottom:12px; background:var(--card)}
+.nipnotice[hidden]{display:none}
+.nipnotice summary{cursor:pointer; font-weight:800}
+.nipnotice .sub{font-weight:400; color:var(--sub); font-size:15px}
+.nipnotice ul{margin:6px 0 0; padding-left:1.4em; columns:2; font-size:16px}
+.job .jh .owner{font-size:15px; color:var(--sub); font-weight:700}
+.chip.reqchip{color:var(--blue, #1a56c4); border-color:var(--blue, #1a56c4)}
 .chip.qrow{cursor:pointer; margin-right:6px; font-size:13px}
 
 /* 質問の窓：知らせは「送信」ボタンの横に出す（画面が低くても、いつも見える） */
@@ -322,6 +356,115 @@ details.more-f .two{margin-top:10px}
 .drwrow.old .drwrev{color:var(--sub)}
 .drwbar{height:12px; border-radius:6px; background:var(--gray-bg); overflow:hidden}
 .drwbar > div{height:100%; width:0; background:var(--blue); transition:width .2s}
+
+/* ===== 写真（第1段階） ===== */
+.phs{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center}
+.ph{width:96px; height:72px; padding:0; border:2px solid var(--line); border-radius:8px; background:#f3f4f6; overflow:hidden; cursor:zoom-in}
+.ph img{width:100%; height:100%; object-fit:cover; display:block}
+.phload{font-size:.8em; color:var(--sub)}
+.phnote{font-size:.85em; color:#b45309; font-weight:700}
+.phgo{margin-top:12px}
+.phgo .btn{font-size:1.15em; padding:12px 22px}
+.phqr{display:flex; flex-direction:column; align-items:center; gap:8px}
+.phqrbox img{width:300px; height:300px; image-rendering:pixelated; background:#fff; border-radius:8px}
+.phhow{margin:0; padding-left:1.4em; font-size:1.05em; line-height:1.7}
+.phleft{font-weight:700; color:var(--sub)}
+.phview{width:96vw; height:94vh; max-width:none; max-height:none; padding:0; border:0; background:#111; color:#fff}
+.phview[open]{display:flex; flex-direction:column; align-items:center; justify-content:center}
+.phview img{max-width:100%; max-height:calc(94vh - 40px); object-fit:contain}
+.phviewmsg{position:absolute; top:45%; width:100%; text-align:center}
+.phviewhint{font-size:.85em; opacity:.7; padding:6px}
+.phpick{margin:6px 0}
+.phdraft{display:flex; flex-wrap:wrap; gap:8px}
+.phd{position:relative; width:120px; border:2px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; font-size:.8em}
+.phd img{width:100%; height:80px; object-fit:cover; display:block}
+.phds{padding:4px 6px; min-height:2.4em}
+.phd.used{border-color:#16a34a} .phd.failed{border-color:var(--red)} .phd.failed .phds{color:var(--red)}
+.phdel{position:absolute; top:2px; right:2px; width:26px; height:26px; border-radius:50%; border:0; background:rgba(0,0,0,.6); color:#fff; font-weight:700; cursor:pointer}
+/* 押せない間は薄くする（写真の登録待ち・送信中） */
+#qList .btn:disabled, #devDlg .btn:disabled, #qAskDlg .btn:disabled{opacity:.5; cursor:default}
+/* ---------- 写真（新方式）：品ごとの写真・スマホの登録 ---------- */
+.phchip{border:2px solid #0e7490; color:#0e7490; background:var(--card); cursor:pointer; font-weight:800}
+.phbtn{border-color:#0e7490; color:#0e7490}
+#phItemTabs button .pn{display:inline-block; min-width:1.6em; margin-left:.4em; padding:0 .35em; border-radius:1em; background:var(--line); color:var(--ink); font-size:.85em}
+#phItemTabs button.on .pn{background:#fff; color:var(--blue)}
+.phgrp{border-bottom:1px solid var(--line); padding:10px 0}
+.phgh{font-weight:700; color:var(--sub)}
+.phgn{color:var(--ink); font-weight:600; margin-top:2px; white-space:pre-wrap}
+#phItemDlg .ph{width:140px; height:105px}
+.devother{margin-top:10px} .devother input{font-size:18px; padding:10px 12px; width:100%; max-width:420px; border:2px solid var(--line); border-radius:10px}
+.devwho{font-size:1.2em}
+
+.devlisth{margin-top:18px; font-weight:800; border-top:1px solid var(--line); padding-top:12px}
+.devtbl{width:100%; border-collapse:collapse} .devtbl td{padding:8px 6px; border-bottom:1px solid var(--line)}
+.devtbl td.n{font-weight:800; font-size:1.1em} .devtbl td.s{color:var(--sub)} .devtbl tr.stopped td.n{color:var(--sub); text-decoration:line-through}
+.devtbl .btn.armed{background:var(--red); color:#fff}
+
+/* ================== v1.9 検品待ち ================== */
+.st-wait{color:#6d28d9; background:#ede9fe; border-color:#6d28d9}
+.card.wait{border-left-color:#6d28d9}
+.due.wait .left{color:#6d28d9; font-size:1.1em}
+.row .rdue.wait b{color:#6d28d9}
+.counts .c-wait{color:#6d28d9}
+:root[data-theme="dark"] .st-wait{color:#ddd6fe; background:#3b2a6b; border-color:#a78bfa}
+:root[data-theme="dark"] .card.wait{border-left-color:#a78bfa}
+:root[data-theme="dark"] .due.wait .left, :root[data-theme="dark"] .row .rdue.wait b, :root[data-theme="dark"] .counts .c-wait{color:#c4b5fd}
+
+/* ================== 事務所の画面：窓の位置と横幅（2026-10-30） ==================
+   窓（製作指示・質問・依頼など）は画面の真ん中に出す（全体の「余白なし」の決まりで左上に寄っていた）。
+   横に広い画面では一覧を広げて、左右の余白を減らす（1440px まで。せまい画面は今までどおり） */
+dialog{margin:auto}
+.wrap{max-width:1440px}
+/* 事務所の一覧：右の印（依頼・写真・図面・質問・状態）は1つの箱に入れて、多い時は折り返す（品名・指示の文に重ならない・つぶさない）。
+   せまい画面では印を品名の下の行に出す */
+.row .rchips{flex:0 1 auto; max-width:48%; display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:6px 8px}
+/* 行の一番右の正方形の「写真」ボタン（カメラの絵＋文字） */
+.row .phsq{flex:0 0 auto; width:58px; height:58px; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  border:2px solid #0f6b63; border-radius:10px; background:var(--card); color:#0f6b63; font-size:13px; font-weight:800; line-height:1.1; cursor:pointer}
+.row .phsq:hover{background:#dff3f1}
+.row .phsq.ph-none{visibility:hidden}
+:root[data-theme="dark"] .row .phsq{border-color:#7fe0d4; color:#7fe0d4}
+:root[data-theme="dark"] .row .phsq:hover{background:#103330}
+@media (max-width:900px){
+  .row{flex-wrap:wrap; row-gap:6px}
+  .row .rmain{flex:1 1 0}   /* 品名の欄が長くても、写真のボタンを次の行へ押し出さない */
+  .row .phsq{order:1}
+  .row .rchips{order:2; max-width:none; flex:1 1 100%; justify-content:flex-start; padding-left:calc(7.5em + 14px)}
+}
+
+/* ================== 工場の画面：期限の列と注番の列のあいだ ==================
+   期限の文字が長くても（「10日 遅れ」「期限 10/29(木)」・パソコンの字の形）右の列に重ならない。列のあいだも広げる */
+.due{flex:0 0 auto; width:auto; min-width:7em}
+.card{gap:1em}
+#display.viewonly .card{gap:1.4em}
+
+/* ================== 工場の画面：字の大きさ（2026-10-31） ==================
+   50型（1920×1080）で1ページ3件にする（前は 3.6vh で2件）。指示の文が長い（2行以上）品が続くと2件のこともある */
+body.display{font-size:clamp(20px, min(2.6vw, 3.1vh), 64px)}
+/* 大型モニター：札のすき間を少しつめる（回答の帯が出ている時も1ページ3件になるように。字の大きさは変えない） */
+#display.viewonly #main{padding:.35em .6em; gap:.35em}
+#display.viewonly .card{padding:.3em .7em .35em .6em}
+#display.viewonly .ansband{padding:.3em .8em}
+
+/* ================== 大型モニター（見るだけ） ================== */
+#display.viewonly header button, #display.viewonly footer .help{display:none !important}
+#display.viewonly .ansband{cursor:default}
+#display.viewonly .ansband .abgo{display:none}
+/* 大型モニター：注番と期限を大きく（離れた所から見るため） */
+#display.viewonly .line1 .no{font-size:1.75em; font-weight:800}
+#display.viewonly .due{flex:0 0 auto; width:auto; min-width:9.4em}
+#display.viewonly .due .left{font-size:1.9em}
+#display.viewonly .due .date{font-size:1.1em; font-weight:700; color:var(--ink)}
+#display.viewonly .due.done .left, #display.viewonly .due.wait .left{font-size:1.5em}
+/* 大型モニター：点滅（ゆっくり 1.6秒に1回。速いチカチカは目に悪いのでしない。字は消さない）
+   ・「〇〇さんの質問（注番）に回答が届いています」の帯：緑と白が入れかわる
+   ・期限を過ぎた札：赤い枠が点いたり消えたりする（今日までの札・検品待ち・完了はしない）
+   質問の札（回答待ち・回答あり）は点滅しない */
+@keyframes qBand{0%,100%{background:#11743a; color:#fff}50%{background:#dcf3e4; color:#11743a}}
+@keyframes lateCard{0%,100%{box-shadow:inset 0 0 0 .25em var(--red)}50%{box-shadow:inset 0 0 0 .25em transparent}}
+#display.viewonly .ansband{animation:qBand 1.6s ease-in-out infinite}
+#display.viewonly .card.late{animation:lateCard 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){ #display.viewonly .ansband, #display.viewonly .card.late{animation:none} }
 </style>
 </head>
 <body>
@@ -392,7 +535,7 @@ details.more-f .two{margin-top:10px}
   </header>
   <div class="counts" id="counts"></div>
   <div class="connwarn" id="connwarn" hidden></div>
-  <button class="ansband" id="ansBand" hidden></button>
+  <div class="ansband" id="ansBand" role="status" hidden></div>
   <div class="syncwarn" id="syncwarn" hidden></div>
   <div class="notice" id="notice"></div>
   <main id="main"></main>
@@ -410,16 +553,22 @@ details.more-f .two{margin-top:10px}
     <div class="who"><b id="meName"></b><span id="meRoles"></span></div>
     <a href="#display" target="_blank" rel="noopener">工場の画面を開く ↗</a>
     <button id="oQBtn">質問<span class="qn" id="oQCount" hidden></span></button>
+    <button id="reqBtn" hidden>製作依頼<span class="qn" id="reqCount" hidden></span></button>
     <button id="rolesBtn" hidden>権限の設定</button>
     <button id="namesBtn" hidden>質問する人の名前</button>
+    <button id="devBtn" hidden>スマホの登録</button>
     <button id="oThemeBtn">明/暗</button>
     <button id="logoutBtn">ログアウト</button>
   </header>
   <div class="wrap">
     <div class="offline" id="officeConn" hidden></div>
     <button class="qnotice" id="oQNotice" hidden></button>
+    <button class="qnotice reqnotice" id="reqNotice" hidden></button>
+    <button class="qnotice phnotice" id="phNotice" hidden></button>
+    <div class="nipnotice" id="nipNotice" hidden></div>
     <div class="toolbar">
       <button class="btn primary" id="newBtn">＋ 新しい製作指示</button>
+      <label class="person">人で絞る <select id="personSel"><option value="">すべての人</option></select></label>
       <div class="tabs" id="tabs">
         <button data-f="open" class="on">未完了</button>
         <button data-f="done">完了</button>
@@ -427,12 +576,14 @@ details.more-f .two{margin-top:10px}
         <button data-f="all">すべて</button>
       </div>
     </div>
+    <div class="personnote" id="personNote" hidden></div>
     <div id="list"></div>
   </div>
 
   <dialog id="dlg">
     <div class="dlg-h"><h2 id="dlgTitle"></h2><button class="btn x" id="dlgClose">閉じる</button></div>
     <div class="dlg-b">
+      <div class="reqnote" id="fReqNote" hidden></div>
       <div class="two">
         <div class="fld">
           <label>注番<span class="req">必須</span></label>
@@ -496,6 +647,7 @@ details.more-f .two{margin-top:10px}
       <div class="fld"><div class="err" id="fErr"></div></div>
     </div>
     <div class="dlg-f">
+      <button class="btn" id="fPhotos" hidden>この品の写真を見る</button>
       <div class="right">
         <button class="btn" id="cancelBtn">やめる</button>
         <button class="btn primary" id="saveBtn">登録する</button>
@@ -542,6 +694,50 @@ details.more-f .two{margin-top:10px}
   <div class="dlg-f qfoot"><div class="qmsg" id="qMsg" role="status" aria-live="polite"></div><div class="right"><button class="btn" id="qAskCancel">やめる</button><button class="btn primary" id="qSend">送信</button></div></div>
 </dialog>
 
+<!-- 品の写真（途中・完成・質問のタブ。工場・事務所で共通） -->
+<dialog id="phItemDlg" class="qdlg wide">
+  <div class="dlg-h"><h2 id="phItemTitle">写真</h2><button class="btn x" id="phItemClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div class="tabs qtabs" id="phItemTabs"></div>
+    <div id="phItemList"></div>
+  </div>
+</dialog>
+
+<!-- 事務所：新しい写真（このパソコンで、まだ見ていない途中・完成の写真） -->
+<dialog id="phNewDlg" class="qdlg wide">
+  <div class="dlg-h"><h2>新しい写真</h2><button class="btn x" id="phNewClose">閉じる</button></div>
+  <div class="dlg-b"><div class="sub" id="phNewNote"></div><div id="phNewList"></div></div>
+</dialog>
+
+<!-- 事務所：スマホの登録（登録用QRを出す・登録したスマホを止める） -->
+<dialog id="devDlg" class="qdlg wide">
+  <div class="dlg-h"><h2>スマホの登録</h2><button class="btn x" id="devClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div id="devStep1">
+      <p class="hint">社員のスマホで写真を送れるようにします。<b>本人がいるところで</b>、名前を選んで「登録用のQRを出す」を押し、本人のスマホのカメラで読んでもらいます（10分だけ・1回だけ使えます）。</p>
+      <div class="qlabel">名前を選んでください</div>
+      <div class="qnames" id="devNames"></div>
+      <div class="devother"><input id="devName" maxlength="20" placeholder="一覧にない時は、ここに名前を入れる"></div>
+      <div class="phgo"><button class="btn primary" id="devIssue">登録用のQRを出す</button></div>
+    </div>
+    <div id="devStep2" class="phqr" hidden>
+      <div class="devwho" id="devWho"></div>
+      <div class="phqrbox" id="devQr"></div>
+      <ol class="phhow"><li>本人のスマホのカメラで、このQRコードを読む</li><li>出てきた画面の案内のとおりに進む（iPhone は「ホーム画面に追加」してから）</li><li>「登録する」を押す</li></ol>
+      <div class="phleft" id="devLeft"></div>
+    </div>
+    <div class="devlisth">登録したスマホ</div>
+    <div id="devList"></div>
+  </div>
+  <div class="dlg-f qfoot"><div class="qmsg" id="devMsg" role="status" aria-live="polite"></div><div class="right"><button class="btn" id="devAgain" hidden>ほかの人も登録する</button></div></div>
+</dialog>
+
+<!-- 写真を大きく見る（工場・事務所で共通） -->
+<dialog id="phView" class="phview" onclick="this.close()">
+  <img id="phViewImg" alt="写真"><div class="phviewmsg" id="phViewMsg"></div>
+  <div class="phviewhint">画面を押すと閉じます</div>
+</dialog>
+
 <!-- 工場・事務所：質問と回答の一覧 -->
 <dialog id="qListDlg" class="qdlg wide">
   <div class="dlg-h"><h2 id="qListTitle">質問と回答</h2><button class="btn x" id="qListClose">閉じる</button></div>
@@ -549,6 +745,15 @@ details.more-f .two{margin-top:10px}
     <div class="tabs qtabs" id="qTabs"></div>
     <div id="qFilterNote" class="qsmall"></div>
     <div id="qList"></div>
+  </div>
+</dialog>
+
+<!-- 事務所：スマホから届いた製作依頼（v2.1） -->
+<dialog id="reqDlg" class="qdlg wide">
+  <div class="dlg-h"><h2>製作依頼（スマホから）</h2><button class="btn x" id="reqClose">閉じる</button></div>
+  <div class="dlg-b">
+    <div class="tabs qtabs" id="reqTabs"><button data-rt="open" class="on">確認待ち</button><button data-rt="all">最近30日</button></div>
+    <div id="reqList"></div>
   </div>
 </dialog>
 
@@ -602,6 +807,20 @@ details.more-f .two{margin-top:10px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+/* 前の版のしまい方（sw.js の kojo-shell-1）は、/kojo/ の中のどの画面を開いてもこの画面を出していた。
+   スマホ用の画面（m.html）の代わりにこの画面が出てしまった時は、新しい版に入れかわるのを待って開き直す（2回まで） */
+(function(){
+  if(!/\/(m|cam)\.html$/.test(location.pathname)) return;
+  let n = 0; try{ n = +(sessionStorage.getItem("kojo-swfix") || 0); sessionStorage.setItem("kojo-swfix", String(n + 1)); }catch(e){}
+  if(n >= 2) return;
+  document.title = "更新しています…";
+  let done = false; const go = ()=>{ if(!done){ done = true; location.reload(); } };
+  if(navigator.serviceWorker){
+    navigator.serviceWorker.addEventListener("controllerchange", go);
+    navigator.serviceWorker.getRegistration().then(r=>r && r.update()).catch(()=>{});
+  }
+  setTimeout(go, 4000);
+})();
 /* =====================================================================
    Firebase（工場管理 yotsuba-kojo）
    この接続情報は秘密ではありません。守りは Firestore のセキュリティルールで行います。
@@ -669,6 +888,7 @@ try{ setTheme(localStorage.getItem("kojo-theme")||"light"); }catch(e){ setTheme(
    ===================================================================== */
 const Live = (()=>{
   let jobsSnap=null, itemsSnap=null, cbs=[];
+  let nippo = null;   // 日報の写し（v1.8 nippoMirror/lastWork・nippoSync/lastWork）。読めない時は null（日報連携なしの表示）
   const st = {jobsCache:true, itemsCache:true, everSynced:false, lostAt:null, startedAt:Date.now(), error:"", online:navigator.onLine};
   /* 最後にサーバーで最新を確認できた時刻（この端末に残す。再起動しても「いつの情報か」を出すため。業務データは入れない） */
   const LAST_KEY = "kojo-lastConfirmed";
@@ -707,15 +927,26 @@ const Live = (()=>{
       if(!jobs[jobKey]) return;   // 注番がまだ届いていない
       jobs[jobKey].items[doc.id] = Object.assign({}, x, {
         id:doc.id,
-        done: x.done ? {by:x.done.by, name:x.done.name, at:toIso(x.done.at)} : null,
+        // v1.9 スマホの「完成」（done.via=='phone'）で、まだ検品OK（inspected）がないものは「検品待ち」（wait）。完了（done）には数えない
+        done: x.done && !(x.done.via === "phone" && !x.inspected)
+          ? {by:x.done.by, name:x.done.name, at:toIso(x.done.at), via:x.done.via||"",
+             insp: x.inspected ? {by:x.inspected.by, name:x.inspected.name, at:toIso(x.inspected.at)} : null} : null,
+        wait: x.done && x.done.via === "phone" && !x.inspected ? {by:x.done.by, name:x.done.name, at:toIso(x.done.at)} : null,
         canceled: x.canceled ? {by:x.canceled.by, name:x.canceled.name, at:toIso(x.canceled.at), reason:x.canceled.reason} : null,
         drawingPdf: x.drawingPdf && x.drawingPdf.fileId ? Object.assign({}, x.drawingPdf, {at:toIso(x.drawingPdf.at)}) : null,
         createdAt: toIso(x.createdAt), updatedAt: toIso(x.updatedAt) });
     });
-    api.data = {jobs};
+    api.data = {jobs, nippo};
     cbs.forEach(cb=>cb(api.data));
   }
   function fail(e){ st.error = (e && e.code==="permission-denied") ? "読む権限がありません。管理者に確認してください" : "読み込みでエラーが起きました（"+(e&&e.code||e)+"）"; cbs.forEach(cb=>cb(api.data)); }
+  /* 日報の写し：松前工場で最後に作業した日（注番ごと）と、同期が最後に成功した時刻。読むだけ */
+  api.watchNippo = ()=>{
+    let days = null, ok = null;
+    const upd = ()=>{ nippo = days ? {days, syncedAt: ok} : null; api.data = Object.assign({}, api.data, {nippo}); cbs.forEach(cb=>cb(api.data)); };
+    db.collection("nippoMirror").doc("lastWork").onSnapshot(s=>{ days = s.exists ? (s.data().days || {}) : null; upd(); }, ()=>{ days = null; upd(); });
+    db.collection("nippoSync").doc("lastWork").onSnapshot(s=>{ const x = s.exists ? s.data() : null; ok = x && typeof x.lastSuccessAt === "number" ? x.lastSuccessAt : null; upd(); }, ()=>{});
+  };
   api.start = ()=>{
     db.collection("jobs").onSnapshot({includeMetadataChanges:true}, s=>{ mark("jobsCache", s); jobsSnap=s; rebuild(); }, fail);
     db.collectionGroup("kojo_items").onSnapshot({includeMetadataChanges:true}, s=>{ mark("itemsCache", s); itemsSnap=s; rebuild(); }, fail);
@@ -791,16 +1022,25 @@ document.getElementById("noRoleLogout").onclick = ()=>auth.signOut();
 /* =====================================================================
    工場の表示画面
    ===================================================================== */
+/* 大型モニター（2026-10-27 会議）：見るだけ。押すもの（ボタン）は出さない。
+   質問・回答・写真・図面はスマホで見る。回答が届いた時は、帯に名前の文字だけ出す */
+window.__viewOnly = true;
 function initDisplay(){
-  const PAGE_SECONDS   = 25;  // 何秒でページを切り替えるか
+  window.__isMonitor = true;   // この画面が大型モニター（事務所の画面では立てない）。回答のお知らせの数え方に使う
+  const VIEW_ONLY      = window.__viewOnly;
+  const PAGE_SECONDS   = 15;  // 何秒でページを切り替えるか
   const RESUME_MINUTES = 0;   // 止めた後に自動で再開するまでの分数（0＝人が再開するまで止めたまま）
   const RECENT_DAYS    = 2;   // 最後の日報がこの日数以内なら「作業中の可能性」
-  const STALE_DAYS     = 7;   // 最後の日報がこの日数以上前なら「状況確認が必要」
+  const STALE_DAYS     = 7;   // 日報でこの日数以上作業なしなら「要確認」の色（参考の情報。決めつけない）
   const SOON_DAYS      = 3;   // 期限まで何日以内なら黄色
-  const SYNC_LATE_MIN  = 30;  // 日報の集計がこの分数より古ければ警告（日報連携後に使う）
+  const SYNC_LATE_MIN  = 30*60;  // 「最後に作業した日」の同期（毎朝6:00）がこの分数（30時間）より古ければ「日報の更新が遅れています」
 
   let T0 = startOfDay(new Date());
-  let JOBS = [], SUMMARY = {}, SYNC_AT = null;
+  let JOBS = [], SUMMARY = {}, SYNC_AT = null, NIPPO = false;
+  if(VIEW_ONLY) document.getElementById("display").classList.add("viewonly");
+  if(typeof Live.watchNippo === "function") Live.watchNippo();
+  const normNo = s => String(s||"").normalize("NFKC").trim().toUpperCase();
+  const md = d => (d.getMonth()+1)+"/"+d.getDate();
 
   /* 保存データ → 表示用の形（日付を Date に） */
   function build(data){
@@ -809,34 +1049,38 @@ function initDisplay(){
       items:Object.values(j.items||{}).filter(it=>!it.canceled).sort((a,b)=>a.br.localeCompare(b.br)).map(it=>({
         br:it.br, kind:it.kind, what:it.what, qty:it.qty, due:parseYmd(it.due), urgent:!!it.urgent,
         inst:it.inst||"", manual:it.manual||null, done:it.done?{by:it.done.by, at:new Date(it.done.at)}:null,
+        wait:it.wait?{name:it.wait.name, at:new Date(it.wait.at)}:null,
         drawingPdf:it.drawingPdf||null }))
     })).filter(j=>j.items.length);
     SUMMARY = {};
-    Object.entries(data.summary||{}).forEach(([no,s])=>{ SUMMARY[no] = {last: s.last ? parseYmd(s.last) : null}; });
-    SYNC_AT = data.syncAt ? new Date(data.syncAt) : null;
+    NIPPO = !!data.nippo;
+    if(data.nippo) Object.entries(data.nippo.days||{}).forEach(([no,d])=>{ SUMMARY[no] = {last: parseYmd(d)}; });
+    SYNC_AT = data.nippo && data.nippo.syncedAt ? new Date(data.nippo.syncedAt) : null;
   }
 
-  function daysSinceLast(job){ const s=SUMMARY[job.no]; return (s&&s.last) ? diffDays(T0, s.last) : null; }
+  function daysSinceLast(job){ const s=SUMMARY[normNo(job.no)]; return (s&&s.last) ? diffDays(T0, s.last) : null; }
+  function lastOf(job){ const s=SUMMARY[normNo(job.no)]; return s&&s.last ? s.last : null; }
   function whenText(d){ return d===0?"今日":d===1?"昨日":d+"日前"; }
   function stateOf(job, it){
     if(it.done)              return {cls:"st-done", text:"完了"};
+    if(it.wait)              return {cls:"st-wait", text:"検品待ち（完成 "+(it.wait.name||"")+"）"};
     if(it.manual==="保留")   return {cls:"st-hold", text:"保留"};
     if(it.manual==="作業中") return {cls:"st-work", text:"作業中"};
-    const d=daysSinceLast(job), multi=job.items.length>1;
-    if(d===null)             return {cls:"st-none", text:"作業状況 未確認"};
-    if(d>=STALE_DAYS)        return {cls:"st-check", text:"状況確認が必要（"+(multi?"注番の":"")+"最終記録 "+whenText(d)+"）"};
-    if(d<=RECENT_DAYS)
-      return multi ? {cls:"st-rec", text:"注番に作業記録あり（"+whenText(d)+"）"}
-                   : {cls:"st-work", text:"作業中の可能性（日報 "+whenText(d)+"）"};
-    return {cls:"st-rec", text:(multi?"注番に":"")+"作業記録あり（最終 "+whenText(d)+"）"};
+    if(!NIPPO)               return {cls:"st-none", text:"作業状況 未確認"};
+    // 日報（松前工場）の「最後に作業した日」から。日報の書きもれもありうるので、言い切らない（参考の情報）
+    const d=daysSinceLast(job);
+    if(d===null)             return {cls:"st-none", text:"日報：作業の記録なし"};
+    if(d<=0)                 return {cls:"st-work", text:"日報：今日 作業あり"};
+    if(d===1)                return {cls:"st-rec",  text:"日報：昨日 作業あり"};
+    return {cls: d>=STALE_DAYS ? "st-check" : "st-rec", text:"日報では "+d+"日 作業なし（最後 "+md(lastOf(job))+"）"};
   }
   function todayNote(job, it){
-    if(it.done || (it.manual!=="作業中" && it.manual!=="保留")) return "";
+    if(it.done || it.wait || (it.manual!=="作業中" && it.manual!=="保留")) return "";
     if(daysSinceLast(job)!==0) return "";
     return job.items.length>1 ? "本日 注番全体の日報あり" : "本日 日報あり";
   }
-  function warningsOf(job, it){ return (!it.done && diffDays(it.due,T0)<0) ? ["⚠ 期限を過ぎています"] : []; }
-  function needsCheck(job, it){ return !it.done && (warningsOf(job,it).length>0 || stateOf(job,it).cls==="st-check"); }
+  function warningsOf(job, it){ return (!it.done && !it.wait && diffDays(it.due,T0)<0) ? ["⚠ 期限を過ぎています"] : []; }
+  function needsCheck(job, it){ return !it.done && !it.wait && (warningsOf(job,it).length>0 || stateOf(job,it).cls==="st-check"); }
 
   function cardHTML(job, it, opt){
     opt=opt||{};
@@ -846,18 +1090,20 @@ function initDisplay(){
     const left=diffDays(it.due,T0);
     let dueCls="", dueText;
     if(it.done){ dueCls="done"; dueText="完了"; }
+    else if(it.wait){ dueCls="wait"; dueText="検品待ち"; }
     else if(left<0){ dueCls="over"; dueText=(-left)+"日 遅れ"; }
     else if(left===0){ dueCls="over"; dueText="今日まで"; }
     else { dueCls=left<=SOON_DAYS?"soon":""; dueText="あと"+left+"日"; }
+    const late=!it.done&&!it.wait&&left<0;   // 大型モニター：期限を過ぎた札は点滅（今日までの札・検品待ち・完了はしない）
     return `
-    <div class="card${it.urgent&&!it.done?" urgent":""}${it.done?" done":""}${opt.scroll?" scroll":""}">
+    <div class="card${it.urgent&&!it.done&&!it.wait?" urgent":""}${it.done?" done":""}${it.wait?" wait":""}${opt.scroll?" scroll":""}${late?" late":""}">
       <div class="due ${dueCls}">
         <div class="left">${esc(dueText)}</div>
-        <div class="date">${it.done?"":"期限 "}${fmtDate(it.done?it.done.at:it.due)}</div>
+        <div class="date">${it.done?"":it.wait?"完成 ":"期限 "}${fmtDate(it.done?it.done.at:it.wait?it.wait.at:it.due)}</div>
       </div>
       <div class="body">
         <div class="line1">
-          ${it.urgent&&!it.done?'<span class="tag-urgent">急ぎ</span>':''}
+          ${it.urgent&&!it.done&&!it.wait?'<span class="tag-urgent">急ぎ</span>':''}
           <span class="no">${esc(job.no)}-${esc(it.br)}</span>
           <span>${esc(job.title)}</span>
           <span>【${esc(it.kind)}】</span>
@@ -881,22 +1127,30 @@ function initDisplay(){
   /* 工場からの質問：札の右下に「質問」ボタンと、その品の質問の状態 */
   function qCardHTML(job, it){
     const q = (typeof QA!=="undefined") ? QA.itemState(job.no, it.br) : {open:0, answered:0};
+    if(VIEW_ONLY)   // 見るだけ：状態の文字だけ（押すものは出さない）
+      return '<span class="qcard">'
+        + (q.answered ? '<span class="chip qs-ans">回答あり（スマホで見てください）</span>' : '')
+        + (q.open ? '<span class="chip qs-open">質問 回答待ち</span>' : '')
+        + '</span>';
     return '<span class="qcard">'
       + (q.answered ? '<button class="chip qs-ans qansbtn" data-qans="1">回答あり　見る ▶</button>' : '')
       + (q.open ? '<span class="chip qs-open">質問 回答待ち</span>' : '')
+      + PHOTO.chip(job.no, it.br, "qbtn phbtn")
       + (it.drawingPdf ? `<button class="qbtn drwbtn" data-drw-view="${esc(job.no)}|${esc(it.br)}">図面を見る<small>第${esc(it.drawingPdf.rev)}版</small></button>` : '')
-      + (it.done ? '' : `<button class="qbtn" data-q="${esc(job.no)}|${esc(it.br)}">質問</button>`)
+      + (it.done || it.wait ? '' : `<button class="qbtn" data-q="${esc(job.no)}|${esc(it.br)}">質問</button>`)
       + '</span>';
   }
   function renderCounts(){
-    let open=0, check=0, done=0;
+    let open=0, check=0, done=0, wait=0;
     JOBS.forEach(j=>j.items.forEach(it=>{
       if(it.done){ if(diffDays(it.done.at,T0)===0) done++; return; }
+      if(it.wait){ wait++; return; }
       open++; if(needsCheck(j,it)) check++;
     }));
     document.getElementById("counts").innerHTML =
       '<span>未完了<span class="n">'+open+'</span>件</span>'+
       '<span class="c-warn">要確認<span class="n">'+check+'</span>件</span>'+
+      (wait ? '<span class="c-wait">検品待ち<span class="n">'+wait+'</span>件</span>' : '')+
       '<span class="c-done">本日完了<span class="n">'+done+'</span>件</span>';
   }
   function orderedCards(){
@@ -982,6 +1236,11 @@ function initDisplay(){
     btn.classList.toggle("paused", paused);
     const nt=document.getElementById("notice");
     nt.classList.toggle("paused", paused);
+    if(VIEW_ONLY){
+      nt.textContent = (NIPPO ? "日報の情報：" + (SYNC_AT ? md(SYNC_AT)+" "+fmtTime(SYNC_AT)+" 更新" : "更新待ち") : "日報連携なし")
+        + (multi ? "　｜　"+PAGE_SECONDS+"秒ごとにページが切りかわります" : "");
+      return;
+    }
     nt.textContent = paused
       ? "‖ 停止中 ｜ スペースキー か「▶ 動かす」で再開"+(RESUME_MINUTES>0?"（"+RESUME_MINUTES+"分で自動再開）":"")
       : "試験運用中（日報連携なし）｜ "+(multi ? PAGE_SECONDS+"秒でページ切替・スペースキーで停止" : "1ページだけです");
@@ -995,7 +1254,7 @@ function initDisplay(){
   function renderSync(){
     const el=document.getElementById("syncwarn");
     const late = !!SYNC_AT && (Date.now()-SYNC_AT.getTime()) > SYNC_LATE_MIN*60000;
-    const text = late ? "⚠ 日報の集計が止まっています（最終 "+fmtTime(SYNC_AT)+"）。作業記録の表示が古い可能性があります" : "";
+    const text = late ? "⚠ 日報の更新が遅れています（最後の更新 "+md(SYNC_AT)+" "+fmtTime(SYNC_AT)+"）。作業の記録の表示が古いかもしれません" : "";
     if(el.hidden===!late && el.textContent===text) return false;
     el.hidden=!late; el.textContent=text; return true;
   }
@@ -1058,6 +1317,7 @@ function initDisplay(){
   setInterval(tick,250); tick();
   initDisplayQuestions();
   initDisplayDrawings();
+  initDisplayPhotos();
 }
 
 /* =====================================================================
@@ -1066,7 +1326,7 @@ function initDisplay(){
    ルール側で、役割・変えてよい項目・今の状態・履歴の有無を確かめる。
    ===================================================================== */
 function initOffice(){
-  let filter="open", editing=null, DATA=Live.data;
+  let filter="open", editing=null, DATA=Live.data, fromReq=null, person="";   // person：人で絞る（段階2-④）   // fromReq：スマホの製作依頼から登録する時の依頼（v2.1）
   const $=id=>document.getElementById(id);
   const R=ME.roles, isAdmin=!!R.admin, isOffice=isAdmin||!!R.office, isApprover=isAdmin||!!R.approver;
 
@@ -1111,6 +1371,7 @@ function initOffice(){
     const T=startOfDay(new Date());
     if(it.canceled) return {cls:"", big:"取り消し", small:it.canceled.at?fmtStamp(it.canceled.at):""};
     if(it.done) return {cls:"done", big:"完了", small:it.done.at?fmtStamp(it.done.at):""};
+    if(it.wait) return {cls:"wait", big:"検品待ち", small:"完成 "+(it.wait.at?fmtStamp(it.wait.at):"")};
     const d=parseYmd(it.due), left=diffDays(d,T);
     if(left<0)   return {cls:"over", big:(-left)+"日 遅れ", small:"期限 "+fmtDate(d)};
     if(left===0) return {cls:"over", big:"今日まで", small:"期限 "+fmtDate(d)};
@@ -1119,6 +1380,7 @@ function initOffice(){
   function stateChip(it){
     if(it.canceled) return '<span class="chip st-cancel">取り消し</span>';
     if(it.done) return '<span class="chip st-done">完了</span>';
+    if(it.wait) return '<span class="chip st-wait">検品待ち</span>';
     if(it.manual==="保留") return '<span class="chip st-hold">保留</span>';
     if(it.manual==="作業中") return '<span class="chip st-work">作業中</span>';
     return '<span class="chip st-none">状態なし</span>';
@@ -1126,7 +1388,7 @@ function initOffice(){
   const pass = it => filter==="all" ? true : filter==="canceled" ? !!it.canceled
                    : filter==="done" ? (!!it.done && !it.canceled) : (!it.done && !it.canceled);
   function render(){
-    const jobs=Object.entries(DATA.jobs).map(([k,j])=>({k,j,items:Object.values(j.items).filter(pass).sort((a,b)=>a.br.localeCompare(b.br))}))
+    const jobs=Object.entries(DATA.jobs).map(([k,j])=>({k,j,items:Object.values(j.items).filter(it=>pass(it) && PEOPLE.match(person, j, it)).sort((a,b)=>a.br.localeCompare(b.br))}))
       .filter(x=>x.items.length);
     const key=x=>Math.min(...x.items.map(i=>(i.done||i.canceled)?9e15:parseYmd(i.due).getTime()));
     jobs.sort((a,b)=>key(a)-key(b) || a.j.no.localeCompare(b.j.no));
@@ -1134,20 +1396,20 @@ function initOffice(){
     $("list").innerHTML = jobs.length ? jobs.map(x=>`
       <div class="job">
         <div class="jh">
-          <span class="no">${esc(x.j.no)}</span><span class="title">${esc(x.j.title)}</span>
+          <span class="no">${esc(x.j.no)}</span><span class="title">${esc(x.j.title)}</span>${PEOPLE.owner(x.j.no) ? `<span class="owner">担当 ${esc(PEOPLE.owner(x.j.no))}</span>` : ""}
           ${isOffice?`<span class="acts"><button class="btn" data-addto="${x.k}">＋ 品を足す</button><button class="btn" data-retitle="${x.k}">件名を直す</button></span>`:""}
         </div>
         ${x.items.map(it=>{ const d=dueInfo(it); return `
         <div class="row${it.canceled?" canceled":""}" data-open="${x.k}|${it.id}">
           <div class="rdue ${d.cls}"><b>${esc(d.big)}</b><small>${esc(d.small)}</small></div>
           <div class="rmain">
-            <div class="w">${it.urgent&&!it.done&&!it.canceled?'<span class="tag-urgent">急ぎ</span> ':''}${esc(x.j.no)}-${esc(it.br)}　${esc(it.what)}　${esc(it.qty)}</div>
+            <div class="w">${it.urgent&&!it.done&&!it.wait&&!it.canceled?'<span class="tag-urgent">急ぎ</span> ':''}${esc(x.j.no)}-${esc(it.br)}　${esc(it.what)}　${esc(it.qty)}</div>
             <div class="s">【${esc(it.kind)}】${esc(it.canceled ? "理由："+it.canceled.reason : (it.inst||"").replace(/\n/g," "))}</div>
           </div>
-          ${drwRowChip(x.k, it)}${qRowChip(x.k, it.br)}${stateChip(it)}
+          <div class="rchips">${it.req ? `<span class="chip reqchip">依頼 ${esc(it.req.name)}</span>` : ""}${drwRowChip(x.k, it)}${qRowChip(x.k, it.br)}${stateChip(it)}</div>${PHOTO.square(x.k, it.br, it)}
         </div>`; }).join("")}
       </div>`).join("")
-      : `<div class="nothing">${empty}${filter==="open"&&isOffice?"。「＋ 新しい製作指示」から登録してください":""}</div>`;
+      : `<div class="nothing">${person ? "この人の品はありません（「人で絞る」を「すべての人」にすると全部出ます）" : empty+(filter==="open"&&isOffice?"。「＋ 新しい製作指示」から登録してください":"")}</div>`;
     $("noList").innerHTML = Object.values(DATA.jobs).map(j=>`<option value="${esc(j.no)}">${esc(j.title)}</option>`).join("");
   }
   function renderConn(){
@@ -1223,10 +1485,11 @@ function initOffice(){
   const FIELDS = ["fWhat","fQty","fDue","fUrgent","fInst","fDrw","fRev","fPlace","fDeliver"];
   const cur = ()=> editing ? (DATA.jobs[editing.jobKey]||{items:{}}).items[editing.itemId] : null;
 
-  function openForm(target, presetNo){
+  function openForm(target, presetNo, req){
     editing=target; $("fErr").textContent=""; $("reasonBox").hidden=true; noConfirmed="";
+    fromReq = (!target && req) ? req : null;
     const isEdit=!!target, j=isEdit?DATA.jobs[target.jobKey]:null, it=isEdit?j.items[target.itemId]:null;
-    const editable = isOffice && (!it || (!it.done && !it.canceled));
+    const editable = isOffice && (!it || (!it.done && !it.wait && !it.canceled));
     $("dlgTitle").textContent = isEdit ? (j.no+"-"+it.br+(editable?" を直す":" の内容")) : "新しい製作指示";
     $("fNo").value = isEdit ? j.no : (presetNo||""); $("fNo").disabled = isEdit;
     $("fNoHint").textContent = isEdit ? "" : "登録済みの注番を選ぶと、その注番に品を足します";
@@ -1241,13 +1504,31 @@ function initOffice(){
     $("saveBtn").textContent = isEdit ? "直した内容を保存" : "登録する";
     $("cancelBtn").textContent = editable ? "やめる" : "閉じる";
     $("stateBox").hidden = !isEdit;
+    /* 品の写真：最近30日をすぎた写真も、ここからいつでも見られる（2026-10-30） */
+    $("fPhotos").hidden = !isEdit;
+    $("fPhotos").onclick = isEdit ? ()=>PHOTO.openItemPhotos(target.jobKey, target.itemId, it.what, { tab: it.done || it.wait ? "done" : "progress" }) : null;
     if(isEdit){ renderState(it); loadHist(target); }
+    /* v2.1 製作依頼から：依頼の中身を入れておく（事務所が確かめて、指示・期限・図面を足す） */
+    if(fromReq){
+      const q = fromReq;
+      $("fNo").value = q.no || "";
+      kind = q.kind || "配管"; syncKind();
+      $("fWhat").value = q.what || ""; $("fQty").value = q.qty || ""; $("fDue").value = q.due || "";
+      $("fInst").value = q.text || "";
+      if(q.no) $("fNo").dispatchEvent(new Event("input"));
+      if(!$("fTitle").disabled && !$("fTitle").value) $("fTitle").value = q.noName || q.site || "";
+    }
+    const rq = fromReq || (it && it.req);
+    $("fReqNote").hidden = !rq;
+    $("fReqNote").textContent = fromReq
+      ? "📝 スマホの製作依頼から（" + fromReq.name + " さん・" + fmtStamp(toIso(fromReq.at)) + (fromReq.no ? "" : "・注番わからない：" + fromReq.site) + "）。確かめて、指示・期限を足して「登録する」を押すと、依頼は「工場の仕事にした」になります"
+      : rq ? "📝 スマホの製作依頼から作った品です（依頼：" + rq.name + " さん）" : "";
     instHint();
-    if(!isEdit && presetNo) $("fNo").dispatchEvent(new Event("input"));
+    if(!isEdit && presetNo && !fromReq) $("fNo").dispatchEvent(new Event("input"));
     $("dlg").showModal();
     if(editable) (isEdit||presetNo ? $("fWhat") : $("fNo")).focus();
   }
-  function closeForm(){ $("dlg").close(); editing=null; }
+  function closeForm(){ $("dlg").close(); editing=null; fromReq=null; $("fReqNote").hidden=true; }
   $("dlgClose").onclick=closeForm; $("cancelBtn").onclick=closeForm;
 
   /* 完了・再開など大事な操作は「2回押し」（押しまちがい防止。権限はルールで守る） */
@@ -1258,13 +1539,16 @@ function initOffice(){
   function renderState(it){
     let now;
     if(it.canceled) now = "取り消し（"+(it.canceled.at?fmtStamp(it.canceled.at)+" ":"")+it.canceled.name+"）理由："+it.canceled.reason;
-    else if(it.done) now = "完了（"+(it.done.at?fmtStamp(it.done.at)+" ":"")+it.done.name+"）";
+    else if(it.done) now = "完了（"+(it.done.at?fmtStamp(it.done.at)+" ":"")+it.done.name+(it.done.via==="phone"?"・スマホで完成":"")+"）"
+      + (it.done.insp ? "　検品OK："+it.done.insp.name+(it.done.insp.at?"（"+fmtStamp(it.done.insp.at)+"）":"") : "");
+    else if(it.wait) now = "検品待ち（完成 "+(it.wait.at?fmtStamp(it.wait.at)+" ":"")+it.wait.name+"）。工場の人がスマホで検品OKを押すと完了になります";
     else now = it.manual || "状態なし（工場の画面では日報から判断します）";
     $("stateNow").textContent = "いまの状態："+now;
     const B=(id,label,cls)=>`<button type="button" class="btn ${cls||""}" data-st="${id}">${label}</button>`;
     let btns=[];
     if(it.canceled){ if(isAdmin) btns.push(B("restore","元に戻す")); }
     else if(it.done){ if(isApprover) btns.push(B("reopen","完了を取り消して再開する","danger")); }
+    else if(it.wait){ if(isApprover) btns.push(B("reopen","差し戻す（完成を取り消して作業にもどす）","danger")); }
     else {
       if(isOffice){
         if(it.manual!=="作業中") btns.push(B("work","作業中にする"));
@@ -1276,7 +1560,8 @@ function initOffice(){
     }
     $("stateBtns").innerHTML = btns.join("") || '<span class="hint">この品で、あなたができる操作はありません</span>';
   }
-  const TYPE_JA = {create:"登録", edit:"内容を直した", done:"完了にした", reopen:"完了を取り消して再開した", cancel:"取り消した", restore:"元に戻した"};
+  const TYPE_JA = {create:"登録", edit:"内容を直した", done:"完了にした", reopen:"完了を取り消して再開した", cancel:"取り消した", restore:"元に戻した",
+                   inspect:"検品OK", uninspect:"検品OKを取り消した"};
   async function loadHist(t){
     $("hist").innerHTML = "<li>履歴を読み込み中…</li>";
     try{
@@ -1298,7 +1583,7 @@ function initOffice(){
       upd={manual: st==="work"?"作業中":st==="hold"?"保留":null}; type="edit"; msg="状態を変えました";
     }
     if(st==="done"){ upd={done:{by:ME.uid, name:ME.rname, at:FV.serverTimestamp()}, manual:null}; type="done"; msg="完了にしました"; }
-    if(st==="reopen"){ upd={done:null}; type="reopen"; msg="再開しました"; }
+    if(st==="reopen"){ upd={done:null, inspected:null}; type="reopen"; msg=it.wait?"差し戻しました":"再開しました"; }
     if(st==="restore"){ upd={canceled:null}; type="restore"; msg="元に戻しました"; }
     const detail = st==="work"?"作業中にした":st==="hold"?"保留にした":st==="clear"?"状態を外した":"";
     upd.lastEvent = withEvent(batch, ref, type, detail);
@@ -1353,10 +1638,13 @@ function initOffice(){
       /* 新しい品の登録：枝番を品のIDにして、トランザクションで空いている番号を確保する。
          同時にほかの人が同じ注番へ登録しても、枝番は重ならない（ぶつかった時は自動でやり直す） */
       if(!navigator.onLine){ $("fErr").textContent="新しい登録は、インターネットにつながっている時だけできます"; return; }
-      const k=jobKeyOf(no), j=DATA.jobs[k];
+      const k=jobKeyOf(no), j=DATA.jobs[k], rq=fromReq;
       $("saveBtn").disabled=true;
       try{
         const br = await db.runTransaction(async tx=>{
+          /* v2.1 製作依頼から：依頼がまだ「確認中」かを先に確かめる（ほかの人が受けた・取り下げられた時は登録しない） */
+          const rRef = rq ? db.collection("requests").doc(rq.id) : null;
+          if(rRef){ const rs = await tx.get(rRef); if(!rs.exists || rs.data().state !== "open") throw {code:"req-closed"}; }
           const js = await tx.get(jobRef(k));
           let n = j ? parseInt(nextBr(j),10) : 1, ref, snap;
           for(let tries=0; tries<50; tries++, n++){
@@ -1369,11 +1657,14 @@ function initOffice(){
           if(!js.exists) tx.set(jobRef(k), Object.assign({no, title, createdAt:FV.serverTimestamp(), createdBy:ME.uid}, stamp()));
           const ev = ref.collection("events").doc();
           tx.set(ev, {at:FV.serverTimestamp(), by:ME.uid, name:ME.rname, type:"create", detail:""});
-          tx.set(ref, Object.assign({br, manual:null, done:null, canceled:null, createdAt:FV.serverTimestamp(), createdBy:ME.uid, lastEvent:ev.id}, fields, stamp()));
+          tx.set(ref, Object.assign({br, manual:null, done:null, canceled:null, createdAt:FV.serverTimestamp(), createdBy:ME.uid, lastEvent:ev.id}, fields, stamp(),
+            rq ? {req:{id:rq.id, by:rq.by, name:rq.name}} : {}));
+          if(rRef) tx.update(rRef, {state:"accepted", closedAt:FV.serverTimestamp(), closedBy:ME.uid, closedName:ME.rname, item:{jobKey:k, br}});
           return br;
         });
-        toast(no+"-"+br+" を登録しました"); closeForm();
-      }catch(e){ $("fErr").textContent = e.code==="no-branch" ? "空いている枝番が見つかりませんでした" : errText(e); }
+        toast(no+"-"+br+" を登録しました"+(rq ? "（製作依頼を受けました）" : "")); closeForm();
+      }catch(e){ $("fErr").textContent = e.code==="no-branch" ? "空いている枝番が見つかりませんでした"
+        : e.code==="req-closed" ? "この製作依頼は、もうほかの人が受けたか、差し戻し・取り下げになっています。依頼の一覧を確かめてください" : errText(e); }
       finally{ $("saveBtn").disabled=false; }
     }
   };
@@ -1412,7 +1703,7 @@ function initOffice(){
   /* 図面PDF：品の行の「図面」ボタン（今の版を出す。押すと図面の窓） */
   function drwRowChip(k, it){
     const d = it.drawingPdf;
-    if(!d && (!isOffice || it.done || it.canceled)) return "";
+    if(!d && (!isOffice || it.done || it.wait || it.canceled)) return "";
     return `<button class="chip drwchip${d ? " has" : ""}" data-drw="${esc(k)}|${esc(it.br)}">${d ? "図面 第" + esc(d.rev) + "版" : "図面なし"}</button>`;
   }
   function qRowChip(k, br){
@@ -1422,9 +1713,248 @@ function initOffice(){
   window.__officeRender = ()=>render();
   initOfficeQuestions();
   initOfficeDrawings();
+  initOfficePhotos();
+  initOfficeRequests(req=>openForm(null, "", req));
+  initOfficePeople(k=>{ if(k !== person){ person = k; render(); } else render(); });
   Live.onChange(d=>{ DATA=d; render(); if(editing){ const it=cur(); if(it) renderState(it); } });
   render(); renderConn();
 }
+
+/* =====================================================================
+   写真（新方式：登録したスマホから送る。サーバー＝Functions は使わない）
+   ・スマホ（m.html）：最初に1回だけ登録用QRで登録 → 品をえらぶ → 途中／完成／質問 → 撮る → 送る
+   ・事務所：スマホの登録（登録用QRを出す・止める）、品ごとの写真を見る、回答に写真を付ける（PCから直接置く）
+   ・工場の画面：札に写真の枚数（「写真 N枚」）を出し、押すと品ごとの写真を見られる
+   ・写真を読むのは、ログインした本人の証明（IDトークン）つき。公開リンクは使わない
+   ===================================================================== */
+const PHOTO = (()=>{
+  const API = "https://firebasestorage.googleapis.com/v0/b/" + firebaseConfig.storageBucket + "/o";
+  const PHONE = new URL("m.html", location.href.split("#")[0].split("?")[0]).href;   // スマホの画面
+  /* QR コードを作る部品：版と中身の指紋（SHA-256）を固定。同じ時だけ使う */
+  const QRLIB = { url: "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js",
+                  sha: "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780" };
+  const MAX_SIDE = 1600, MAX_BYTES = 2 * 1024 * 1024, RECENT_DAYS = 30;
+  const KIND = { progress: "途中", done: "完成", question: "質問" };
+  const $ = id => document.getElementById(id);
+
+  async function token(){ const u = auth.currentUser; if(!u) throw {code:"no-auth"}; return u.getIdToken(); }
+  function errText(e){
+    const c = e && e.code;
+    if(c==="network" || c==="offline" || c==="unavailable") return "通信できません。通信を確かめてください";
+    if(e && e.message && /[ぁ-んァ-ン一-龥]/.test(e.message)) return e.message;
+    if(c==="permission-denied") return "権限がありません";
+    return "うまくいきませんでした（" + (c || e) + "）";
+  }
+  /* 写真ID（20文字の英数字。Firestore の自動IDと同じ形） */
+  function newId(){
+    const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", r = new Uint8Array(20);
+    crypto.getRandomValues(r); return Array.from(r, x=>A[x % 62]).join("");
+  }
+
+  /* ---------- 写真を読む（本人の証明つき。少しだけ覚えておく） ---------- */
+  const urls = new Map();
+  async function url(path){
+    if(urls.has(path)) return urls.get(path);
+    const r = await fetch(API + "/" + encodeURIComponent(path) + "?alt=media", { headers:{ Authorization:"Firebase " + await token() } });
+    if(!r.ok) throw {code:"http-" + r.status};
+    const u = URL.createObjectURL(await r.blob());
+    urls.set(path, u);
+    if(urls.size > 60){ const k = urls.keys().next().value; URL.revokeObjectURL(urls.get(k)); urls.delete(k); }
+    return u;
+  }
+  /* 小さな写真の並び。表示したあとに hydrate() で中身を入れる */
+  function thumbs(photos, note){
+    if(!photos || !photos.length) return "";
+    return '<div class="phs">' + photos.map(p=>`<button class="ph" data-ph="${esc(p.path)}" title="押すと大きく見られます"><span class="phload">写真</span></button>`).join("")
+      + (note ? '<span class="phnote">' + esc(note) + '</span>' : "") + '</div>';
+  }
+  function hydrate(root){
+    (root || document).querySelectorAll("[data-ph]:not([data-done])").forEach(b=>{
+      b.dataset.done = "1";
+      url(b.dataset.ph).then(u=>{ b.innerHTML = '<img alt="写真" src="' + u + '">'; }, ()=>{ b.innerHTML = '<span class="phload">読めません</span>'; });
+    });
+  }
+  /* 大きく見る（押すと閉じる） */
+  document.addEventListener("click", e=>{
+    const b = e.target.closest("[data-ph]"); if(!b) return;
+    e.preventDefault();
+    const d = $("phView"); $("phViewImg").removeAttribute("src"); $("phViewMsg").textContent = "読み込んでいます…";
+    if(!d.open) d.showModal();
+    url(b.dataset.ph).then(u=>{ $("phViewImg").src = u; $("phViewMsg").textContent = ""; }, ()=>{ $("phViewMsg").textContent = "写真を読み込めません"; });
+  });
+
+  /* ---------- 写真を小さくする（長い辺1600・JPEG。撮影場所などの情報はここで消える） ---------- */
+  async function shrink(file){
+    if(!file || !/^image\//.test(file.type || "image/")) throw {code:"type", message:"写真のファイルを選んでください"};
+    const src = URL.createObjectURL(file);
+    try{
+      const img = new Image(); img.decoding = "async"; img.src = src;
+      await img.decode().catch(()=>{ throw {code:"bad-image", message:"写真として読めませんでした"}; });
+      const w0 = img.naturalWidth, h0 = img.naturalHeight;
+      if(w0 < 32 || h0 < 32) throw {code:"dimensions", message:"写真が小さすぎます"};
+      const k = Math.min(1, MAX_SIDE / Math.max(w0, h0)), w = Math.round(w0 * k), h = Math.round(h0 * k);
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      for(const q of [0.85, 0.75, 0.65, 0.5]){
+        const b = await new Promise(ok=>cv.toBlob(ok, "image/jpeg", q));
+        if(b && b.size <= MAX_BYTES) return { blob:b, w, h };
+      }
+      throw {code:"size", message:"写真が大きすぎます"};
+    }finally{ URL.revokeObjectURL(src); }
+  }
+  /* 決まった場所に1枚置く（本人の証明つき。進み具合を知らせる） */
+  function put(path, blob, onProgress){
+    return new Promise(async (ok, ng)=>{
+      let t; try{ t = await token(); }catch(e){ ng(e); return; }
+      const x = new XMLHttpRequest();
+      x.open("POST", API + "?name=" + encodeURIComponent(path));
+      x.setRequestHeader("Authorization", "Firebase " + t);
+      x.setRequestHeader("Content-Type", "image/jpeg");
+      x.timeout = 120000;
+      x.upload.onprogress = ev=>{ if(ev.lengthComputable && onProgress) onProgress(ev.loaded / ev.total); };
+      x.onload = ()=> (x.status >= 200 && x.status < 300) ? ok() : ng({code: x.status===403 ? "permission-denied" : "http-" + x.status});
+      x.onerror = ()=> ng({code:"network"});
+      x.ontimeout = ()=> ng({code:"timeout", message:"時間がかかりすぎたため、止めました"});
+      x.send(blob);
+    });
+  }
+
+  /* ---------- 品ごとの写真 ---------- */
+  /* 最近の写真の枚数（品ごと）："注番|枝番" → {n, last, progress, done}。工場の画面・事務所の一覧の「写真 N枚」に使う */
+  let recent = {}, recentDocs = [], recentLoaded = false, recentStarted = false; const recentCbs = [];
+  function startRecent(){
+    if(recentStarted) return; recentStarted = true;
+    const since = new Date(Date.now() - RECENT_DAYS * 86400000);
+    db.collectionGroup("photos").where("at", ">=", since).onSnapshot(s=>{
+      const m = {}, docs = [];
+      s.forEach(d=>{
+        const it = d.ref.parent.parent, job = it && it.parent && it.parent.parent; if(!it || !job) return;
+        const k = job.id + "|" + it.id, x = d.data({serverTimestamps:"estimate"});
+        const at = x.at && x.at.toDate ? x.at.toDate().getTime() : 0;
+        docs.push(Object.assign({}, x, {id:d.id, no:job.id, br:it.id, atMs:at}));
+        if(!m[k]) m[k] = {n:0, last:0, progress:0, done:0}; m[k].n++; if(at > m[k].last) m[k].last = at;
+        if(x.kind === "progress" || x.kind === "done") m[k][x.kind]++;
+      });
+      recent = m; recentDocs = docs; recentLoaded = true; recentCbs.forEach(cb=>cb());
+    }, ()=>{ /* 読めない時（公開直後で索引の準備中など）は、5分後にもう一度ためす */
+      setTimeout(()=>{ recentStarted = false; startRecent(); }, 5 * 60e3);
+    });
+  }
+  const recentOf = (no, br) => recent[no + "|" + br] || {n:0, last:0, progress:0, done:0};
+  /* 最近30日の写真（1枚ずつ）。読めていない時は null（事務所の「新しい写真」の知らせに使う） */
+  const recentList = () => recentLoaded ? recentDocs : null;
+  function onRecent(cb){ recentCbs.push(cb); }
+
+  /* 品の写真の窓（途中・完成・質問のタブ。工場・事務所で共通） */
+  let viewUnsub = null, viewTab = "progress", viewData = {progress:[], done:[], question:[]}, viewKey = null, viewOnClose = null;
+  function fmtAt(ms){ return ms ? fmtStamp(new Date(ms).toISOString()) : ""; }
+  function renderItemPhotos(){
+    const tabs = ["progress","done","question"];
+    /* タブの数は写真の枚数（送った回数ではない。一覧の「途中写真 N枚」と同じ数え方） */
+    $("phItemTabs").innerHTML = tabs.map(t=>`<button data-pt="${t}" class="${viewTab===t?"on":""}">${KIND[t]}<span class="pn">${viewData[t].reduce((s,g)=>s + (g.photos || []).length, 0)}枚</span></button>`).join("");
+    const list = viewData[viewTab];
+    $("phItemList").innerHTML = list.length ? list.map(g=>`<div class="phgrp">
+        <div class="phgh">${esc(g.name||"")}　${esc(fmtAt(g.at))}${g.note ? '<div class="phgn">' + esc(g.note) + '</div>' : ""}</div>
+        ${thumbs(g.photos)}</div>`).join("")
+      : '<div class="qnone">' + KIND[viewTab] + 'の写真はまだありません</div>';
+    hydrate($("phItemList"));
+  }
+  /* 品の写真を、送ったまとまり（sendId）ごとに並べる */
+  function groupPhotos(docs){
+    const by = {};
+    docs.forEach(x=>{
+      const g = by[x.sendId] || (by[x.sendId] = {name:x.name, at:x.atMs, note:x.note || "", photos:[], kind:x.kind});
+      g.photos.push(x); if(x.note && !g.note) g.note = x.note; if(x.atMs > g.at) g.at = x.atMs;
+    });
+    return Object.values(by).sort((a,b)=>b.at-a.at);
+  }
+  function openItemPhotos(no, br, title, opt){
+    opt = opt || {};
+    closeItemPhotos(true);
+    viewKey = no + "|" + br; viewOnClose = opt.onClose || null;
+    viewTab = opt.tab || "progress"; viewData = {progress:[], done:[], question:[]};
+    $("phItemTitle").textContent = "写真：" + no + "-" + br + "　" + (title || "");
+    renderItemPhotos();
+    if(!$("phItemDlg").open) $("phItemDlg").showModal();
+    const key = viewKey;
+    const u1 = db.collection("jobs").doc(no).collection("kojo_items").doc(br).collection("photos").orderBy("at","desc").limit(200)
+      .onSnapshot(s=>{
+        if(viewKey !== key) return;
+        const docs = s.docs.map(d=>{ const x = d.data({serverTimestamps:"estimate"}); return Object.assign({}, x, {id:d.id, atMs: x.at && x.at.toDate ? x.at.toDate().getTime() : 0}); });
+        viewData.progress = groupPhotos(docs.filter(x=>x.kind==="progress"));
+        viewData.done = groupPhotos(docs.filter(x=>x.kind==="done"));
+        renderItemPhotos();
+      }, ()=>{ if(viewKey===key){ $("phItemList").innerHTML = '<div class="qnone">写真を読み込めません</div>'; } });
+    /* 質問の写真：その品の質問（最近30日＋対応中）に付いた写真 */
+    const qs = ()=>{
+      if(viewKey !== key || typeof QA === "undefined") return;
+      viewData.question = QA.list().filter(q=>q.jobKey===no && q.br===br && (q.photos||[]).length)
+        .map(q=>({name:q.askName || "", at:q.atMs, note:"質問：" + (q.text||""), photos:q.photos}));
+      renderItemPhotos();
+    };
+    qs(); if(typeof QA !== "undefined") QA.onChange(qs);
+    viewUnsub = ()=>{ u1(); };
+  }
+  function closeItemPhotos(silent){
+    if(viewUnsub){ viewUnsub(); viewUnsub = null; }
+    viewKey = null;
+    if(!silent && $("phItemDlg").open) $("phItemDlg").close();
+    const cb = viewOnClose; viewOnClose = null; if(!silent && cb) cb();
+  }
+  function initItemPhotosDlg(){
+    $("phItemTabs").addEventListener("click", e=>{ const b = e.target.closest("[data-pt]"); if(!b) return; viewTab = b.dataset.pt; renderItemPhotos(); });
+    $("phItemClose").onclick = ()=>closeItemPhotos();
+    $("phItemDlg").addEventListener("cancel", e=>{ e.preventDefault(); closeItemPhotos(); });
+  }
+  /* 札・一覧の写真のボタン：「途中写真 N枚」「完成写真 N枚」「質問写真 N枚」（ある種類だけ。押すとその種類のタブで開く）
+     絵（📷）と数字だけだと分かりにくいので、種類を文字で出す（2026-10-30）
+     途中・完成：最近30日の写真。質問：その品の質問（最近30日＋対応中）に付いた写真（品の写真の窓の「質問」タブと同じ数え方） */
+  function chip(no, br, cls){
+    const r = recentOf(no, br), c = cls || "chip phchip";
+    const qn = (typeof QA !== "undefined") ? QA.list().filter(q=>q.jobKey===no && q.br===br).reduce((s,q)=>s + (q.photos || []).length, 0) : 0;
+    return [["progress", r.progress || 0], ["done", r.done || 0], ["question", qn]].filter(x=>x[1] > 0)
+      .map(([t, n])=>`<button class="${c}" data-phitem="${esc(no)}|${esc(br)}" data-phtab="${t}" title="この品の${KIND[t]}の写真">${KIND[t]}写真 ${n}枚</button>`).join("");
+  }
+
+  /* 事務所の一覧：行の一番右の正方形の「写真」ボタン（カメラの絵＋文字。2026-10-30）
+     途中・完成・質問の写真をまとめて1つ。押すと品の写真の窓（タブで途中・完成・質問）。
+     写真がない品は、同じ大きさの見えない場所だけとる（行ごとに右の印の位置がそろうように） */
+  const CAM = '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>';
+  function square(no, br, it){
+    const r = recentOf(no, br);
+    const qn = (typeof QA !== "undefined") ? QA.list().filter(q=>q.jobKey===no && q.br===br).reduce((s,q)=>s + (q.photos || []).length, 0) : 0;
+    const pn = r.progress || 0, dn = r.done || 0;
+    if(!pn && !dn && !qn) return '<span class="phsq ph-none" aria-hidden="true"></span>';
+    const tab = (it && (it.done || it.wait) && dn) ? "done" : pn ? "progress" : dn ? "done" : "question";
+    return `<button class="phsq" data-phitem="${esc(no)}|${esc(br)}" data-phtab="${tab}" title="この品の写真（途中・完成・質問）">${CAM}<span>写真</span></button>`;
+  }
+
+  /* ---------- QR コード ---------- */
+  let qrP = null;
+  function loadQR(){
+    if(window.qrcode) return Promise.resolve(window.qrcode);
+    if(!qrP) qrP = (async()=>{
+      let b;
+      try{ const r = await fetch(QRLIB.url, {mode:"cors"}); if(!r.ok) throw 0; b = await r.arrayBuffer(); }
+      catch(e){ throw {code:"qr-load", message:"QRコードの部品を読み込めません。通信を確かめてください"}; }
+      const h = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", b))).map(x=>x.toString(16).padStart(2,"0")).join("");
+      if(h !== QRLIB.sha) throw {code:"qr-bad", message:"QRコードの部品の中身が正しくないため、使いませんでした。事務所に知らせてください"};
+      const u = URL.createObjectURL(new Blob([b], {type:"text/javascript"}));
+      await new Promise((ok, ng)=>{ const s = document.createElement("script"); s.src = u; s.onload = ok; s.onerror = ()=>ng({code:"qr-load", message:"QRコードの部品を読み込めません"}); document.head.appendChild(s); });
+      if(!window.qrcode) throw {code:"qr-load", message:"QRコードの部品を読み込めません"};
+      return window.qrcode;
+    })().catch(e=>{ qrP = null; throw e; });
+    return qrP;
+  }
+  async function qrImg(text){
+    const qrcode = await loadQR();
+    const q = qrcode(0, "M"); q.addData(text); q.make();
+    return q.createImgTag(10, 20, "QRコード");
+  }
+
+  return { errText, newId, url, thumbs, hydrate, shrink, put, startRecent, recentOf, recentList, groupPhotos, onRecent, chip, square,
+           openItemPhotos, closeItemPhotos, initItemPhotosDlg, qrImg, PHONE, MAX_SIDE, KIND };
+})();
 
 /* =====================================================================
    工場からの質問（段階1）
@@ -1435,6 +1965,10 @@ function initOffice(){
    ===================================================================== */
 const QA = (()=>{
   const DAYS = 30;                 // ふだんの一覧に出す日数（対応が終わっていない質問は、古くても出す）
+  /* 回答のお知らせに数える質問：大型モニター（見るだけ）では、スマホから出した質問だけ（事務所の画面は今まで通り全部）。
+     前の工場パネルから出した質問（via なし）は、本人のスマホで見られない（パネルのアカウントの質問）ので、
+     モニターには出さず、事務所の質問の一覧で扱う（事務所から本人に伝える）。GPT 75 */
+  const ansShown = q => q.state === "answered" && (!(window.__viewOnly && window.__isMonitor) || q.via === "phone");
   let byId = {}, recent = {}, active = {}, names = {}, cbs = [], started = false, error = "";
   const api = {
     list(){ return Object.values(byId).sort((a,b)=>(b.atMs||0)-(a.atMs||0)); },
@@ -1444,13 +1978,29 @@ const QA = (()=>{
     /* 品ごとの状態 "注番|枝番" → {open, answered} */
     itemState(no, br){
       let open=0, answered=0;
-      for(const q of Object.values(byId)) if(q.jobKey===no && q.br===br){ if(q.state==="open") open++; else if(q.state==="answered") answered++; }
+      for(const q of Object.values(byId)) if(q.jobKey===no && q.br===br){ if(q.state==="open") open++; else if(ansShown(q)) answered++; }
       return {open, answered};
     },
     counts(){
       let open=0, answered=0;
-      for(const q of Object.values(byId)){ if(q.state==="open") open++; else if(q.state==="answered") answered++; }
+      for(const q of Object.values(byId)){ if(q.state==="open") open++; else if(ansShown(q)) answered++; }
       return {open, answered};
+    },
+    /* 回答が届いていて、まだ「見ました」になっていない質問の、質問した人の名前（重ならないように） */
+    /* 回答が届いていて、まだ「見ました」になっていない質問：だれの・どの品の（古い回答から。同じ人・同じ品は1つ） */
+    answeredList(){
+      const tAns = q => q.lastAnswerAt ? q.lastAnswerAt.getTime() : (q.atMs || 0);
+      const m = new Map();
+      Object.values(byId).filter(ansShown).sort((a,b)=>tAns(a)-tAns(b)).forEach(q=>{
+        const name = q.askName || "名前なし", no = q.jobKey ? q.jobKey + (q.br ? "-" + q.br : "") : "";
+        m.set(name + "|" + no, {name, no});
+      });
+      return Array.from(m.values());
+    },
+    answeredNames(){
+      const s = new Set();
+      for(const q of Object.values(byId)) if(ansShown(q)) s.add(q.askName || "名前なし");
+      return Array.from(s);
     },
   };
   function toQ(doc){
@@ -1492,7 +2042,11 @@ const QA = (()=>{
 
 /* ---------- 共通の小道具 ---------- */
 function qWhen(d){ return d ? fmtStamp(d.toISOString ? d.toISOString() : d) : ""; }
-function qWho(q){ return q.askName ? esc(q.askName)+'<span class="qself">（自己申告）</span>' : '<span class="qself">名前なし</span>'; }
+function qWho(q){
+  if(q.via==="phone") return esc(q.askName||"")+'<span class="qself">（スマホ）</span>';
+  return q.askName ? esc(q.askName)+'<span class="qself">（自己申告）</span>' : '<span class="qself">名前なし</span>';
+}
+function qPhotosHTML(q){ return PHOTO.thumbs(q.photos || []); }
 function qStateChip(q){
   if(q.state==="open") return '<span class="chip qs-open">未回答</span>';
   if(q.state==="answered") return '<span class="chip qs-ans">回答あり・工場は未確認</span>';
@@ -1504,7 +2058,7 @@ async function qAnswersHTML(q){
     if(!list.length) return '<div class="qnone">まだ回答はありません</div>';
     return list.map(a=>`<div class="qans${a.kind==="correction"?" corr":""}">
       <div class="qah">${a.kind==="correction"?"訂正・追記":"回答"}　${esc(a.name||"")}　${esc(qWhen(a.at))}</div>
-      <div class="qat">${esc(a.text)}</div></div>`).join("");
+      <div class="qat">${esc(a.text)}</div>${PHOTO.thumbs(a.photos)}</div>`).join("");
   }catch(e){ return '<div class="qnone">回答を読み込めませんでした</div>'; }
 }
 
@@ -1588,6 +2142,14 @@ function initDisplayQuestions(){
     catch(e){ $("qMicState").textContent="音声を使えませんでした。文字で入力してください"; }
   };
 
+  /* 送信できたら知らせて、少しして閉じる（写真つきの質問は、登録したスマホの「質問」から送る） */
+  function sentOk(){
+    msg("送信しました。事務所に届いています","ok");
+    $("qSend").textContent = "送信しました";
+    const mine = cur;
+    setTimeout(()=>{ if($("qAskDlg").open && cur===mine) closeAsk(); }, 1800);
+  }
+
   /* ----- 送信：サーバーに届いたのを確かめてから「送信しました」 ----- */
   function msg(t, cls){ $("qMsg").textContent = t; $("qMsg").className = "qmsg "+(cls||""); }
   $("qSend").onclick = async ()=>{
@@ -1619,8 +2181,7 @@ function initDisplayQuestions(){
     sending = false;
     if(result==="ok"){
       try{ localStorage.setItem("kojo-askName", cur.nameId||""); }catch(e){}
-      msg("送信しました。事務所に届いています","ok"); $("qSend").textContent="送信しました";
-      setTimeout(()=>{ if($("qAskDlg").open) closeAsk(); }, 1800);
+      sentOk();
       return;
     }
     $("qSend").disabled = false;
@@ -1629,7 +2190,7 @@ function initDisplayQuestions(){
       msg("送信を確認できません。通信が戻ると届く場合があります（同じ質問が2つになることはありません）。「届いたか確かめる」を押してください","bad");
     } else if(result && result.code==="permission-denied"){
       const ex = await check();
-      if(ex===true){ msg("送信しました。事務所に届いています","ok"); $("qSend").textContent="送信しました"; setTimeout(()=>{ if($("qAskDlg").open) closeAsk(); },1800); return; }
+      if(ex===true){ sentOk(); return; }
       msg("送れませんでした。名前の登録が変わったか、品がなくなった可能性があります。画面を開き直して、もう一度お試しください","bad");
     } else {
       cur.retry = true;
@@ -1642,10 +2203,17 @@ function initDisplayQuestions(){
   function band(){
     const c = QA.counts();
     $("ansBand").hidden = !c.answered;
+    if(window.__viewOnly){   // 大型モニター：押せないので、だれの・どの品の質問かを文字だけで知らせる（この帯が点滅する）
+      const L = QA.answeredList(), who = x => x.name === "名前なし" ? x.name : x.name + "さん", no = x => x.no ? "（" + x.no + "）" : "";
+      let t = "";
+      if(L.length === 1) t = who(L[0]) + "の質問" + no(L[0]) + "に回答が届いています（スマホで見てください）";
+      else if(L.length > 1) t = "回答が届いています：" + L.slice(0,3).map(x=>who(x) + no(x)).join("・") + (L.length > 3 ? " ほか" + (L.length - 3) + "件" : "") + "（スマホで見てください）";
+      $("ansBand").innerHTML = c.answered ? '<span class="abtxt">💬 '+esc(t)+'</span>' : "";
+    } else
     $("ansBand").innerHTML = c.answered ? '<span class="abtxt">💬 事務所から回答が届きました（'+c.answered+'件）</span><span class="abgo">ここを押して見る ▶</span>' : "";
     const b = $("qListBtn"); b.textContent = c.open ? "質問（回答待ち "+c.open+"）" : "質問";
   }
-  $("ansBand").onclick = ()=>openList("need");
+  $("ansBand").onclick = ()=>{ if(!window.__viewOnly) openList("need"); };
   $("main").addEventListener("click", e=>{ if(e.target.closest("[data-qans]")) openList("need"); });
   $("qListBtn").onclick = ()=>openList(QA.counts().answered ? "need" : "all");
   function openList(t){ tab = t; pauseRotation(true); $("qListDlg").showModal(); renderList(); }
@@ -1665,11 +2233,12 @@ function initDisplayQuestions(){
     const parts = await Promise.all(list.map(async q=>`
       <div class="qitem" data-id="${esc(q.id)}">
         <div class="qih"><b>${esc(q.jobKey)}-${esc(q.br)}</b>　${esc(q.what||"")}　${qStateChip(q)}</div>
-        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div></div>
+        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div>${qPhotosHTML(q)}</div>
         ${await qAnswersHTML(q)}
         ${q.state==="answered" ? `<button class="btn primary qack" data-ack="${esc(q.id)}">見ました</button>` : ""}
       </div>`));
     $("qList").innerHTML = parts.join("");
+    PHOTO.hydrate($("qList"));
   }
   $("qList").addEventListener("click", async e=>{
     const b = e.target.closest("[data-ack]"); if(!b) return;
@@ -1701,8 +2270,8 @@ function initOfficeQuestions(){
      ・permission-denied は、サーバーの最新の質問を読み、ほかの人の回答が先に入った（回答数や最後の回答IDが
        変わった）と分かった時だけやり直す。権限がない・原因が分からない時はやり直さない
      ・やり直しは最大3回まで */
-  async function answerWithRetry(qRef, text){
-    const aid = qRef.collection("answers").doc().id;
+  async function answerWithRetry(qRef, text, aid0, photos){
+    const aid = aid0 || qRef.collection("answers").doc().id;
     const aRef = qRef.collection("answers").doc(aid);
     for(let tries=1; ; tries++){
       const exists = await aRef.get({source:"server"}).then(s=>s.exists, ()=>false);
@@ -1712,7 +2281,9 @@ function initOfficeQuestions(){
         await db.runTransaction(async tx=>{
           const s = await tx.get(qRef); if(!s.exists) throw new Error("質問が見つかりません");
           const q = s.data(); seen = {count:q.answerCount, last:q.lastAnswerId};
-          tx.set(aRef, {kind: q.answerCount===0 ? "answer" : "correction", text: text.slice(0,1000), by:ME.uid, name:ME.rname, at:FV.serverTimestamp()});
+          const a = {kind: q.answerCount===0 ? "answer" : "correction", text: text.slice(0,1000), by:ME.uid, name:ME.rname, at:FV.serverTimestamp()};
+          if(photos && photos.length) a.photos = photos;   // 先に置いた写真の記録（回答と一緒に1回で記録）
+          tx.set(aRef, a);
           tx.update(qRef, {answerCount:q.answerCount+1, lastAnswerId:aid, lastAnswerAt:FV.serverTimestamp(), state:"answered"});
         });
         return "ok";
@@ -1771,29 +2342,83 @@ function initOfficeQuestions(){
     const parts = await Promise.all(list.map(async q=>`
       <div class="qitem" data-id="${esc(q.id)}">
         <div class="qih"><b>${esc(q.jobKey)}-${esc(q.br)}</b>　${esc(q.what||"")}　${qStateChip(q)}</div>
-        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div></div>
+        <div class="qq"><span class="qwho">${qWho(q)}　${esc(qWhen(q.at))}</span><div class="qqt">${esc(q.text)}</div>${qPhotosHTML(q)}</div>
         ${await qAnswersHTML(q)}
         ${isOffice ? `<div class="qreply">
           <textarea data-reply="${esc(q.id)}" maxlength="1000" rows="2" placeholder="${q.answerCount?"訂正・追記を書く（元の回答は残ります）":"回答を書く"}">${esc(drafts[q.id]||"")}</textarea>
-          <button class="btn ${q.answerCount?"":"primary"}" data-send="${esc(q.id)}">${q.answerCount?"訂正・追記する":"回答する"}</button>
+          <div class="phpick"><button class="btn" data-phpick="${esc(q.id)}">📷 写真を付ける（3枚まで）</button><input type="file" accept="image/*" multiple hidden data-phfile="${esc(q.id)}"></div>
+          <div class="phdraft" data-phdraft="${esc(q.id)}">${phDraftHTML(q.id)}</div>
+          <button class="btn ${q.answerCount?"":"primary"}" data-send="${esc(q.id)}" data-label="${q.answerCount?"訂正・追記する":"回答する"}">${q.answerCount?"訂正・追記する":"回答する"}</button>
           <div class="qmsg" data-msg="${esc(q.id)}"></div></div>` : ""}
       </div>`));
     $("qList").innerHTML = parts.join("");
+    PHOTO.hydrate($("qList"));
+    if(isOffice) Object.keys(dph).forEach(updD);   // 作り直しても「写真の登録待ち」のボタンはそのまま
   }
   $("qList").addEventListener("input", e=>{ const t=e.target.closest("[data-reply]"); if(t) drafts[t.dataset.reply]=t.value; });
+
+  /* ----- 回答に付ける写真（送る前にそろえる。回答と一緒に1回で記録する） ----- */
+  const dph = {};   // 質問ID → { aid（これから送る回答のID）, items:[{key, state, pct, url, photo, reason}] }
+  const LABEL = { shrink:"準備中…", upload:"送信中", used:"登録ずみ ✓", failed:"送れませんでした" };
+  function phD(qid){ return dph[qid] || (dph[qid] = { aid: db.collection("questions").doc().id, items: [] }); }
+  function busyD(qid){ const d = dph[qid]; return !!d && d.items.some(x=>x.state!=="used" && x.state!=="failed"); }
+  function phDraftHTML(qid){
+    const d = dph[qid]; if(!d || !d.items.length) return "";
+    return d.items.map(x=>`<div class="phd ${x.state}"><img alt="" src="${x.url}"><div class="phds">${LABEL[x.state]}${x.state==="upload"?" "+Math.round((x.pct||0)*100)+"%":""}${x.reason?"<br>"+esc(x.reason):""}</div>
+      ${x.state==="used"||x.state==="failed" ? `<button class="phdel" data-phdel="${esc(qid)}|${x.key}" title="この写真を外す">×</button>` : ""}</div>`).join("");
+  }
+  function updD(qid){
+    const el = $("qList").querySelector(`[data-phdraft="${CSS.escape(qid)}"]`); if(el) el.innerHTML = phDraftHTML(qid);
+    const sb = $("qList").querySelector(`[data-send="${CSS.escape(qid)}"]`);
+    if(sb && !sb.dataset.sending){ const busy = busyD(qid); sb.disabled = busy; sb.textContent = busy ? "写真の登録を待っています…" : sb.dataset.label; }
+  }
+  async function addPhoto(qid, file){
+    const d = phD(qid), x = { key: Math.random().toString(36).slice(2,9), state:"shrink", pct:0, url: URL.createObjectURL(file) };
+    d.items.push(x); updD(qid);
+    const fail = e=>{ x.state = "failed"; x.reason = e && e.message && /[ぁ-んァ-ン一-龥]/.test(e.message) ? e.message : PHOTO.errText(e); updD(qid); };
+    let img; try{ img = await PHOTO.shrink(file); }catch(e){ return fail(e); }
+    x.state = "upload"; updD(qid);
+    const id = PHOTO.newId(), path = "photos/a/" + qid + "/" + d.aid + "/" + id + ".jpg";
+    try{ await PHOTO.put(path, img.blob, f=>{ x.pct = f; updD(qid); }); }catch(e){ return fail(e); }
+    x.state = "used";
+    x.photo = { id, path, w: img.w, h: img.h, size: img.blob.size, at: Date.now(), name: ME.rname, src: "office" };
+    updD(qid);
+  }
+  $("qList").addEventListener("click", e=>{
+    const pk = e.target.closest("[data-phpick]");
+    if(pk){ const f = $("qList").querySelector(`[data-phfile="${CSS.escape(pk.dataset.phpick)}"]`); if(f){ f.value = ""; f.click(); } return; }
+    const dl = e.target.closest("[data-phdel]");
+    if(dl){ const [qid, key] = dl.dataset.phdel.split("|"); const d = dph[qid]; if(!d) return;
+      const x = d.items.find(i=>i.key===key); if(x) URL.revokeObjectURL(x.url);
+      d.items = d.items.filter(i=>i.key!==key); updD(qid); }
+  });
+  $("qList").addEventListener("change", e=>{
+    const f = e.target.closest("[data-phfile]"); if(!f) return;
+    const qid = f.dataset.phfile, d = phD(qid);
+    const room = 3 - d.items.filter(x=>x.state!=="failed").length;
+    const files = Array.from(f.files || []);
+    const m = $("qList").querySelector(`[data-msg="${CSS.escape(qid)}"]`);
+    if(files.length > room){ if(m){ m.className = "qmsg bad"; m.textContent = "写真は3枚までです（あと " + Math.max(0, room) + " 枚）"; } }
+    files.slice(0, Math.max(0, room)).forEach(file=>addPhoto(qid, file));
+  });
   $("qList").addEventListener("click", async e=>{
     const b = e.target.closest("[data-send]"); if(!b) return;
     const id = b.dataset.send, ta = $("qList").querySelector(`[data-reply="${CSS.escape(id)}"]`), m = $("qList").querySelector(`[data-msg="${CSS.escape(id)}"]`);
     const text = (ta.value||"").trim();
     if(!text){ m.className="qmsg bad"; m.textContent="回答を書いてください"; return; }
-    b.disabled = true; m.className="qmsg"; m.textContent="送信中…";
+    if(busyD(id)){ m.className="qmsg bad"; m.textContent="写真の登録が終わるまで、お待ちください"; return; }
+    const d = dph[id], photos = d ? d.items.filter(x=>x.state==="used").map(x=>x.photo) : [];
+    b.disabled = true; b.dataset.sending = "1"; m.className="qmsg"; m.textContent="送信中…";
     const qRef = db.collection("questions").doc(id);
     try{
-      const r = await answerWithRetry(qRef, text);
+      const r = await answerWithRetry(qRef, text, d && d.aid, photos);
       if(r==="already"){ /* 前の送信が実は届いていた（同じ回答IDで確認）。二重には保存しない */ }
       delete drafts[id];
-      m.className="qmsg ok"; m.textContent="回答しました。工場の画面に出ます";
+      if(d){ d.items.forEach(x=>URL.revokeObjectURL(x.url)); delete dph[id]; }
+      delete b.dataset.sending;
+      m.className="qmsg ok"; m.textContent="回答しました" + (photos.length ? "（写真 " + photos.length + " 枚）" : "") + "。工場の画面に出ます";
     }catch(err){
+      delete b.dataset.sending;
       b.disabled = false; m.className="qmsg bad";
       m.textContent = err && err.code==="unavailable" ? "通信できません。書いた回答は残しています" :
         err && err.code==="permission-denied" ? "回答できませんでした（権限、または名前の登録を確かめてください）" : "回答できませんでした（"+(err&&err.code||err.message||err)+"）";
@@ -2128,7 +2753,7 @@ function initOfficeDrawings(){
 
   function render(){
     const it = item(); if(!it){ $("drwDlg").close(); cur = null; return; }
-    const d = it.drawingPdf, open = !it.done && !it.canceled;
+    const d = it.drawingPdf, open = !it.done && !it.wait && !it.canceled;
     $("drwTarget").innerHTML = `<b>${esc(cur.k)}-${esc(cur.br)}</b>　${esc(it.what || "")}` + (it.drawing ? `<div class="qsmall">図面番号：${esc(it.drawing)}${it.rev ? "　改訂：" + esc(it.rev) : ""}</div>` : "");
     $("drwCur").innerHTML = d
       ? `<div class="drwnow"><span class="drwrev">第${esc(d.rev)}版</span>　${esc(d.name)}<div class="qsmall">${esc(fmtStamp(d.at))}　${esc(d.byName || "")} が登録　${(d.size/1048576).toFixed(1)}MB</div></div>`
@@ -2137,7 +2762,7 @@ function initOfficeDrawings(){
     $("drwPick").hidden = !canAttach;
     $("drwPick").disabled = !open || busy;
     $("drwPick").textContent = d ? "新しい版を付ける（PDF）" : "図面を付ける（PDF）";
-    $("drwNote").textContent = !open ? (it.done ? "完了した品には、図面を付けられません" : "取り消した品には、図面を付けられません") : "";
+    $("drwNote").textContent = !open ? (it.done ? "完了した品には、図面を付けられません" : it.wait ? "検品待ちの品には、図面を付けられません" : "取り消した品には、図面を付けられません") : "";
     $("drwRetry").hidden = !pending;
   }
   async function loadHistory(){
@@ -2225,6 +2850,348 @@ function initOfficeDrawings(){
       msg("図面のファイルは送れましたが、登録できませんでした（" + (e && e.code || e) + "）。「登録をやり直す」を押してください", "bad");
     }
   }
+}
+
+/* =====================================================================
+   写真（新方式）：工場の画面・事務所の画面の部分
+   ・工場の画面：札に「途中写真 N枚」など。押すと品ごとの写真（途中・完成・質問）
+   ・事務所：一覧に「途中写真 N枚」など、スマホの登録（登録用QRを出す・止める）
+   ===================================================================== */
+function initDisplayPhotos(){
+  PHOTO.initItemPhotosDlg();
+  PHOTO.startRecent();
+  PHOTO.onRecent(()=>{ if(window.__display) window.__display.refresh(); });
+  let pausedByMe = false;
+  function pauseRotation(on){
+    const d = window.__display; if(!d) return;
+    if(on && !d.isPaused()){ d.togglePause(); pausedByMe = true; }
+    if(!on && pausedByMe){ if(d.isPaused()) d.togglePause(); pausedByMe = false; }
+  }
+  document.getElementById("main").addEventListener("click", e=>{
+    const b = e.target.closest("[data-phitem]"); if(!b) return;
+    const [no, br] = b.dataset.phitem.split("|");
+    const job = (Live.data.jobs || {})[no], it = job && job.items && job.items[br];
+    pauseRotation(true);
+    PHOTO.openItemPhotos(no, br, it ? it.what : "", { tab: b.dataset.phtab || (it && (it.done || it.wait) ? "done" : "progress"), onClose: ()=>pauseRotation(false) });
+  });
+}
+
+function initOfficePhotos(){
+  const $ = id=>document.getElementById(id);
+  const R = ME.roles, isAdmin = !!R.admin, isOffice = isAdmin || !!R.office;
+  PHOTO.initItemPhotosDlg();
+  PHOTO.startRecent();
+  PHOTO.onRecent(()=>{ if(window.__officeRender) window.__officeRender(); });
+  $("list").addEventListener("click", e=>{
+    const b = e.target.closest("[data-phitem]"); if(!b) return;
+    e.stopPropagation();
+    const [no, br] = b.dataset.phitem.split("|");
+    const job = (Live.data.jobs || {})[no], it = job && job.items && job.items[br];
+    PHOTO.openItemPhotos(no, br, it ? it.what : "", { tab: b.dataset.phtab || (it && (it.done || it.wait) ? "done" : "progress") });
+  }, true);
+
+  /* ---------- 新しい写真の知らせ（2026-10-30） ----------
+     このパソコンで、まだ見ていない途中・完成の写真（最近30日）の枚数を上の帯に出す。押すと一覧の窓。窓を開いたら「見た」にする。
+     「見た」はこのパソコンのブラウザに覚える（人ごと・パソコンごと。データベースには書かない）。
+     はじめて開いた時は、今ある写真を「見た」にする（古い写真で帯が出っぱなしにならないように） */
+  const SEEN_KEY = "kojo-photoSeenAt";
+  let seenAt = null;
+  try{ const v = localStorage.getItem(SEEN_KEY); if(v !== null && v !== "") seenAt = +v || 0; }catch(e){}
+  const saveSeen = v => { seenAt = v; try{ localStorage.setItem(SEEN_KEY, String(v)); }catch(e){} };
+  const newPhotos = () => { const L = PHOTO.recentList(); return L ? L.filter(x=>(x.kind === "progress" || x.kind === "done") && x.atMs > seenAt) : []; };
+  function phNotice(){
+    const L = PHOTO.recentList();
+    if(L && seenAt === null) saveSeen(L.reduce((m, x)=>Math.max(m, x.atMs || 0), 0));
+    const n = newPhotos().length;
+    $("phNotice").hidden = !n;
+    $("phNotice").textContent = n ? "新しい写真が " + n + " 枚届いています（押して見る）" : "";
+  }
+  function openNewPhotos(){
+    const list = newPhotos();
+    if(list.length) saveSeen(list.reduce((m, x)=>Math.max(m, x.atMs || 0), seenAt || 0));
+    phNotice();
+    const groups = PHOTO.groupPhotos(list).map(g=>Object.assign(g, {no:g.photos[0].no, br:g.photos[0].br}));
+    $("phNewNote").textContent = groups.length ? "このパソコンでまだ見ていなかった写真です（新しい順）" : "新しい写真はありません";
+    $("phNewList").innerHTML = groups.map(g=>{
+      const job = (Live.data.jobs || {})[g.no], it = job && job.items && job.items[g.br];
+      return `<div class="phgrp phnew">
+        <div class="phgh"><b>${esc(g.no)}-${esc(g.br)}　${esc(it ? it.what : "")}</b>　${esc(PHOTO.KIND[g.kind] || "")}写真・${esc(g.name || "")}　${esc(g.at ? fmtStamp(new Date(g.at).toISOString()) : "")}
+          ${g.note ? '<div class="phgn">' + esc(g.note) + '</div>' : ""}</div>
+        ${PHOTO.thumbs(g.photos)}
+        <div class="phall"><button class="btn" data-phitem="${esc(g.no)}|${esc(g.br)}" data-phtab="${esc(g.kind)}">この品の写真を全部見る</button></div>
+      </div>`;
+    }).join("");
+    PHOTO.hydrate($("phNewList"));
+    if(!$("phNewDlg").open) $("phNewDlg").showModal();
+  }
+  $("phNotice").onclick = openNewPhotos;
+  $("phNewClose").onclick = ()=>$("phNewDlg").close();
+  $("phNewList").addEventListener("click", e=>{
+    const b = e.target.closest("[data-phitem]"); if(!b) return;
+    const [no, br] = b.dataset.phitem.split("|");
+    const job = (Live.data.jobs || {})[no], it = job && job.items && job.items[br];
+    PHOTO.openItemPhotos(no, br, it ? it.what : "", { tab: b.dataset.phtab || "progress" });
+  });
+  PHOTO.onRecent(phNotice);
+  phNotice();
+
+  /* ---------- スマホの登録（事務所だけ） ---------- */
+  $("devBtn").hidden = !isOffice;
+  if(!isOffice) return;
+  /* 登録用QRのID：28文字の乱数（英大文字・小文字・数字）。QRで読むだけなので、長くても手間は変わらない
+     かたよりが出ないよう、248 以上の値は使わない（62×4＝248） */
+  const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  function regId(){
+    let s = "";
+    while(s.length < 28){ const r = new Uint8Array(40); crypto.getRandomValues(r); for(const x of r) if(x < 248 && s.length < 28) s += ALPHA[x % 62]; }
+    return s;
+  }
+  let pick = null, cur = null, timer = null, unsubReg = null, unsubDev = null;
+  function msg(t, cls){ $("devMsg").textContent = t; $("devMsg").className = "qmsg " + (cls||""); }
+  function names(){
+    const n = QA.names() || {}, ids = Object.keys(n).filter(id=>n[id] && n[id].active).sort((a,b)=>n[a].name.localeCompare(n[b].name,"ja"));
+    $("devNames").innerHTML = ids.map(id=>`<button class="qname${pick===n[id].name?" on":""}" data-dn="${esc(n[id].name)}">${esc(n[id].name)}</button>`).join("")
+      || '<span class="hint">質問する人の名前が、まだ登録されていません。下に名前を入れてください</span>';
+  }
+  function step(n){ $("devStep1").hidden = n!==1; $("devStep2").hidden = n!==2; }
+  function stopWatch(){ clearInterval(timer); timer = null; if(unsubReg){ unsubReg(); unsubReg = null; } }
+  function reset(){ stopWatch(); cur = null; pick = null; $("devName").value = ""; $("devQr").innerHTML = ""; step(1); names(); $("devIssue").disabled = false; $("devAgain").hidden = true; }
+  $("devNames").addEventListener("click", e=>{ const b = e.target.closest("[data-dn]"); if(!b) return; pick = b.dataset.dn; $("devName").value = ""; names(); msg(""); });
+  $("devName").addEventListener("input", ()=>{ if($("devName").value.trim()){ pick = null; names(); } });
+  $("devBtn").onclick = ()=>{ reset(); msg(""); $("devDlg").showModal(); watchDevices(); };
+  function close(){ stopWatch(); if(unsubDev){ unsubDev(); unsubDev = null; } $("devDlg").close(); }
+  $("devClose").onclick = close;
+  $("devDlg").addEventListener("cancel", e=>{ e.preventDefault(); close(); });
+  $("devAgain").onclick = ()=>{ reset(); msg(""); };
+
+  $("devIssue").onclick = async ()=>{
+    const name = ($("devName").value.trim() || pick || "").slice(0, 20);
+    if(!name){ msg("名前を選ぶか、入れてください", "bad"); return; }
+    if(!navigator.onLine){ msg("通信がないため、QRコードを出せません", "bad"); return; }
+    $("devIssue").disabled = true; msg("QRコードを用意しています…");
+    const id = regId(), ref = db.collection("devReg").doc(id);
+    try{
+      await ref.set({ name, by:ME.uid, byName:ME.rname, createdAt:FV.serverTimestamp(), state:"open", usedBy:null, usedAt:null });
+      $("devQr").innerHTML = await PHOTO.qrImg(PHOTO.PHONE + "?r=" + id);
+    }catch(e){ $("devIssue").disabled = false; msg(PHOTO.errText(e), "bad"); return; }
+    cur = { id, name, exp: Date.now() + 10 * 60e3 };
+    $("devWho").innerHTML = "<b>" + esc(name) + "</b> さんのスマホを登録します";
+    step(2); msg("本人のスマホのカメラで、QRコードを読んでもらってください");
+    const tick = ()=>{ const left = Math.max(0, Math.round((cur.exp - Date.now())/1000));
+      $("devLeft").textContent = left > 0 ? "このQRコードが使えるのは、あと " + Math.floor(left/60) + "分" + String(left%60).padStart(2,"0") + "秒" : "";
+      if(!left){ stopWatch(); $("devQr").innerHTML = ""; step(1); $("devIssue").disabled = false; msg("時間切れです。もう一度「登録用のQRを出す」を押してください", "bad"); } };
+    tick(); timer = setInterval(tick, 1000);
+    const mine = cur;
+    unsubReg = ref.onSnapshot(s=>{
+      if(cur !== mine || !s.exists) return;
+      if(s.data().state === "used"){
+        stopWatch(); $("devQr").innerHTML = ""; step(1);
+        msg("登録できました ✓　" + mine.name + " さんのスマホから写真を送れます", "ok");
+        $("devIssue").disabled = true; $("devAgain").hidden = false;
+      }
+    }, ()=>{});
+  };
+
+  /* 登録したスマホの一覧（止めることだけできる。止めたスマホは、登録しなおしてもらう） */
+  function watchDevices(){
+    if(unsubDev) return;
+    unsubDev = db.collection("devices").onSnapshot(s=>{
+      const list = s.docs.map(d=>{ const x = d.data({serverTimestamps:"estimate"}); return Object.assign({}, x, {uid:d.id, at: x.createdAt && x.createdAt.toDate ? x.createdAt.toDate() : null}); })
+        .sort((a,b)=>(b.active - a.active) || ((b.at||0) - (a.at||0)));
+      $("devList").innerHTML = list.length ? '<table class="devtbl"><tbody>' + list.map(d=>`<tr class="${d.active?"":"stopped"}">
+          <td class="n">${esc(d.name)}</td><td class="s">${d.at ? esc(fmtStamp(d.at.toISOString())) + " 登録" : ""}</td>
+          <td>${d.active ? `<button class="btn danger" data-devstop="${esc(d.uid)}">止める</button>` : '<span class="chip st-cancel">止めた</span>'}</td></tr>`).join("") + '</tbody></table>'
+        : '<div class="qnone">まだ登録したスマホはありません</div>';
+    }, e=>{ $("devList").innerHTML = '<div class="qnone">一覧を読み込めません（' + esc(e && e.code || e) + '）</div>'; });
+  }
+  $("devList").addEventListener("click", async e=>{
+    const b = e.target.closest("[data-devstop]"); if(!b) return;
+    if(!b.classList.contains("armed")){
+      b.classList.add("armed"); b.textContent = "もう一度押すと止めます";
+      clearTimeout(b._t); b._t = setTimeout(()=>{ b.classList.remove("armed"); b.textContent = "止める"; }, 4000);
+      return;
+    }
+    b.disabled = true;
+    try{ await db.collection("devices").doc(b.dataset.devstop).update({ active:false, stoppedAt:FV.serverTimestamp(), stoppedBy:ME.uid }); msg("止めました。このスマホからは、もう送れません", "ok"); }
+    catch(err){ b.disabled = false; msg("止められませんでした（" + (err && err.code || err) + "）", "bad"); }
+  });
+}
+
+/* =====================================================================
+   製作依頼（v2.1）：事務所の画面
+   ・スマホ（現場・工場の職人）から届いた依頼を見る（確認待ちは全部、ほかは最近30日）
+   ・「工場の仕事にする」：新しい製作指示の窓に依頼の中身を入れて開く。事務所が確かめて、指示・期限・図面を足して登録する
+       登録の時に、品を作るのと依頼を「受けた」にするのを1回で書く（part_office.js の登録）
+   ・「差し戻す」：理由を書いて返す（依頼した人のスマホに理由が出る）
+   ・読むのは事務所・完了の人。受ける・差し戻すのは事務所だけ（Rules で守る）
+   ===================================================================== */
+function initOfficeRequests(openFromReq){
+  const $ = id=>document.getElementById(id);
+  const R = ME.roles, isAdmin = !!R.admin, isOffice = isAdmin || !!R.office, isApprover = isAdmin || !!R.approver;
+  if(!isOffice && !isApprover) return;
+  const DAYS = 30;
+  let open = {}, recent = {}, tab = "open", lastN = null, error = "";
+  const rows = s=>{ const o = {}; s.forEach(d=>{ o[d.id] = Object.assign({}, d.data({serverTimestamps:"estimate"}), {id:d.id}); }); return o; };
+  const fail = e=>{ error = (e && e.code === "permission-denied") ? "製作依頼を読む権限がありません" : "製作依頼を読み込めません（" + (e && e.code || e) + "）"; refresh(); };
+  db.collection("requests").where("state", "==", "open").onSnapshot(s=>{ open = rows(s); error = ""; refresh(); }, fail);
+  db.collection("requests").where("at", ">=", new Date(Date.now() - DAYS * 864e5)).onSnapshot(s=>{ recent = rows(s); refresh(); }, fail);
+
+  $("reqBtn").hidden = false;
+  const ms = t => t && t.toDate ? t.toDate().getTime() : 0;
+  const when = t => { const m = ms(t); return m ? fmtStamp(new Date(m).toISOString()) : ""; };
+  const ymdText = s => { const p = String(s || "").split("-"); return p.length === 3 ? (+p[1]) + "/" + (+p[2]) : ""; };
+
+  function refresh(){
+    const n = Object.keys(open).length;
+    $("reqCount").hidden = !n; $("reqCount").textContent = n;
+    $("reqNotice").hidden = !n || !isOffice;
+    $("reqNotice").textContent = n ? "📝 スマホから製作依頼が " + n + " 件届いています（押して見る）" : "";
+    lastN = n;
+    if($("reqDlg").open) render();
+  }
+  function list(){
+    const all = Object.assign({}, recent, open);
+    return Object.values(all).filter(q=>tab === "all" || q.state === "open").sort((a,b)=>ms(b.at) - ms(a.at));
+  }
+  const STATE = { open:["確認待ち", "rq-open"], accepted:["工場の仕事にした", "rq-acc"], returned:["差し戻した", "rq-ret"], withdrawn:["取り下げ", "rq-wd"] };
+  function card(q){
+    const st = STATE[q.state] || [q.state, ""];
+    const head = q.no ? `注番 ${esc(q.no)}<span class="rqs">　${esc(q.noName || "")}</span>` : `注番わからない<span class="rqs">　${esc(q.site || "")}</span>`;
+    let foot = "";
+    if(q.state === "accepted" && q.item) foot = `<div class="rqs">→ ${esc(q.item.jobKey)}-${esc(q.item.br)} として工場の仕事にしました（${esc(q.closedName || "")}・${esc(when(q.closedAt))}）</div>`;
+    if(q.state === "returned") foot = `<div class="rqs">差し戻した理由：${esc(q.reason || "")}（${esc(q.closedName || "")}・${esc(when(q.closedAt))}）</div>`;
+    if(q.state === "withdrawn") foot = `<div class="rqs">依頼した人が取り下げました（${esc(when(q.closedAt))}）</div>`;
+    const acts = q.state === "open" && isOffice ? `
+      <div class="rqacts">
+        <button class="btn primary" data-racc="${esc(q.id)}">工場の仕事にする</button>
+        <button class="btn" data-rret="${esc(q.id)}">差し戻す</button>
+      </div>
+      <div class="rqback" id="rqb-${esc(q.id)}" hidden>
+        <textarea rows="2" maxlength="300" placeholder="差し戻す理由（依頼した人のスマホに出ます）　例：図面を付けて出しなおしてください"></textarea>
+        <div class="rqacts"><button class="btn danger" data-rretgo="${esc(q.id)}">この理由で差し戻す</button><button class="btn" data-rretno="${esc(q.id)}">やめる</button></div>
+        <div class="err"></div>
+      </div>` : "";
+    return `<div class="rq${q.state === "open" ? " open" : ""}">
+      <div class="rqh"><b>${head}</b><span class="chip ${st[1]}">${esc(st[0])}</span><span class="rqs">${esc(q.name || "")} さん（スマホ）・${esc(when(q.at))}</span></div>
+      <div class="rqw">【${esc(q.kind || "")}】${esc(q.what || "")}　${esc(q.qty || "")}${q.due ? `<span class="rqs">　いつまでに ${esc(ymdText(q.due))}</span>` : ""}</div>
+      ${q.text ? `<div class="rqt">${esc(q.text)}</div>` : ""}
+      ${PHOTO.thumbs(q.photos || [], (q.photos || []).length ? "写真 " + q.photos.length + " 枚（押すと大きく）" : "")}
+      ${foot}${acts}
+    </div>`;
+  }
+  function render(){
+    $("reqTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.rt === tab));
+    const arr = list();
+    $("reqList").innerHTML = (error ? `<div class="err">${esc(error)}</div>` : "")
+      + (arr.length ? arr.map(card).join("") : `<div class="nothing">${tab === "open" ? "確認待ちの製作依頼はありません" : "最近30日の製作依頼はありません"}</div>`);
+    PHOTO.hydrate($("reqList"));
+  }
+  function openDlg(t){ tab = t || (Object.keys(open).length ? "open" : "all"); $("reqDlg").showModal(); render(); }
+  $("reqBtn").onclick = ()=>openDlg();
+  $("reqNotice").onclick = ()=>openDlg("open");
+  $("reqClose").onclick = ()=>$("reqDlg").close();
+  $("reqTabs").addEventListener("click", e=>{ const b = e.target.closest("[data-rt]"); if(!b) return; tab = b.dataset.rt; render(); });
+  $("reqList").addEventListener("click", async e=>{
+    const a = e.target.closest("[data-racc]"), r = e.target.closest("[data-rret]"), go = e.target.closest("[data-rretgo]"), no = e.target.closest("[data-rretno]");
+    if(a){
+      const q = open[a.dataset.racc]; if(!q) return;
+      $("reqDlg").close(); openFromReq(q); return;
+    }
+    if(r){ const box = $("rqb-" + r.dataset.rret); box.hidden = false; box.querySelector("textarea").focus(); return; }
+    if(no){ $("rqb-" + no.dataset.rretno).hidden = true; return; }
+    if(go){
+      const id = go.dataset.rretgo, box = $("rqb-" + id), reason = box.querySelector("textarea").value.trim(), er = box.querySelector(".err");
+      if(!reason){ er.textContent = "差し戻す理由を書いてください"; return; }
+      go.disabled = true; er.textContent = "";
+      try{
+        await db.collection("requests").doc(id).update({ state:"returned", closedAt:FV.serverTimestamp(), closedBy:ME.uid, closedName:ME.rname, reason:reason.slice(0, 300) });
+      }catch(err){
+        go.disabled = false;
+        er.textContent = err && err.code === "permission-denied" ? "差し戻せませんでした。ほかの人が先に受けたか、取り下げられた可能性があります" : "差し戻せませんでした（" + (err && err.code || err) + "）";
+      }
+    }
+  });
+}
+
+/* =====================================================================
+   事務所の画面：人で絞る（日報の担当・製作依頼を出した人）と、日報の注番の未照合（段階2-④）
+   ・担当：日報の注番の一覧（nippoMirror/jobs）の owner。製作依頼から作った品は、依頼した人（品の req.name）
+   ・名前は、空白をとって全角・半角をそろえて、同じなら同じ人とする（日報の名前とスマホの登録名の書き方がちがうと、別の人として並ぶ）
+   ・未照合：日報の行の注番が、日報の注番の一覧と合わない行の数（nippoMirror/lastWork。最近13か月・松前工場）
+   ・読むだけ。日報アプリ・日報のデータには書かない
+   ===================================================================== */
+const PEOPLE = (()=>{
+  let owners = {}, lastWork = null, cbs = [];
+  const normName = s => String(s || "").normalize("NFKC").replace(/\s+/g, "");
+  const fire = ()=>cbs.forEach(cb=>{ try{ cb(); }catch(e){} });
+  const api = {
+    onChange(cb){ cbs.push(cb); },
+    start(){
+      db.collection("nippoMirror").doc("jobs").onSnapshot(s=>{
+        owners = {};
+        const it = s.exists ? (s.data().items || {}) : {};
+        Object.values(it).forEach(j=>{ if(j && typeof j.no === "string") owners[j.no] = String(j.owner || ""); });
+        fire();
+      }, ()=>{ owners = {}; fire(); });
+      db.collection("nippoMirror").doc("lastWork").onSnapshot(s=>{ lastWork = s.exists ? s.data() : null; fire(); }, ()=>{ lastWork = null; fire(); });
+    },
+    normName,
+    /* 注番の担当（日報）。日報の一覧にない注番は "" */
+    owner(no){ return owners[normNo(no)] || ""; },
+    /* 絞るための名前の一覧：いまの品の、担当（日報）と依頼した人 */
+    names(jobs){
+      const m = new Map();
+      Object.values(jobs || {}).forEach(j=>{
+        const o = api.owner(j.no); if(o && o !== "その他") m.set(normName(o), o);
+        Object.values(j.items || {}).forEach(it=>{ if(it.req && it.req.name) m.set(normName(it.req.name), it.req.name); });
+      });
+      return Array.from(m.entries()).sort((a,b)=>a[1].localeCompare(b[1], "ja")).map(([key, label])=>({key, label}));
+    },
+    /* その品が、その人の分か（担当か、依頼した人） */
+    match(key, job, it){
+      if(!key) return true;
+      return normName(api.owner(job.no)) === key || !!(it.req && normName(it.req.name) === key);
+    },
+    /* 未照合：行の数と、合わない注番（多い順。同期の関数が書く。古い版の同期では null） */
+    unmatched(){
+      if(!lastWork) return null;
+      const n = (lastWork.unmatchedAmbiguous || 0) + (lastWork.unmatchedNotFound || 0);
+      const nos = lastWork.unmatchedNos && typeof lastWork.unmatchedNos === "object" ? lastWork.unmatchedNos : null;
+      return { n, nos, from:lastWork.monthsFrom || "", to:lastWork.monthsTo || "", syncedAt:lastWork.syncedAt || 0 };
+    },
+  };
+  return api;
+})();
+
+function initOfficePeople(onFilter){
+  const $ = id=>document.getElementById(id);
+  const R = ME.roles, isOffice = !!R.admin || !!R.office;
+  PEOPLE.start();
+  let key = "";
+  function fillSel(){
+    const sel = $("personSel"), cur = sel.value, list = PEOPLE.names(Live.data.jobs);
+    sel.innerHTML = '<option value="">すべての人</option>' + list.map(p=>`<option value="${esc(p.key)}">${esc(p.label)}</option>`).join("");
+    sel.value = list.some(p=>p.key === cur) ? cur : "";
+    if(sel.value !== key){ key = sel.value; onFilter(key); }
+    $("personNote").hidden = !key;
+    $("personNote").textContent = key ? "担当（日報）か、製作依頼を出した人が「" + (sel.options[sel.selectedIndex] || {}).textContent + "」の品だけ出しています" : "";
+  }
+  $("personSel").addEventListener("change", ()=>{ key = $("personSel").value; onFilter(key); fillSel(); });
+  function notice(){
+    const u = PEOPLE.unmatched(), el = $("nipNotice");
+    if(!isOffice || !u || !u.n){ el.hidden = true; el.innerHTML = ""; return; }
+    const ym = s => { const p = String(s || "").split("-"); return p.length === 2 ? (+p[0]) + "年" + (+p[1]) + "月" : ""; };
+    const md = s => { const p = String(s || "").split("-"); return p.length === 3 ? (+p[1]) + "/" + (+p[2]) : ""; };
+    const list = u.nos ? Object.entries(u.nos).map(([no, v])=>`<li><b>${esc(no)}</b>　${esc(v.n)}行（最後 ${esc(md(v.last))}）</li>`).join("") : "";
+    el.hidden = false;
+    el.innerHTML = `<details><summary>ℹ 日報の注番に未照合あり（${esc(u.n)}行）`
+      + (u.from ? `<span class="sub">　${esc(ym(u.from))}〜${esc(ym(u.to))}・松前工場の行</span>` : "") + `</summary>`
+      + `<div class="sub">日報の行の注番が、日報の注番の一覧と合いません。工場の画面の「日報では N日 作業なし」に入らないので、日報アプリの事務所の画面で注番を確かめてください（このアプリからは日報を直しません）</div>`
+      + (list ? `<ul>${list}</ul>` : `<div class="sub">どの注番かは、日報の同期の新しい版から出ます</div>`) + `</details>`;
+  }
+  PEOPLE.onChange(()=>{ fillSel(); notice(); onFilter(key); });
+  Live.onChange(()=>fillSel());
+  fillSel(); notice();
 }
 </script>
 </body>
